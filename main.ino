@@ -96,8 +96,9 @@ void setup(){
     str[30]='\0';
     myGLCD.print(str,2,2);
     delay(5000);
-    digitalWrite(BACKLIGHT,LOW);
-    ESP.deepSleep(0);
+    ///////digitalWrite(BACKLIGHT,LOW);
+    ///////ESP.deepSleep(0);
+        while(1);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
   else if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);
   
@@ -145,21 +146,30 @@ void loop(){
     database();
   }
   else{
+    myGLCD.setColor(VGA_WHITE);
+    myGLCD.setBackColor(VGA_BLACK);
+    myGLCD.setFont(SmallFontRu);
+    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
+    sprintf(text_buf,"%-30s",text_buf);
+    text_buf[30]='\0';
+    myGLCD.print(text_buf,2,2);
+    delay(10000);
     analogWrite(BACKLIGHT,0);
     ESP.reset();
   }
     
-  for(uint8_t i=0;i<30;i++){
+  for(uint16_t i=0;i<600;i++){
     rssi=viewNetworks();
     showBatteryLevel();
     showWiFiLevel(rssi);
     showTime();
     is_settings();
+        showInsideTemp();//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
-  analogWrite(BACKLIGHT,html.bright*3);
-  delay(5000);
-  digitalWrite(BACKLIGHT,LOW);
-  ESP.deepSleep(0);
+  //analogWrite(BACKLIGHT,html.bright*3);
+  //delay(5000);
+  //digitalWrite(BACKLIGHT,LOW);
+  //ESP.deepSleep(0);
 }
 
 int viewNetworks(void){
@@ -183,7 +193,7 @@ void siteTime(){
   if(httpCode==HTTP_CODE_OK){
     httpData=client.getString();
     char stamp[12];
-    httpData.toCharArray(stamp,(httpData.length())+1);
+    httpData.toCharArray(stamp,12);
     int dayLight=0;
     if(ntp->getDayLight()) dayLight=3600;
     setTime(atol(stamp)+(html.zone*3600)+dayLight);
@@ -191,9 +201,17 @@ void siteTime(){
 }
 
 void database(void){
+  byte mac[6];
+  WiFi.macAddress(mac);
   if((html.id[0]==0xFF)or(html.id[0]==0)){
     url=site;
-    url+="get_id.php";
+    url+="get_id.php?MAC=";
+    url+=String(mac[5],HEX)+"-";
+    url+=String(mac[4],HEX)+"-";
+    url+=String(mac[3],HEX)+"-";
+    url+=String(mac[2],HEX)+"-";
+    url+=String(mac[1],HEX)+"-";
+    url+=String(mac[0],HEX);
     HTTPClient client;
     client.begin(url);
     int httpCode=client.GET();
@@ -201,19 +219,16 @@ void database(void){
       if(httpCode==HTTP_CODE_OK){
         httpData=client.getString();
         char myID[32];
-        httpData.toCharArray(myID,(httpData.length())+1);
-        EEPROM.begin(512);
-        EEPROM.put(140,myID);
-        EEPROM.commit();
-        EEPROM.end();
-    
-        EEPROM.begin(512);
-        EEPROM.get(140,html.id);
-        EEPROM.end();
+        httpData.toCharArray(myID,10);
+        if(myID>0){
+          EEPROM.begin(512);
+          EEPROM.put(140,myID);
+          EEPROM.commit();
+          EEPROM.end();
+        }
       }
     }
   }
-  
   url=site;
   url+="database.php?ID=";
   url+=html.id;
@@ -227,8 +242,6 @@ void database(void){
   url+="&LANG=";
   url+=urlLang;
   url+="&MAC=";
-  byte mac[6];
-  WiFi.macAddress(mac);
   url+=String(mac[5],HEX)+"-";
   url+=String(mac[4],HEX)+"-";
   url+=String(mac[3],HEX)+"-";
@@ -239,16 +252,20 @@ void database(void){
   HTTPClient client;
   client.begin(url+"&KEY="+sha1(html.id+city)+html.id);
   int httpCode=client.GET();
-  httpData=client.getString();
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& root=jsonBuffer.parseObject(httpData);
-  if(root.success()){
-    outside.temp   =root["temp"];
-    outside.bat    =root["bat"];
-    outside.mac    =root["mac"];
-    outside.updated=root["updated"];
+  if(httpCode>0){
+    if(httpCode==HTTP_CODE_OK){
+      httpData=client.getString();
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root=jsonBuffer.parseObject(httpData);
+      if(root.success()){
+        outside.temp   =root["temp"];
+        outside.bat    =root["bat"];
+        outside.mac    =root["mac"];
+        outside.updated=root["updated"];
+      }
+      client.end();
+    }
   }
-  client.end();
 }
 
 void is_settings(void){
