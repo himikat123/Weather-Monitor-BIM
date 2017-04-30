@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- Weather Station v1.0 © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-->
 <meta charset=utf-8>
 <title>Weather monitor</title>
@@ -250,8 +250,9 @@
     t+="&AP_PASS="+enc(e.AP_PASS);
     t+="&AP_SSID="+enc(e.AP_SSID);
     t+="&AP_PASS="+enc(e.AP_PASS);
+    t+="&SLEEP="+enc(e.SLEEP);
     var c=new XMLHttpRequest();
-    c.open("POST","esp/settings.php",true);
+    c.open("POST","/settings",true);
     c.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     c.send(t);
     c.onreadystatechange=function(){
@@ -271,7 +272,7 @@
   function bright(){
     var b=document.getElementById("BR").value;
     var c=new XMLHttpRequest();
-    c.open("POST","esp/br.php",true);
+    c.open("POST","/br",true);
     c.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     c.send("?BRG=0&BR="+encodeURIComponent(b));
     c.onreadystatechange=function(){
@@ -286,7 +287,7 @@
 
   function chLang(b){
     var c=new XMLHttpRequest();
-    c.open("POST","esp/lang.php",true);
+    c.open("POST","/lang",true);
     c.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     c.send("?LN=0&CHLNG="+encodeURIComponent(b));
     c.onreadystatechange=function(){
@@ -307,7 +308,7 @@
 
   function ssid_update(){
     var e=new XMLHttpRequest;
-    e.open("POST","esp/ssid.php",!0);
+    e.open("POST","/ssid",!0);
     e.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     e.send("?SSLIST=1");
     e.onreadystatechange=function(){
@@ -338,7 +339,7 @@
 
   function content(){
     var e=new XMLHttpRequest;
-    e.open("POST","esp/content.php",!0),
+    e.open("POST","/content",!0),
     e.setRequestHeader("Content-Type","application/x-www-form-urlencoded"),
     e.send("?CONTENT=1"),
     e.onreadystatechange=function(){
@@ -438,7 +439,8 @@
     chck(form.UNITS[e.tmp],1);
     chck(form.PRES[e.prs],1);
     chck(form.TIME[e.tim],1);
-    chck(form.LANG[e.lng],0)
+    chck(form.LANG[e.lng],0);
+    chck(form.SLEEP[e.slp],0)
   }
 
   function sh(f,e){
@@ -460,7 +462,7 @@
   <div id=header>
    <h1 id=ver>Weather monitor v1.0</h1>
   </div>
-  <form action=settings.php id=form method=POST onsubmit=save(this)>
+  <form action=/settings id=form method=POST onsubmit=save(this)>
    <div id=columns>
     <div id=left>
      <h3 id=measures>Measures</h3><hr>
