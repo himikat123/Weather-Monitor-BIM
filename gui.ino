@@ -75,11 +75,6 @@ void showBatteryLevel(void){
   if(b3==3) BAT=Bat50;
   if(b3==4) BAT=Bat75;
   if(b3>=5) BAT=Bat100;
-  //if(level_battery<=580) myGLCD.setColor(VGA_RED);
-  //if(level_battery>580) BAT=Bat25;
-  //if(level_battery>603) BAT=Bat50;
-  //if(level_battery>626) BAT=Bat75;
-  //if(level_battery>650) BAT=Bat100;
   sprintf(text_buf,"%c",BAT);
   myGLCD.print(text_buf,296,0);
 }
@@ -97,17 +92,17 @@ void save_bat(void){
   }
 }
 
-void showIcon(uint8_t icon,uint8_t x,uint8_t y,uint8_t x1,uint8_t y1){
+void showIcon(uint8_t icon,uint8_t x,uint8_t y/*,uint8_t x1,uint8_t y1*/){
   switch(icon){
-    case 1:myGLCD.drawBitmap(x,y,x1,y1,icon01,1);break;
-    case 2:myGLCD.drawBitmap(x,y,x1,y1,icon02,1);break;
-    case 3:myGLCD.drawBitmap(x,y,x1,y1,icon03,1);break;
-    case 4:myGLCD.drawBitmap(x,y,x1,y1,icon04,1);break;
-    case 9:myGLCD.drawBitmap(x,y,x1,y1,icon09,1);break;
-    case 10:myGLCD.drawBitmap(x,y,x1,y1,icon10,1);break;
-    case 11:myGLCD.drawBitmap(x,y,x1,y1,icon11,1);break;
-    case 13:myGLCD.drawBitmap(x,y,x1,y1,icon13,1);break;
-    case 50:myGLCD.drawBitmap(x,y,x1,y1,icon50,1);break;
+    case 1:drawFSJpeg("/01.jpg",x,y);break;
+    case 2:drawFSJpeg("/02.jpg",x,y);break;
+    case 3:drawFSJpeg("/03.jpg",x,y);break;
+    case 4:drawFSJpeg("/04.jpg",x,y);break;
+    case 9:drawFSJpeg("/09.jpg",x,y);break;
+    case 10:drawFSJpeg("/10.jpg",x,y);break;
+    case 11:drawFSJpeg("/11.jpg",x,y);break;
+    case 13:drawFSJpeg("/13.jpg",x,y);break;
+    case 50:drawFSJpeg("/50.jpg",x,y);break;
     default:;;
   }
 }
@@ -131,7 +126,7 @@ void showWeatherToday(void){
   String str=UTF8(WeatherDaily[html.lang].Today);
   printCent(str,0,105,166,VGA_MAROON,VGA_TRANSPARENT,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon1),0,178,57,46);
+  showIcon(atoi(weather.icon1),0,178/*,57,46*/);
     //temperature day1
   str=dtostrf(weather.day1,1,1,text_buf);
   if(html.units) str+="^F";
@@ -159,7 +154,7 @@ void showWeatherTomorrow(void){
   String str=UTF8(WeatherDaily[html.lang].Tomorrow);
   printCent(str,107,212,166,VGA_MAROON,VGA_WHITE,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon2),107,178,57,46);
+  showIcon(atoi(weather.icon2),107,178/*,57,46*/);
    //temperature day2
   str=dtostrf(weather.day2,1,1,text_buf);
   if(html.units) str+="^F";
@@ -187,7 +182,7 @@ void showWeatherAfterTomorrow(void){
   String str=UTF8(WeatherDaily[html.lang].AfterTomorrow);
   printCent(str,214,319,166,VGA_MAROON,VGA_WHITE,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon3),214,178,57,46);
+  showIcon(atoi(weather.icon3),214,178/*,57,46*/);
     //temperature day3
   str=dtostrf(weather.day3,1,1,text_buf);
   if(html.units) str+="^F";
@@ -221,7 +216,7 @@ void showWeatherNow(void){
    //description
   printCent(UTF8(descript),1,190,62,VGA_BLUE,VGA_TRANSPARENT,SmallFontRu);
    //icon
-  showIcon(icon,1,80,57,46);
+  showIcon(icon,1,80/*,57,46*/);
    //temperature
   str=dtostrf(weather.temp,1,1,text_buf);
   if(html.units) str+="^F";
@@ -262,14 +257,17 @@ void showWeatherNow(void){
 }
 
 void showInsideTemp(void){
+  if(html.sleep==0){
+    sensors.requestTemperatures();
+    tempInside=sensors.getTempC(insideThermometer);
+  }
   myGLCD.setColor(0xE7F9); //224 252 200 e0fcc8
   myGLCD.fillRect(201,61,318,69);
   myGLCD.fillRect(201,70,214,148);
   myGLCD.fillRect(305,70,318,148);
   myGLCD.setColor(VGA_BLACK);
   myGLCD.drawRect(200,60,319,165);
-  //myGLCD.drawBitmap(215,70,90,79,homme,1);
-  drawFSJpeg("/home.jpg",215,60);
+  drawFSJpeg("/home.jpg",215,61);
    
   String str;
   if(html.units){

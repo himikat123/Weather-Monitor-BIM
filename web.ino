@@ -130,6 +130,10 @@ void sendContent(void){
   root["shPass"]   =web_lng[html.lang].show_password; //text
   root["Assid"]    =web_lng[html.lang].ap_ssid;       //text
   root["Apass"]    =web_lng[html.lang].ap_pass;       //text
+  root["sleep"]    =web_lng[html.lang].sleep;         //text
+  root["never"]    =web_lng[html.lang].never;         //text
+  root["after"]    =web_lng[html.lang].after;         //text
+  root["min"]      =web_lng[html.lang].min;           //text
   root["myID"]     =html.id;                          //my id value
   root["site"]     =site;                             //site address 
   root["copy"]     =copy;                             //email address
@@ -141,18 +145,18 @@ void sendContent(void){
   root["prs"]      =html.pres;                        //checkbox pressure
   root["tim"]      =html.timef;                       //checkbox time format
   root["lng"]      =html.lang;                        //selected language
+  root["slp"]      =html.sleep;                       //selected sleep time
   
-  char buffer[1600];
+  char buffer[1800];
   root.printTo(buffer,sizeof(buffer));
   webServer.send(200,"text/json",buffer);
-  Serial.print(buffer);
 }
 
 void web_settings(void)
 {
   SPIFFS.begin();
   MDNS.begin(host);
-  webServer.on("/esp/settings.php",HTTP_POST,[](){
+  webServer.on("/settings",HTTP_POST,[](){
     html.ssid=webServer.arg("SSID");
     html.pass=webServer.arg("PASS");
     html.city=webServer.arg("CITY");
@@ -164,28 +168,29 @@ void web_settings(void)
     html.pres=webServer.arg("PRES").toInt();
     html.timef=webServer.arg("TIME").toInt();
     html.bright=webServer.arg("BRIGHT").toInt();
+    html.sleep=webServer.arg("SLEEP").toInt();
     webServer.arg("AP_SSID").toCharArray(rtcData.AP_SSID,(webServer.arg("AP_SSID").length())+1);
     webServer.arg("AP_PASS").toCharArray(rtcData.AP_PASS,(webServer.arg("AP_PASS").length())+1);
     save_eeprom();
     webServer.send(200,"text/plain","Saved");
   });
   
-  webServer.on("/esp/content.php",HTTP_POST,[](){
+  webServer.on("/content",HTTP_POST,[](){
     sendContent();
   });
   
-  webServer.on("/esp/br.php",HTTP_POST,[](){
+  webServer.on("/br",HTTP_POST,[](){
     int bright=webServer.arg("BR").toInt();
     analogWrite(BACKLIGHT,bright*10);
     webServer.send(200,"text/plain",String(bright));
   });
 
-  webServer.on("/esp/lang.php",HTTP_POST,[](){
+  webServer.on("/lang",HTTP_POST,[](){
     html.lang=webServer.arg("CHLNG").toInt();
     sendContent();
   });  
   
-  webServer.on("/esp/ssid.php",HTTP_POST,[](){
+  webServer.on("/ssid",HTTP_POST,[](){
     String json="{";
     uint8_t n=WiFi.scanNetworks();
     for(uint8_t i=0;i<n;i++){

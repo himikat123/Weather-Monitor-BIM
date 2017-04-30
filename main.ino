@@ -2,8 +2,8 @@
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016 
  * http://esp8266.atwebpages.com
  */
-
-                               // Board ESP-12E 8Mb (128kB SPIFFS) 
+                               // Board ESP-12E 
+                               // 1MB (128kB SPIFFS) 
 #include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -96,9 +96,22 @@ void setup(){
     str[30]='\0';
     myGLCD.print(str,2,2);
     delay(5000);
-    ///////digitalWrite(BACKLIGHT,LOW);
-    ///////ESP.deepSleep(0);
-        while(1);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if(html.ssid!=""){
+      if(html.sleep==0) while(1);
+      else{
+        digitalWrite(BACKLIGHT,LOW);
+        ESP.deepSleep(0);
+      }
+    }
+    else{
+      showSettingsMode();
+      WiFi.mode(WIFI_AP_STA);
+      WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
+      web_settings();
+      while(1){
+        webServer.handleClient();
+      }  
+    }
   }
   else if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);
   
@@ -157,19 +170,24 @@ void loop(){
     analogWrite(BACKLIGHT,0);
     ESP.reset();
   }
-    
-  for(uint16_t i=0;i<600;i++){
+
+  uint16_t sleep;
+  if(html.sleep==0) sleep=600;
+  else sleep=27*html.sleep;
+  for(uint16_t i=0;i<sleep;i++){
     rssi=viewNetworks();
     showBatteryLevel();
     showWiFiLevel(rssi);
     showTime();
     is_settings();
-        showInsideTemp();//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if(html.sleep==0) showInsideTemp();
   }
-  //analogWrite(BACKLIGHT,html.bright*3);
-  //delay(5000);
-  //digitalWrite(BACKLIGHT,LOW);
-  //ESP.deepSleep(0);
+  if(html.sleep!=0){
+    analogWrite(BACKLIGHT,html.bright*3);
+    delay(5000);
+    digitalWrite(BACKLIGHT,LOW);
+    ESP.deepSleep(0);
+  }
 }
 
 int viewNetworks(void){
@@ -321,12 +339,14 @@ void read_eeprom(void){
       html.pres   =root["press"];
       html.timef  =root["time"];
       html.lang   =root["lng"];
+      html.sleep  =root["sleep"];
       html.ssid=ssid;
       html.pass=pass;
       html.city=city;
       html.appid=appid;
     }
   }
+  if(html.sleep>100) html.sleep=1;
   if(html.lang>3) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
@@ -361,6 +381,7 @@ void save_eeprom(void){
   root["press"]   =html.pres;
   root["time"]    =html.timef;
   root["lng"]     =html.lang;
+  root["sleep"]   =html.sleep;
   File file=SPIFFS.open("/settings.json","w");
   if(file){
     root.printTo(file);

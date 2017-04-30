@@ -102,6 +102,10 @@ struct web_text{
   const char* show_password;
   const char* ap_ssid;
   const char* ap_pass;
+  const char* sleep;
+  const char* never;
+  const char* after;
+  const char* min;
 };
 
 struct web_text web_lng[4]={
@@ -130,6 +134,10 @@ struct web_text web_lng[4]={
   "show password",
   "Access point name",
   "Access point password",
+  "Sleep",
+  "never",
+  "after",
+  "min",
   
   "Настройки",
   "Ваша WiFi сеть",
@@ -156,6 +164,10 @@ struct web_text web_lng[4]={
   "показать пароль",
   "Имя точки доступа",
   "Пароль точки доступа",
+  "Режим сна",
+  "никогда",
+  "через",
+  "мин",
 
   "Setări",
   "Rețeaua WiFi",
@@ -182,6 +194,10 @@ struct web_text web_lng[4]={
   "show password",
   "Access point name",
   "Access point password",
+  "Sleep",
+  "never",
+  "after",
+  "min",
 
   "Einstellungen",
   "Ihr WiFi-Netzwerk",
@@ -207,7 +223,11 @@ struct web_text web_lng[4]={
   "Saved",
   "show password",
   "Access point name",
-  "Access point password"
+  "Access point password",
+  "Sleep",
+  "never",
+  "after",
+  "min"
 };
 
 struct Month{

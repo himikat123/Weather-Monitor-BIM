@@ -1,13 +1,3 @@
-extern unsigned int homme[0x1BC6];
-extern unsigned int icon01[0x0A3E];
-extern unsigned int icon02[0x0A3E];
-extern unsigned int icon03[0x0A3E];
-extern unsigned int icon04[0x0A3E];
-extern unsigned int icon09[0x0A3E];
-extern unsigned int icon10[0x0A3E];
-extern unsigned int icon11[0x0A3E];
-extern unsigned int icon13[0x0A3E];
-extern unsigned int icon50[0x0A3E];
 extern unsigned int n[0xE1];
 extern unsigned int s[0xE1];
 extern unsigned int e[0xE1];
@@ -21,8 +11,8 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="1.0";
-String vers="Weather monitor v1.0";
+String fw="1.2";
+String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;
 char cityName[32];
@@ -73,10 +63,9 @@ struct html_structure{
   uint8_t     pres=0;
   uint8_t     timef=0;
   int         bright=0;
+  int         sleep=1;
 };
 html_structure html;
-
-
 
 struct weather_structure{
   const char* latitude;
