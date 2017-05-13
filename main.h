@@ -11,10 +11,13 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="1.2";
+String fw="1.3";
 String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;
+uint8_t icon1=0;
+uint8_t icon2=0;
+uint8_t icon3=0;
 char cityName[32];
 char text_buf[255];
 float tempInside;
@@ -45,9 +48,12 @@ struct{
 
 struct{
   float temp;
+  float temp_in;
+  int pres;
+  int humidity;
   int bat;
   const char* mac;
-  const char* updated;
+  uint32_t updated=0;
 } outside;
 
 struct html_structure{
@@ -64,6 +70,10 @@ struct html_structure{
   uint8_t     timef=0;
   int         bright=0;
   int         sleep=1;
+  int         typ;
+  String      ip;
+  String      mask;
+  String      gateway;
 };
 html_structure html;
 

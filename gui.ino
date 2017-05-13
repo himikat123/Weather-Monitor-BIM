@@ -60,7 +60,7 @@ void showBatteryLevel(void){
   int level_battery=analogRead(A0);
   if(level_battery>battery.max){
     battery.max=level_battery;
-    save_bat();  
+    save_bat();
   }
   if(level_battery<battery.min){
     battery.min=level_battery;
@@ -92,7 +92,7 @@ void save_bat(void){
   }
 }
 
-void showIcon(uint8_t icon,uint8_t x,uint8_t y/*,uint8_t x1,uint8_t y1*/){
+void showIcon(uint8_t icon,uint8_t x,uint8_t y){
   switch(icon){
     case 1:drawFSJpeg("/01.jpg",x,y);break;
     case 2:drawFSJpeg("/02.jpg",x,y);break;
@@ -109,8 +109,8 @@ void showIcon(uint8_t icon,uint8_t x,uint8_t y/*,uint8_t x1,uint8_t y1*/){
 
 void printCent(String str,int x1,int x2,uint8_t y,word color,word colorBack,uint8_t* font){
   myGLCD.setFont(font);
-  int len=str.length()/2*myGLCD.getFontXsize();
-  int cen=x1+round((x2-x1)/2);
+  int len=str.length()*myGLCD.getFontXsize()/2;
+  int cen=round((x2-x1)/2)+x1;
   myGLCD.setBackColor(colorBack);
   myGLCD.setColor(colorBack);
   myGLCD.fillRect(x1,y,cen-len,y+myGLCD.getFontYsize()-1);
@@ -124,25 +124,25 @@ void showWeatherToday(void){
   myGLCD.fillRect(1,166,105,239);
     //today
   String str=UTF8(WeatherDaily[html.lang].Today);
-  printCent(str,0,105,166,VGA_MAROON,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,0,105,166,VGA_MAROON,VGA_WHITE,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon1),0,178/*,57,46*/);
+  showIcon(icon1,0,178);
     //temperature day1
   str=dtostrf(weather.day1,1,1,text_buf);
   if(html.units) str+="^F";
   else str+="^C";
-  printCent(str,60,105,185,VGA_PURPLE,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,60,105,185,VGA_PURPLE,VGA_WHITE,SmallFontRu);
     //temperature night1
   str=dtostrf(weather.night1,1,1,text_buf);
   if(html.units) str+="^F";
   else str+="^C";
-  printCent(str,60,105,201,VGA_BLUE,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,60,105,201,VGA_BLUE,VGA_WHITE,SmallFontRu);
     //wind day1
   str=UTF8(WeatherNow[html.lang].Wind);
   str+=dtostrf(weather.speed1,1,1,text_buf);
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
-  printCent(str,0,105,225,VGA_BLACK,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,0,105,225,VGA_BLACK,VGA_WHITE,SmallFontRu);
     //line
   myGLCD.drawLine(106,165,106,239);
 }
@@ -154,7 +154,7 @@ void showWeatherTomorrow(void){
   String str=UTF8(WeatherDaily[html.lang].Tomorrow);
   printCent(str,107,212,166,VGA_MAROON,VGA_WHITE,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon2),107,178/*,57,46*/);
+  showIcon(icon2,107,178);
    //temperature day2
   str=dtostrf(weather.day2,1,1,text_buf);
   if(html.units) str+="^F";
@@ -182,7 +182,7 @@ void showWeatherAfterTomorrow(void){
   String str=UTF8(WeatherDaily[html.lang].AfterTomorrow);
   printCent(str,214,319,166,VGA_MAROON,VGA_WHITE,SmallFontRu);
     //icon
-  showIcon(atoi(weather.icon3),214,178/*,57,46*/);
+  showIcon(icon3,214,178);
     //temperature day3
   str=dtostrf(weather.day3,1,1,text_buf);
   if(html.units) str+="^F";
@@ -211,23 +211,32 @@ void showWeatherNow(void){
   myGLCD.fillRect(0,19,199,164);
    //now
   String str=UTF8(WeatherNow[html.lang].Now);
-  printCent(str,1,171,43,VGA_MAROON,VGA_TRANSPARENT,BigFontRu);
+  printCent(str,1,171,43,VGA_MAROON,VGA_WHITE,BigFontRu);
   myGLCD.drawLine(0,165,200,165);
    //description
-  printCent(UTF8(descript),1,190,62,VGA_BLUE,VGA_TRANSPARENT,SmallFontRu);
+  printCent(UTF8(descript),1,190,62,VGA_BLUE,VGA_WHITE,SmallFontRu);
    //icon
-  showIcon(icon,1,80/*,57,46*/);
+  showIcon(icon,1,80);
    //temperature
-  str=dtostrf(weather.temp,1,1,text_buf);
+  int color=VGA_BLACK;
+  int dayLight=0;
+  if(ntp->getDayLight()) dayLight=3600;
+  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  if(updated<1800){
+    if(html.units) str=outside.temp*1.8+32;
+    else str=outside.temp;
+    color=VGA_BLUE;
+  }
+  else str=dtostrf(weather.temp,1,1,text_buf);
   if(html.units) str+="^F";
   else str+="^C";
-  printCent(str,61,199,85,VGA_PURPLE,VGA_TRANSPARENT,BigFontRu);
+  printCent(str,61,199,85,color,VGA_WHITE,BigFontRu);
    //wind
   str=UTF8(WeatherNow[html.lang].Wind);
   str+=dtostrf(weather.speed,1,1,text_buf);
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
-  printCent(str,61,171,108,VGA_BLACK,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,61,171,108,VGA_BLACK,VGA_WHITE,SmallFontRu);
    //wind direction
   if(((weather.deg>=0) and (weather.deg<23))
   or((weather.deg>337) and (weather.deg<360))) windIcon(n);
@@ -240,20 +249,24 @@ void showWeatherNow(void){
   if((weather.deg>291) and (weather.deg<337)) windIcon(n_w);
    //humidity
   str=UTF8(WeatherNow[html.lang].Humidity);
-  str+=String(weather.humidity,DEC);
+  if(updated<1800) str+=outside.humidity;
+  else str+=String(weather.humidity,DEC);
   str+='%';
-  printCent(str,1,199,128,VGA_BLACK,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,1,199,128,color,VGA_WHITE,SmallFontRu);
    //pressure
   str=UTF8(WeatherNow[html.lang].Pressure);
+  float pres;
+  if(updated<1800) pres=outside.pres;  
+  else pres=weather.pressure;
   if(html.pres){
-    str+=String(round(weather.pressure),DEC);
+    str+=String(round(pres),DEC);
     str+=UTF8(WeatherNow[html.lang].hpa);
   }
   else{
-    str+=String(round(0.75*weather.pressure),DEC);
+    str+=String(round(0.75*pres),DEC);
     str+=UTF8(WeatherNow[html.lang].mm);
   }
-  printCent(str,1,199,148,VGA_BLUE,VGA_TRANSPARENT,SmallFontRu);
+  printCent(str,1,199,148,color,VGA_WHITE,SmallFontRu);
 }
 
 void showInsideTemp(void){
@@ -268,17 +281,27 @@ void showInsideTemp(void){
   myGLCD.setColor(VGA_BLACK);
   myGLCD.drawRect(200,60,319,165);
   drawFSJpeg("/home.jpg",215,61);
-   
+
   String str;
+  float temp;
+  int color=VGA_GREEN;
+  int dayLight=0;
+  if(ntp->getDayLight()) dayLight=3600;
+  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  if(updated<1800){
+    temp=outside.temp_in;
+    color=VGA_BLUE;
+  }
+  else temp=tempInside;
   if(html.units){
-    str=dtostrf(tempInside*1.8+32,1,1,text_buf);
+    str=dtostrf(temp*1.8+32,1,1,text_buf);
     str+="^F";
   }
   else{
-    str=dtostrf(tempInside,1,1,text_buf);
+    str=dtostrf(temp,1,1,text_buf);
     str+="^C";
   }
-  printCent(str,201,318,149,VGA_GREEN,0xE7F9,BigFontRu);  
+  printCent(str,201,318,149,color,0xE7F9,BigFontRu);  
 }
 
 void showCityName(void){

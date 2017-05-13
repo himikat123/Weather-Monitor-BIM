@@ -103,33 +103,21 @@ bool parseWeatherDaily(){
   
   weather.day1      = root["list"][0]["temp"]["day"];
   weather.night1    = root["list"][0]["temp"]["night"];
-  weather.pressure1 = root["list"][0]["pressure"];
-  weather.humidity1 = root["list"][0]["humidity"];
-  weather.main1     = root["list"][0]["weather"][0]["main"];
-  weather.descript1 = root["list"][0]["weather"][0]["description"];
   weather.icon1     = root["list"][0]["weather"][0]["icon"];
+  icon1=atoi(weather.icon1);
   weather.speed1    = root["list"][0]["speed"];
-  weather.deg1      = root["list"][0]["deg"];
-
+  
   weather.day2      = root["list"][1]["temp"]["day"];
   weather.night2    = root["list"][1]["temp"]["night"];
-  weather.pressure2 = root["list"][1]["pressure"];
-  weather.humidity2 = root["list"][1]["humidity"];
-  weather.main2     = root["list"][1]["weather"][0]["main"];
-  weather.descript2 = root["list"][1]["weather"][0]["description"];
   weather.icon2     = root["list"][1]["weather"][0]["icon"];
+  icon2=atoi(weather.icon2);
   weather.speed2    = root["list"][1]["speed"];
-  weather.deg2      = root["list"][1]["deg"];
-
+  
   weather.day3      = root["list"][2]["temp"]["day"];
   weather.night3    = root["list"][2]["temp"]["night"];
-  weather.pressure3 = root["list"][2]["pressure"];
-  weather.humidity3 = root["list"][2]["humidity"];
-  weather.main3     = root["list"][2]["weather"][0]["main"];
-  weather.descript3 = root["list"][2]["weather"][0]["description"];
   weather.icon3     = root["list"][2]["weather"][0]["icon"];
+  icon3=atoi(weather.icon3);
   weather.speed3    = root["list"][2]["speed"];
-  weather.deg3      = root["list"][2]["deg"];
 
   httpData = "";
   return true;
@@ -157,9 +145,9 @@ bool parseCoordinates(){
 
   if(!root.success()) return false;
 
-  weather.latitude        = root["latitude"];
-  weather.longitude       = root["longitude"];
+  weather.latitude =root["latitude"];
+  weather.longitude=root["longitude"];
 
-  httpData = "";
+  httpData="";
   return true;
 }

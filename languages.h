@@ -60,12 +60,12 @@ struct settings_text settings_lng[4]={
   "адрес 192.168.4.1",
 
   "Pentru a intra în setări",
-  "conectați laptop-ul",
-  "tabletă sau smartphone",
-  "la rețea",
+  "conectați laptopul,",
+  "tableta sau smartphone",
+  "la rețeaua",
   "parola",
-  "Și introduceți adresa",
-  "192.168.4.1 în browserul",
+  "și introduceți adresa",
+  "192.168.4.1 în browser",
 
   "So geben sie setup",
   "schließen sie Ihren laptop",
@@ -106,6 +106,15 @@ struct web_text{
   const char* never;
   const char* after;
   const char* min;
+  const char* type;
+  const char* dyn;
+  const char* stat;
+  const char* ip;
+  const char* mask;
+  const char* gateway;
+  const char* ip_err;
+  const char* mask_err;
+  const char* gw_err;
 };
 
 struct web_text web_lng[4]={
@@ -138,6 +147,15 @@ struct web_text web_lng[4]={
   "never",
   "after",
   "min",
+  "Connection type",
+  "Dynamic IP",
+  "Static IP",
+  "IP address",
+  "Subnet mask",
+  "Default gateway",
+  "IP address is incorrect",
+  "subnet mask is incorrect",
+  "default gateway is incorrect",
   
   "Настройки",
   "Ваша WiFi сеть",
@@ -149,7 +167,7 @@ struct web_text web_lng[4]={
   "Нет",
   "Язык",
   "Русский",
-  "Еденицы измерения",
+  "Единицы измерения",
   "Система",
   "Метрическая",
   "температура в Цельсиях, ветер в метр/сек",
@@ -168,29 +186,38 @@ struct web_text web_lng[4]={
   "никогда",
   "через",
   "мин",
+  "Тип соединения",
+  "Динамический IP адрес",
+  "Статический IP адрес",
+  "IP адрес",
+  "Маска подсети",
+  "Основной шлюз",
+  "неверный IP адрес",
+  "неверная маска подсети",
+  "неверный адрес шлюза",
 
   "Setări",
-  "Rețeaua WiFi",
-  "Parola pentru rețea",
-  "Orașul",
+  "Rețeaua Dvs WiFi",
+  "Parola rețelei Dvs",
+  "Orașul Dvs",
   "Fusul orar",  
-  "Reglarea automată a ceasului la modificarea orei de vară", 
+  "Ajustarea automată a ceasului la modificarea orei de vară", 
   "Da",
   "Nu",
   "Limba",
   "Română",
-  "Measures",
-  "Units",
+  "Unitatea de măsură",
+  "Sistemul",
   "Metric",
-  "temperatura Celsius, wint m/s",
+  "temperatura Celsius, vântul m/s",
   "Imperial",
-  "temperatura Farengeit, wint m/s",
-  "Time format",
-  "12 hour",
-  "24 hour",
-  "Brightness",
-  "Save all",
-  "Сохранено",
+  "temperatura Farengeit, vântul m/s",
+  "Formatul timpului",
+  "12 ore",
+  "24 ore",
+  "Luminozitatea",
+  "Salvează tot",
+  "Salvat",
   "show password",
   "Access point name",
   "Access point password",
@@ -198,6 +225,15 @@ struct web_text web_lng[4]={
   "never",
   "after",
   "min",
+  "Connection type",
+  "Dynamic IP",
+  "Static IP",
+  "IP address",
+  "Subnet mask",
+  "Default gateway",
+  "IP address is incorrect",
+  "subnet mask is incorrect",
+  "default gateway is incorrect",
 
   "Einstellungen",
   "Ihr WiFi-Netzwerk",
@@ -227,7 +263,16 @@ struct web_text web_lng[4]={
   "Sleep",
   "never",
   "after",
-  "min"
+  "min",
+  "Connection type",
+  "Dynamic IP",
+  "Static IP",
+  "IP address",
+  "Subnet mask",
+  "Default gateway",
+  "IP address is incorrect",
+  "subnet mask is incorrect",
+  "default gateway is incorrect"
 };
 
 struct Month{
@@ -380,11 +425,11 @@ struct Weather_now WeatherNow[4]={
   "ПП",
 
   "La moment",
-  "Vînt ",
+  "Vîntul ",
   "m/s",
   "mph",
   "Umiditatea ",
-  "Presiune ",
+  "Presiunea ",
   "mmHg",
   "hPa",
   "AM",
@@ -418,8 +463,8 @@ struct Weather_daily WeatherDaily[4]={
   "Послезавтра",
 
   "Astăzi",
-  "Mîine",
-  "Poimîine",
+  "Mâine",
+  "Poimâine",
   
   "Heute",
   "Morgen",

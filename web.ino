@@ -101,14 +101,9 @@ void sendContent(void){
   root["ver"]      =vers;                             //text
   root["settings"] =web_lng[html.lang].Settings;      //text
   root["ssid"]     =web_lng[html.lang].YourSSID;      //text
-  root["ssidval"]  =html.ssid;                        //value ssid
   root["pass"]     =web_lng[html.lang].YourPASS;      //text
-  root["passval"]  =html.pass;                        //value password
   root["city"]     =web_lng[html.lang].YourCity;      //text
-  root["cityval"]  =html.city;                        //value city
   root["zone"]     =web_lng[html.lang].YourTimeZone;  //text
-  root["appidval"] =html.appid;                       //value appid
-  root["zoneval"]  =html.zone;                        //value time zone
   root["summer"]   =web_lng[html.lang].AdjustClock;   //text
   root["yes"]      =web_lng[html.lang].Yes;           //text
   root["no"]       =web_lng[html.lang].No;            //text
@@ -134,6 +129,20 @@ void sendContent(void){
   root["never"]    =web_lng[html.lang].never;         //text
   root["after"]    =web_lng[html.lang].after;         //text
   root["min"]      =web_lng[html.lang].min;           //text
+  root["type"]     =web_lng[html.lang].type;          //text
+  root["dyn"]      =web_lng[html.lang].dyn;           //text
+  root["stat"]     =web_lng[html.lang].stat;          //text
+  root["ip"]       =web_lng[html.lang].ip;            //text
+  root["mask"]     =web_lng[html.lang].mask;          //text
+  root["gateway"]  =web_lng[html.lang].gateway;       //text
+  root["ip_err"]   =web_lng[html.lang].ip_err;        //text
+  root["mask_err"] =web_lng[html.lang].mask_err;      //text
+  root["gw_err"]   =web_lng[html.lang].gw_err;        //text
+  root["ssidval"]  =html.ssid;                        //value ssid
+  root["passval"]  =html.pass;                        //value password
+  root["cityval"]  =html.city;                        //value city
+  root["appidval"] =html.appid;                       //value appid
+  root["zoneval"]  =html.zone;                        //value time zone
   root["myID"]     =html.id;                          //my id value
   root["site"]     =site;                             //site address 
   root["copy"]     =copy;                             //email address
@@ -146,8 +155,12 @@ void sendContent(void){
   root["tim"]      =html.timef;                       //checkbox time format
   root["lng"]      =html.lang;                        //selected language
   root["slp"]      =html.sleep;                       //selected sleep time
+  root["typ"]      =html.typ;                         //selected type of connection
+  root["ipval"]    =html.ip;                          //value ip address
+  root["maskval"]  =html.mask;                        //value subnet mask
+  root["gwval"]    =html.gateway;                     //value gateway
   
-  char buffer[1800];
+  char buffer[2000];
   root.printTo(buffer,sizeof(buffer));
   webServer.send(200,"text/json",buffer);
 }
@@ -169,6 +182,10 @@ void web_settings(void)
     html.timef=webServer.arg("TIME").toInt();
     html.bright=webServer.arg("BRIGHT").toInt();
     html.sleep=webServer.arg("SLEEP").toInt();
+    html.typ=webServer.arg("TYPE").toInt();
+    html.ip=webServer.arg("IP");
+    html.mask=webServer.arg("MASK");
+    html.gateway=webServer.arg("GATEWAY");
     webServer.arg("AP_SSID").toCharArray(rtcData.AP_SSID,(webServer.arg("AP_SSID").length())+1);
     webServer.arg("AP_PASS").toCharArray(rtcData.AP_PASS,(webServer.arg("AP_PASS").length())+1);
     save_eeprom();

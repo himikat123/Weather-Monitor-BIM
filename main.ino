@@ -1,4 +1,4 @@
-/* Weather Station v1.0
+/* Weather Station v1.3
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016 
  * http://esp8266.atwebpages.com
  */
@@ -53,8 +53,6 @@ void setup(){
   while (!Serial);
    //SPIFS
   if(!SPIFFS.begin()) while(1) yield();
-   //EEPROM 
-  read_eeprom();
    //PINs
   pinMode(BUTTON,INPUT);
   pinMode(BACKLIGHT,OUTPUT);
@@ -62,9 +60,11 @@ void setup(){
   myGLCD.InitLCD();
   analogWrite(BACKLIGHT,10);
   drawFSJpeg("/logo.jpg",0,0);
-  analogWrite(BACKLIGHT,html.bright*10);
   myGLCD.setColor(VGA_BLACK);
-  myGLCD.fillRect(0,0,319,18);//верхний бар
+  myGLCD.fillRect(0,0,319,18);
+   //EEPROM 
+  read_eeprom();
+  analogWrite(BACKLIGHT,html.bright*10);
    //WIFI MODE
   WiFi.mode(WIFI_STA);
    //NTP
@@ -82,58 +82,55 @@ void setup(){
    //battery
   showBatteryLevel();
    // WiFi
+  myGLCD.drawBitmap(273,2,16,16,nowifi,1);
   html.ssid.toCharArray(ssid,(html.ssid.length())+1);
   html.pass.toCharArray(password,(html.pass.length())+1);
   is_settings();
   myGLCD.setColor(VGA_WHITE);
   myGLCD.setBackColor(VGA_BLACK);
   myGLCD.setFont(SmallFontRu);
-  rssi=viewNetworks();
-  if(rssi==0){
-    String str=String(UTF8(status_lng[html.lang].network));
-    str+=String(ssid);
-    str+=String(UTF8(status_lng[html.lang].not_found));
-    str[30]='\0';
-    myGLCD.print(str,2,2);
-    delay(5000);
-    if(html.ssid!=""){
-      if(html.sleep==0) while(1);
-      else{
-        digitalWrite(BACKLIGHT,LOW);
-        ESP.deepSleep(0);
-      }
-    }
-    else{
-      showSettingsMode();
-      WiFi.mode(WIFI_AP_STA);
-      WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
-      web_settings();
-      while(1){
-        webServer.handleClient();
-      }  
+  if(html.ssid==""){
+    showSettingsMode();
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
+    web_settings();
+    while(1){
+      webServer.handleClient();
     }
   }
-  else if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);
-  
-  uint8_t e=0;
-  myGLCD.drawBitmap(273,2,16,16,nowifi,1);
-  
-  myGLCD.setFont(SmallFontRu);
-  sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
-  sprintf(text_buf,"%-30s",text_buf);
-  text_buf[30]='\0';
-  myGLCD.print(text_buf,2,2);
-  while(WiFi.status()!=WL_CONNECTED){
-    if((e++)>50){
-      sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-      sprintf(text_buf,"%-30s",text_buf);
-      text_buf[30]='\0';
-      myGLCD.print(text_buf,2,2);
-      delay(2000);
-      break;
+  else{
+    if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);
+    if(html.typ==1){
+      IPAddress ip;
+      IPAddress subnet;
+      IPAddress gateway;
+      if(ip.fromString(html.ip) and gateway.fromString(html.gateway) and subnet.fromString(html.mask)){
+        WiFi.config(ip,gateway,subnet);
+      }
     }
-    delay(500);
-    is_settings();
+    uint8_t e=0;
+    myGLCD.setFont(SmallFontRu);
+    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
+    sprintf(text_buf,"%-30s",text_buf);
+    text_buf[30]='\0';
+    myGLCD.print(text_buf,2,2);
+    while(WiFi.status()!=WL_CONNECTED){
+      if((e++)>50){
+        sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
+        sprintf(text_buf,"%-30s",text_buf);
+        text_buf[30]='\0';
+        myGLCD.print(text_buf,2,2);
+        delay(5000);
+        if(html.sleep==0) ESP.reset();
+        else{
+          analogWrite(BACKLIGHT,0);
+          myGLCD.lcdOff();
+          ESP.deepSleep(0);
+        }
+      }
+      delay(500);
+      is_settings();
+    } 
   }
   sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connected_to),ssid);
   sprintf(text_buf,"%-30s",text_buf);
@@ -149,14 +146,14 @@ void loop(){
     getWeatherNow();
     getWeatherDaily();  
     showInsideTemp();
+    siteTime();
+    database();
     showWeatherNow();
     showCityName();
     showTime();
     showWeatherToday();
     showWeatherTomorrow();
     showWeatherAfterTomorrow();
-    siteTime();
-    database();
   }
   else{
     myGLCD.setColor(VGA_WHITE);
@@ -168,7 +165,11 @@ void loop(){
     myGLCD.print(text_buf,2,2);
     delay(10000);
     analogWrite(BACKLIGHT,0);
-    ESP.reset();
+    if(html.sleep==0) ESP.reset();
+    else{
+      myGLCD.lcdOff();
+      ESP.deepSleep(0);
+    }
   }
 
   uint16_t sleep;
@@ -185,7 +186,8 @@ void loop(){
   if(html.sleep!=0){
     analogWrite(BACKLIGHT,html.bright*3);
     delay(5000);
-    digitalWrite(BACKLIGHT,LOW);
+    analogWrite(BACKLIGHT,0);
+    myGLCD.lcdOff();
     ESP.deepSleep(0);
   }
 }
@@ -276,14 +278,17 @@ void database(void){
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root=jsonBuffer.parseObject(httpData);
       if(root.success()){
-        outside.temp   =root["temp"];
-        outside.bat    =root["bat"];
-        outside.mac    =root["mac"];
-        outside.updated=root["updated"];
+        outside.temp    =root["temp"];
+        outside.pres    =root["press"];
+        outside.humidity=root["hum"];
+        outside.bat     =root["bat"];
+        outside.temp_in =root["temp_in"];
+        outside.updated =root["updated"];
       }
       client.end();
     }
   }
+  httpData="";
 }
 
 void is_settings(void){
@@ -340,6 +345,13 @@ void read_eeprom(void){
       html.timef  =root["time"];
       html.lang   =root["lng"];
       html.sleep  =root["sleep"];
+      html.typ    =root["type"];
+      String ip   =root["ip"];
+      String mask =root["mask"];
+      String gw   =root["gateway"];
+      html.ip=ip;
+      html.mask=mask;
+      html.gateway=gw;
       html.ssid=ssid;
       html.pass=pass;
       html.city=city;
@@ -382,6 +394,10 @@ void save_eeprom(void){
   root["time"]    =html.timef;
   root["lng"]     =html.lang;
   root["sleep"]   =html.sleep;
+  root["type"]    =html.typ;
+  root["ip"]      =html.ip;
+  root["mask"]    =html.mask;
+  root["gateway"] =html.gateway;
   File file=SPIFFS.open("/settings.json","w");
   if(file){
     root.printTo(file);
