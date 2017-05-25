@@ -222,7 +222,7 @@ void showWeatherNow(void){
   int dayLight=0;
   if(ntp->getDayLight()) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
-  if(updated<1800){
+  if(updated<1800 and outside.temp<120){
     if(html.units) str=outside.temp*1.8+32;
     else str=outside.temp;
     color=VGA_BLUE;
@@ -249,15 +249,44 @@ void showWeatherNow(void){
   if((weather.deg>291) and (weather.deg<337)) windIcon(n_w);
    //humidity
   str=UTF8(WeatherNow[html.lang].Humidity);
-  if(updated<1800) str+=outside.humidity;
-  else str+=String(weather.humidity,DEC);
+  if(updated<1800 and outside.humidity<120){
+    str+=outside.humidity;
+    color=VGA_BLUE;
+  }
+  else{
+    str+=String(weather.humidity,DEC);
+    color=VGA_BLACK;
+  }
   str+='%';
-  printCent(str,1,199,128,color,VGA_WHITE,SmallFontRu);
+  printCent(str,1,190,128,color,VGA_WHITE,SmallFontRu);
+   //outside battery
+  #define Bat0 0xBB
+  #define Bat25 0xBC
+  #define Bat50 0xBD
+  #define Bat75 0xBE
+  #define Bat100 0xBF
+  myGLCD.setColor(VGA_BLUE);
+  myGLCD.setBackColor(VGA_WHITE);
+  myGLCD.setFont(BigFontRu);
+  char BAT=Bat0;
+  if(outside.bat==1) myGLCD.setColor(VGA_RED);
+  if(outside.bat==2) BAT=Bat25;
+  if(outside.bat==3) BAT=Bat50;
+  if(outside.bat==4) BAT=Bat75;
+  if(outside.bat>=5) BAT=Bat100;
+  sprintf(text_buf,"%c",BAT);
+  myGLCD.print(text_buf,180,60);
    //pressure
   str=UTF8(WeatherNow[html.lang].Pressure);
-  float pres;
-  if(updated<1800) pres=outside.pres;  
-  else pres=weather.pressure;
+  int pres;
+  if(updated<1800 and outside.pres<1200){
+    pres=outside.pres;
+    color=VGA_BLUE;  
+  }
+  else{
+    pres=weather.pressure;
+    color=VGA_BLACK;
+  }
   if(html.pres){
     str+=String(round(pres),DEC);
     str+=UTF8(WeatherNow[html.lang].hpa);
@@ -273,6 +302,10 @@ void showInsideTemp(void){
   if(html.sleep==0){
     sensors.requestTemperatures();
     tempInside=sensors.getTempC(insideThermometer);
+    //sensors_event_t event;
+    //dht.temperature().getEvent(&event);
+    //if(isnan(event.temperature)) ;
+    //else tempInside=event.temperature;
   }
   myGLCD.setColor(0xE7F9); //224 252 200 e0fcc8
   myGLCD.fillRect(201,61,318,69);
@@ -283,25 +316,42 @@ void showInsideTemp(void){
   drawFSJpeg("/home.jpg",215,61);
 
   String str;
-  float temp;
-  int color=VGA_GREEN;
-  int dayLight=0;
-  if(ntp->getDayLight()) dayLight=3600;
-  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
-  if(updated<1800){
-    temp=outside.temp_in;
-    color=VGA_BLUE;
-  }
-  else temp=tempInside;
+  //float temp;
+  //int color=VGA_GREEN;
+  //int dayLight=0;
+  //if(ntp->getDayLight()) dayLight=3600;
+  //uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  //if(updated<1800){
+  //  temp=outside.temp_in;
+  //  color=VGA_BLUE;
+  //}
+  /*else *///temp=tempInside;
   if(html.units){
-    str=dtostrf(temp*1.8+32,1,1,text_buf);
+    str=dtostrf(tempInside*1.8+32,1,1,text_buf);
     str+="^F";
   }
   else{
-    str=dtostrf(temp,1,1,text_buf);
+    str=dtostrf(tempInside,1,1,text_buf);
     str+="^C";
   }
-  printCent(str,201,318,149,color,0xE7F9,BigFontRu);  
+  printCent(str,201,318,149,VGA_GREEN,0xE7F9,BigFontRu);
+
+  //humidity
+  //dht.humidity().getEvent(&event);
+  //if(isnan(event.relative_humidity)) ;
+  //else weather.humidity=event.relative_humidity;
+  
+  //str=UTF8(WeatherNow[html.lang].Humidity);
+  //if(updated<1800 and outside.humidity<120){
+  //  str+=outside.humidity;
+  //  color=VGA_BLUE;
+  //}
+  //else{
+    //str+=String(weather.humidity,DEC);
+//    color=VGA_BLACK;
+  //}
+  //str+='%';
+  //printCent(str,1,199,128,VGA_BLACK,VGA_WHITE,SmallFontRu);
 }
 
 void showCityName(void){

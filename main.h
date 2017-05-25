@@ -11,7 +11,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="1.3";
+String fw="2.0";
 String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -47,12 +47,14 @@ struct{
 } battery;
 
 struct{
-  float temp;
-  float temp_in;
-  int pres;
-  int humidity;
-  int bat;
-  const char* mac;
+  const char* lat;
+  const char* lon;
+  const char* alt;
+  float temp=200;
+  //float temp_in;
+  int pres=2000;
+  int humidity=200;
+  int bat=9;
   uint32_t updated=0;
 } outside;
 
@@ -74,6 +76,7 @@ struct html_structure{
   String      ip;
   String      mask;
   String      gateway;
+  String      sensor;
 };
 html_structure html;
 

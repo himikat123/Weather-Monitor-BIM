@@ -159,6 +159,8 @@ void sendContent(void){
   root["ipval"]    =html.ip;                          //value ip address
   root["maskval"]  =html.mask;                        //value subnet mask
   root["gwval"]    =html.gateway;                     //value gateway
+  root["mac"]      =web_lng[html.lang].mac;           //text
+  root["sensor"]   =html.sensor;                      //value gateway
   
   char buffer[2000];
   root.printTo(buffer,sizeof(buffer));
@@ -186,6 +188,7 @@ void web_settings(void)
     html.ip=webServer.arg("IP");
     html.mask=webServer.arg("MASK");
     html.gateway=webServer.arg("GATEWAY");
+    html.sensor=webServer.arg("MAC");
     webServer.arg("AP_SSID").toCharArray(rtcData.AP_SSID,(webServer.arg("AP_SSID").length())+1);
     webServer.arg("AP_PASS").toCharArray(rtcData.AP_PASS,(webServer.arg("AP_PASS").length())+1);
     save_eeprom();
@@ -221,7 +224,7 @@ void web_settings(void)
     json+="}";
     webServer.send(200,"text/json",json);
   });
-  
+
   webServer.on("/list",HTTP_GET,handleFileList);
   webServer.on("/edit",HTTP_GET,[](){
     if(!handleFileRead("/edit.htm")) webServer.send(404,"text/plain","FileNotFound");

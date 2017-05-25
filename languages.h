@@ -115,6 +115,7 @@ struct web_text{
   const char* ip_err;
   const char* mask_err;
   const char* gw_err;
+  const char* mac;
 };
 
 struct web_text web_lng[4]={
@@ -156,6 +157,7 @@ struct web_text web_lng[4]={
   "IP address is incorrect",
   "subnet mask is incorrect",
   "default gateway is incorrect",
+  "Sensor's address",
   
   "Настройки",
   "Ваша WiFi сеть",
@@ -195,6 +197,7 @@ struct web_text web_lng[4]={
   "неверный IP адрес",
   "неверная маска подсети",
   "неверный адрес шлюза",
+  "Адрес датчика",
 
   "Setări",
   "Rețeaua Dvs WiFi",
@@ -234,6 +237,7 @@ struct web_text web_lng[4]={
   "IP address is incorrect",
   "subnet mask is incorrect",
   "default gateway is incorrect",
+  "Sensor's address",
 
   "Einstellungen",
   "Ihr WiFi-Netzwerk",
@@ -272,7 +276,8 @@ struct web_text web_lng[4]={
   "Default gateway",
   "IP address is incorrect",
   "subnet mask is incorrect",
-  "default gateway is incorrect"
+  "default gateway is incorrect",
+  "Sensor's address"
 };
 
 struct Month{

@@ -1,5 +1,5 @@
-/* Weather Station v1.3
- * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016 
+/* Weather Station v2.0
+ * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
                                // Board ESP-12E 
@@ -23,6 +23,9 @@
 #include <Print.h>
 #include <pgmspace.h>
 #include <SPI.h>
+//#include <Adafruit_Sensor.h>
+//#include <DHT.h>
+//#include <DHT_U.h>
 
 extern "C"{
   #include "main.h"
@@ -36,6 +39,8 @@ extern "C"{
 #define CS 15
 #define RES 5
 #define DC 4
+//#define DHTPIN 2
+//#define DHTTYPE DHT22
 
 UTFT myGLCD(ILI9341_S5P,CS,RES,DC);
 OneWire oneWire(ONE_WIRE_BUS);
@@ -43,6 +48,7 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer;
 ESP8266WebServer webServer(80);
 File fsUploadFile;
+//DHT_Unified dht(DHTPIN, DHTTYPE);
 
 extern uint8_t SmallFontRu[];
 extern uint8_t BigFontRu[];
@@ -75,10 +81,15 @@ void setup(){
   ntp->begin();
    //DS18B20
   sensors.begin();
-  if(!sensors.getAddress(insideThermometer,0)) 
+  sensors.getAddress(insideThermometer,0); 
   sensors.setResolution(insideThermometer,9);
   sensors.requestTemperatures();
   tempInside=sensors.getTempC(insideThermometer);
+   //DHT22
+  //dht.begin();
+  //sensor_t sensor;
+  //dht.temperature().getSensor(&sensor);
+  //dht.humidity().getSensor(&sensor);
    //battery
   showBatteryLevel();
    // WiFi
@@ -148,6 +159,11 @@ void loop(){
     showInsideTemp();
     siteTime();
     database();
+    out();
+      //sensors_event_t event;
+      //dht.humidity().getEvent(&event);
+      //if(isnan(event.relative_humidity)) ;
+      //else weather.humidity=event.relative_humidity;
     showWeatherNow();
     showCityName();
     showTime();
@@ -268,9 +284,18 @@ void database(void){
   url+=String(mac[2],HEX)+"-";
   url+=String(mac[1],HEX)+"-";
   url+=String(mac[0],HEX);
-  url.toCharArray(text_buf,url.length());
   HTTPClient client;
   client.begin(url+"&KEY="+sha1(html.id+city)+html.id);
+  client.GET();
+  client.end();
+}
+
+void out(void){
+  url=site;
+  url+="outside.php?MAC=";
+  url+=html.sensor;
+  HTTPClient client;
+  client.begin(url);
   int httpCode=client.GET();
   if(httpCode>0){
     if(httpCode==HTTP_CODE_OK){
@@ -278,11 +303,13 @@ void database(void){
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root=jsonBuffer.parseObject(httpData);
       if(root.success()){
+        outside.lat     =root["lat"];
+        outside.lon     =root["lon"];
+        outside.alt     =root["alt"];
         outside.temp    =root["temp"];
         outside.pres    =root["press"];
         outside.humidity=root["hum"];
         outside.bat     =root["bat"];
-        outside.temp_in =root["temp_in"];
         outside.updated =root["updated"];
       }
       client.end();
@@ -349,6 +376,8 @@ void read_eeprom(void){
       String ip   =root["ip"];
       String mask =root["mask"];
       String gw   =root["gateway"];
+      String mac  =root["mac_out"];
+      html.sensor=mac;
       html.ip=ip;
       html.mask=mask;
       html.gateway=gw;
@@ -372,7 +401,7 @@ void read_eeprom(void){
     case 2:urlLang="ro";break;
     case 3:urlLang="de";break;
     default:urlLang="en";break;
-  }  
+  }
 }
 
 void save_eeprom(void){
@@ -398,6 +427,7 @@ void save_eeprom(void){
   root["ip"]      =html.ip;
   root["mask"]    =html.mask;
   root["gateway"] =html.gateway;
+  root["mac_out"] =html.sensor;
   File file=SPIFFS.open("/settings.json","w");
   if(file){
     root.printTo(file);
