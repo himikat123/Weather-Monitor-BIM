@@ -11,7 +11,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="2.0";
+String fw="2.1";
 String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;

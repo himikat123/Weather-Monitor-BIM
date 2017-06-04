@@ -1,4 +1,4 @@
-/* Weather Station v2.0
+/* Weather Station v2.1
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */

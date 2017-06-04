@@ -259,23 +259,6 @@ void showWeatherNow(void){
   }
   str+='%';
   printCent(str,1,190,128,color,VGA_WHITE,SmallFontRu);
-   //outside battery
-  #define Bat0 0xBB
-  #define Bat25 0xBC
-  #define Bat50 0xBD
-  #define Bat75 0xBE
-  #define Bat100 0xBF
-  myGLCD.setColor(VGA_BLUE);
-  myGLCD.setBackColor(VGA_WHITE);
-  myGLCD.setFont(BigFontRu);
-  char BAT=Bat0;
-  if(outside.bat==1) myGLCD.setColor(VGA_RED);
-  if(outside.bat==2) BAT=Bat25;
-  if(outside.bat==3) BAT=Bat50;
-  if(outside.bat==4) BAT=Bat75;
-  if(outside.bat>=5) BAT=Bat100;
-  sprintf(text_buf,"%c",BAT);
-  myGLCD.print(text_buf,180,60);
    //pressure
   str=UTF8(WeatherNow[html.lang].Pressure);
   int pres;
@@ -296,6 +279,25 @@ void showWeatherNow(void){
     str+=UTF8(WeatherNow[html.lang].mm);
   }
   printCent(str,1,199,148,color,VGA_WHITE,SmallFontRu);
+   //outside battery
+  #define Bat0 0xBB
+  #define Bat25 0xBC
+  #define Bat50 0xBD
+  #define Bat75 0xBE
+  #define Bat100 0xBF
+  if(updated<1800){
+    myGLCD.setColor(VGA_BLUE);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFontRu);
+    char BAT=Bat0;
+    if(outside.bat==1) myGLCD.setColor(VGA_RED);
+    if(outside.bat==2) BAT=Bat25;
+    if(outside.bat==3) BAT=Bat50;
+    if(outside.bat==4) BAT=Bat75;
+    if(outside.bat>=5) BAT=Bat100;
+    sprintf(text_buf,"%c",BAT);
+    myGLCD.print(text_buf,180,60);
+  }
 }
 
 void showInsideTemp(void){
@@ -356,26 +358,26 @@ void showInsideTemp(void){
 
 void showCityName(void){
   myGLCD.setColor(0xFE5F);
-  myGLCD.fillRect(1,20,171,39);
+  myGLCD.fillRect(1,20,199,39);
   myGLCD.setColor(VGA_BLACK);
-  myGLCD.drawRect(0,19,172,40);
+  myGLCD.drawRect(0,19,200,40);
   String str=UTF8(cityName);
-  if(str.length()>10){
-    str[21]='\0';
-    printCent(str,1,171,21,VGA_PURPLE,0xFE5F,SmallFontRu);
+  if(str.length()>12){
+    str[28]='\0';
+    printCent(str,1,199,21,VGA_PURPLE,0xFE5F,SmallFontRu);
   }
-  else printCent(str,1,171,21,VGA_PURPLE,0xFE5F,BigFontRu);
+  else printCent(str,1,199,21,VGA_PURPLE,0xFE5F,BigFontRu);
 }
 
 void showTime(void){
   myGLCD.setColor(VGA_BLACK);
-  myGLCD.drawRect(172,19,319,60);
+  myGLCD.drawRect(200,19,319,60);
    //weekday
-  printCent(UTF8(weekday_name(weekday())),173,318,20,0x6180,0xFFF9,SmallFontRu);
+  printCent(UTF8(weekday_name(weekday())),201,318,20,0x6180,0xFFF9,SmallFontRu);
    //date
   sprintf(text_buf,"%d %s %d",day(),month_name(month()),year());
   String str=UTF8(text_buf);
-  printCent(str,173,318,48,0x6180,0xFFF9,SmallFontRu);
+  printCent(str,201,318,48,0x6180,0xFFF9,SmallFontRu);
    //time
   if(html.timef) sprintf(text_buf,"%d:%02d",hour(),minute());
   else{
@@ -384,7 +386,7 @@ void showTime(void){
     if(isPM()) am_pm="PM";
     sprintf(text_buf,"%d:%02d %s",hourFormat12(),minute(),am_pm);
   }
-  printCent(text_buf,173,318,32,0x6180,0xFFF9,BigFontRu);  
+  printCent(text_buf,201,318,32,0x6180,0xFFF9,BigFontRu);  
 }
 
 char* month_name(int m){
