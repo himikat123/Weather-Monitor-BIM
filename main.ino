@@ -3,7 +3,7 @@
  * http://esp8266.atwebpages.com
  */
                                // Board ESP-12E 
-                               // 1MB (128kB SPIFFS) 
+                               // 1MB (144kB SPIFFS) 
 #include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
