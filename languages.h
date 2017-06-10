@@ -116,6 +116,7 @@ struct web_text{
   const char* mask_err;
   const char* gw_err;
   const char* mac;
+  const char* sav;
 };
 
 struct web_text web_lng[4]={
@@ -158,6 +159,7 @@ struct web_text web_lng[4]={
   "subnet mask is incorrect",
   "default gateway is incorrect",
   "Sensor's address",
+  "Saved networks",
   
   "Настройки",
   "Ваша WiFi сеть",
@@ -198,6 +200,7 @@ struct web_text web_lng[4]={
   "неверная маска подсети",
   "неверный адрес шлюза",
   "Адрес датчика",
+  "Сохраненные сети",
 
   "Setări",
   "Rețeaua Dvs WiFi",
@@ -238,6 +241,7 @@ struct web_text web_lng[4]={
   "subnet mask is incorrect",
   "default gateway is incorrect",
   "Sensor's address",
+  "Saved networks",
 
   "Einstellungen",
   "Ihr WiFi-Netzwerk",
@@ -277,7 +281,8 @@ struct web_text web_lng[4]={
   "IP address is incorrect",
   "subnet mask is incorrect",
   "default gateway is incorrect",
-  "Sensor's address"
+  "Sensor's address",
+  "Saved networks"
 };
 
 struct Month{
@@ -296,57 +301,57 @@ struct Month{
 };
 
 struct Month Mon_lng[4]={
-  "January",
-  "February",
-  "March",
-  "April",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
   "May",
   "June",
   "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
   
-  "Января",
-  "Февраля",
+  "Янв",
+  "Фев",
   "Марта",
-  "Апреля",
+  "Апр",
   "Мая",
   "Июня",
   "Июля",
-  "Августа",
-  "Сентября",
-  "Октября",
-  "Ноября",
-  "Декабря",
+  "Авг",
+  "Сент",
+  "Окт",
+  "Ноябр",
+  "Дек",
 
-  "Ianuarie",
-  "Februarie",
-  "Martie",
-  "Aprilie"
+  "Ian",
+  "Feb",
+  "Mar",
+  "Apr"
   "Mai",
   "Iunie",
   "Iulie",
-  "August",
-  "Septembrie",
-  "Octombrie",
-  "Noiembrie",
-  "Decembrie",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Noi",
+  "Dec",
   
-  "Januar",
-  "Februar",
+  "Jan",
+  "Feb",
   "Marz",
-  "April",
+  "Apr",
   "Mai",
   "Juni",
   "Juli",
-  "August",
-  "September",
-  "Oktober",
-  "November",
-  "Dezember"
+  "Aug",
+  "Sept",
+  "Okt",
+  "Nov",
+  "Dez"
 };
 
 struct Weekday{

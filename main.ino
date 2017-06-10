@@ -1,4 +1,4 @@
-/* Weather Station v2.1
+/* Weather Station v2.2
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -94,13 +94,11 @@ void setup(){
   showBatteryLevel();
    // WiFi
   myGLCD.drawBitmap(273,2,16,16,nowifi,1);
-  html.ssid.toCharArray(ssid,(html.ssid.length())+1);
-  html.pass.toCharArray(password,(html.pass.length())+1);
   is_settings();
   myGLCD.setColor(VGA_WHITE);
   myGLCD.setBackColor(VGA_BLACK);
   myGLCD.setFont(SmallFontRu);
-  if(html.ssid==""){
+  if(!ssids.num){
     showSettingsMode();
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
@@ -110,7 +108,61 @@ void setup(){
     }
   }
   else{
-    if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);
+    /*if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);*/
+    myGLCD.setFont(SmallFontRu);
+    if(WiFi.status()!=WL_CONNECTED){
+      uint8_t n=WiFi.scanNetworks();
+      int rssi=0;
+      if(n!=0){
+        for(uint8_t i=0;i<n;i++){
+          for(uint8_t k=0;k<ssids.num;k++){
+            delay(1);
+            if(WiFi.SSID(i)==ssids.ssid[k]){
+              connected_ssid=ssids.ssid[k];
+              ssids.ssid[k].toCharArray(ssid,(ssids.ssid[k].length())+1);
+              ssids.pass[k].toCharArray(password,(ssids.pass[k].length())+1);
+              WiFi.begin(ssid,password);
+              sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
+              sprintf(text_buf,"%-30s",text_buf);
+              text_buf[30]='\0';
+              myGLCD.print(text_buf,2,2);
+              break;
+            }
+          }
+        }  
+      }
+      uint8_t e=0;
+      while(WiFi.status()!=WL_CONNECTED){
+        if((e++)>20){
+          for(uint8_t k=0;k<ssids.num;k++){
+            delay(1);
+            connected_ssid=ssids.ssid[k];
+            ssids.ssid[k].toCharArray(ssid,(ssids.ssid[k].length())+1);
+            ssids.pass[k].toCharArray(password,(ssids.pass[k].length())+1);
+            WiFi.begin(ssid,password);
+            sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
+            sprintf(text_buf,"%-30s",text_buf);
+            text_buf[30]='\0';
+            myGLCD.print(text_buf,2,2);
+            if(WiFi.status()==WL_CONNECTED) goto connectedd;
+          }    
+          sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
+          sprintf(text_buf,"%-30s",text_buf);
+          text_buf[30]='\0';
+          myGLCD.print(text_buf,2,2);
+          delay(5000);
+          if(html.sleep==0) ESP.reset();
+          else{
+            analogWrite(BACKLIGHT,0);
+            myGLCD.lcdOff();
+            ESP.deepSleep(0);
+          }
+        }
+        delay(500);
+        is_settings();
+      }
+    }
+ connectedd:
     if(html.typ==1){
       IPAddress ip;
       IPAddress subnet;
@@ -118,31 +170,9 @@ void setup(){
       if(ip.fromString(html.ip) and gateway.fromString(html.gateway) and subnet.fromString(html.mask)){
         WiFi.config(ip,gateway,subnet);
       }
-    }
-    uint8_t e=0;
-    myGLCD.setFont(SmallFontRu);
-    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
-    sprintf(text_buf,"%-30s",text_buf);
-    text_buf[30]='\0';
-    myGLCD.print(text_buf,2,2);
-    while(WiFi.status()!=WL_CONNECTED){
-      if((e++)>50){
-        sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-        sprintf(text_buf,"%-30s",text_buf);
-        text_buf[30]='\0';
-        myGLCD.print(text_buf,2,2);
-        delay(5000);
-        if(html.sleep==0) ESP.reset();
-        else{
-          analogWrite(BACKLIGHT,0);
-          myGLCD.lcdOff();
-          ESP.deepSleep(0);
-        }
-      }
-      delay(500);
-      is_settings();
     } 
   }
+  WiFi.SSID().toCharArray(ssid,(WiFi.SSID().length())+1);
   sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connected_to),ssid);
   sprintf(text_buf,"%-30s",text_buf);
   text_buf[30]='\0';
@@ -192,7 +222,7 @@ void loop(){
   if(html.sleep==0) sleep=600;
   else sleep=27*html.sleep;
   for(uint16_t i=0;i<sleep;i++){
-    rssi=viewNetworks();
+    rssi=viewRSSI(connected_ssid);
     showBatteryLevel();
     showWiFiLevel(rssi);
     showTime();
@@ -208,13 +238,13 @@ void loop(){
   }
 }
 
-int viewNetworks(void){
+int viewRSSI(String ssid){
   uint8_t n=WiFi.scanNetworks();
   int rssi=0;
   if(n!=0){
     for(uint8_t i=0;i<n;i++){
       delay(1);
-      if(WiFi.SSID(i)==html.ssid) rssi=WiFi.RSSI(i);
+      if(WiFi.SSID(i)==ssid) rssi=WiFi.RSSI(i);
     }  
   }
   return rssi;
@@ -402,6 +432,25 @@ void read_eeprom(void){
     case 3:urlLang="de";break;
     default:urlLang="en";break;
   }
+  read_ssids();
+}
+
+void read_ssids(void){
+  String fData;
+  File f=SPIFFS.open("/ssids.json","r");
+  if(f){
+    fData=f.readString();
+    f.close();
+    DynamicJsonBuffer jsonBuf;
+    JsonObject& json=jsonBuf.parseObject(fData);
+    if(json.success()){
+      ssids.num=json["num"];
+      for(uint8_t i=0;i<ssids.num;i++){
+        ssids.ssid[i]=json["nets"][i*2].as<String>();
+        ssids.pass[i]=json["nets"][i*2+1].as<String>();
+      }
+    }
+  } 
 }
 
 void save_eeprom(void){
@@ -432,6 +481,59 @@ void save_eeprom(void){
   if(file){
     root.printTo(file);
     file.close();  
+  }
+  save_ssids();
+}
+
+void save_ssids(void){
+  volatile int n=0,num=1;
+  uint8_t i=0;
+  bool ad=true;
+  String ssids[20];
+  String fData;
+  File f=SPIFFS.open("/ssids.json","r");
+  if(f){
+    fData=f.readString();
+    f.close();
+    DynamicJsonBuffer jsonBuf;
+    JsonObject& json=jsonBuf.parseObject(fData);
+    if(json.success()){      
+      num=atoi(json["num"]);
+      n=num*2;
+      for(i=0;i<n;i+=2){
+        char s1[32],s2[32];
+        json["nets"][i].as<String>().toCharArray(s1,(json["nets"][i].as<String>().length())+1);
+        html.ssid.toCharArray(s2,(html.ssid.length())+1);
+        if(strcmp(s1,s2)==0){
+          ssids[i]=json["nets"][i].as<String>();
+          ssids[i+1]=html.pass;
+          ad=false;
+        }
+        else{
+          ssids[i]=json["nets"][i].as<String>();
+          ssids[i+1]=json["nets"][i+1].as<String>();
+        }
+      }
+    }
+  }
+  else{
+    num=0;
+    i=0;
+  }
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root=jsonBuffer.createObject();
+  if(num<9 and ad) num++;
+  root["num"]=num;
+  JsonArray& nets=root.createNestedArray("nets");
+  for(i=0;i<n;i++) nets.add(ssids[i]);
+  if(num<9 and ad){
+    nets.add(html.ssid);
+    nets.add(html.pass);
+  }
+  File file=SPIFFS.open("/ssids.json","w");
+  if(file){
+    root.printTo(file);
+    file.close();
   }
 }
 

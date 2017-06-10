@@ -138,6 +138,7 @@ void sendContent(void){
   root["ip_err"]   =web_lng[html.lang].ip_err;        //text
   root["mask_err"] =web_lng[html.lang].mask_err;      //text
   root["gw_err"]   =web_lng[html.lang].gw_err;        //text
+  root["sav"]      =web_lng[html.lang].sav;           //text
   root["ssidval"]  =html.ssid;                        //value ssid
   root["passval"]  =html.pass;                        //value password
   root["cityval"]  =html.city;                        //value city
@@ -223,6 +224,73 @@ void web_settings(void)
     }
     json+="}";
     webServer.send(200,"text/json",json);
+  });
+
+  webServer.on("/ssids",HTTP_POST,[](){
+    String ssids[20];
+    String js="";
+    String fData;
+    File f=SPIFFS.open("/ssids.json","r");
+    if(f){
+      fData=f.readString();
+      f.close();
+      DynamicJsonBuffer jsonBuf;
+      JsonObject& json=jsonBuf.parseObject(fData);
+      if(json.success()){
+        uint8_t num=json["num"];
+        for(uint8_t i=0;i<num*2;i++){
+          ssids[i]=json["nets"][i].as<String>();
+        }
+        js="{";
+        for(uint8_t i=0;i<num*2;i+=2){
+          js+="\""; 
+          js+=ssids[i];
+          js+="\":\"";
+          js+=ssids[i+1];
+          js+="\"";
+          if((i+2)!=num*2) js+=",";
+        }
+        js+="}";
+      }
+      webServer.send(200,"text/json",js);
+    }
+  });
+
+  webServer.on("/delete",HTTP_POST,[](){
+    String del=webServer.arg("?D");
+    String ssids[20];
+    String js="";
+    String fData;
+    File f=SPIFFS.open("/ssids.json","r");
+    if(f){
+      fData=f.readString();
+      f.close();
+      DynamicJsonBuffer jsonBuf;
+      JsonObject& json=jsonBuf.parseObject(fData);
+      if(json.success()){
+        uint8_t num=json["num"];
+        for(uint8_t i=0;i<num*2;i++){
+          ssids[i]=json["nets"][i].as<String>();
+        }
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root=jsonBuffer.createObject();
+        if(num>0) num--;
+        root["num"]=num;
+        JsonArray& nets=root.createNestedArray("nets");
+        for(uint8_t i=0;i<(num+1)*2;i+=2){
+          if(ssids[i]!=del){
+            nets.add(ssids[i]);
+            nets.add(ssids[i+1]);
+          }
+        }
+        File file=SPIFFS.open("/ssids.json","w");
+        if(file){
+          root.printTo(file);
+          file.close();  
+        }
+      }
+      webServer.send(200,"text/json","ok");
+    }
   });
 
   webServer.on("/list",HTTP_GET,handleFileList);

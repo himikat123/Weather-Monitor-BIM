@@ -11,7 +11,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="2.1";
+String fw="2.2";
 String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -23,6 +23,7 @@ char text_buf[255];
 float tempInside;
 char ssid[32]="";
 char password[32]="";
+String connected_ssid;
 String servak;
 String url;
 int rssi;
@@ -33,6 +34,12 @@ const char* host="settings";
 const char* copy="© himikat123@gmail.com";
 char DEFAULT_AP_SSID[15]="WeatherMonitor";
 char DEFAULT_AP_PASS[11]="1234567890";
+
+struct{
+  uint8_t num;
+  String ssid[10];
+  String pass[10];
+} ssids;
 
 struct{
   uint32_t crc_ssid;
