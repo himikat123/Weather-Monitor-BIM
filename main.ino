@@ -1,9 +1,9 @@
-/* Weather Station v2.2
+/* Weather Station v2.3
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
                                // Board ESP-12E 
-                               // 1MB (144kB SPIFFS) 
+                               // 1MB (512kB SPIFFS) 
 #include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -15,6 +15,7 @@
 #include <ArduinoJson.h>
 #include <NtpClientLib.h>
 #include <UTFT.h>
+#include <UTFT_Geometry.h>
 #include <FS.h>
 #include <ESP8266mDNS.h>
 #include <Hash.h>
@@ -43,6 +44,7 @@ extern "C"{
 //#define DHTTYPE DHT22
 
 UTFT myGLCD(ILI9341_S5P,CS,RES,DC);
+UTFT_Geometry geo(&myGLCD);
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer;
@@ -52,6 +54,7 @@ File fsUploadFile;
 
 extern uint8_t SmallFontRu[];
 extern uint8_t BigFontRu[];
+extern uint8_t DotMatrix_M_Num[];
 
 void setup(){
    //Serial port
@@ -65,7 +68,7 @@ void setup(){
    //LCD
   myGLCD.InitLCD();
   analogWrite(BACKLIGHT,10);
-  drawFSJpeg("/logo.jpg",0,0);
+  drawFSJpeg("/pic/logo.jpg",0,0);
   myGLCD.setColor(VGA_BLACK);
   myGLCD.fillRect(0,0,319,18);
    //EEPROM 
@@ -108,7 +111,6 @@ void setup(){
     }
   }
   else{
-    /*if(String(WiFi.SSID())!=String(ssid)) WiFi.begin(ssid,password);*/
     myGLCD.setFont(SmallFontRu);
     if(WiFi.status()!=WL_CONNECTED){
       uint8_t n=WiFi.scanNetworks();
@@ -185,7 +187,7 @@ void loop(){
     showWiFiLevel(rssi);
     getCoordinates();
     getWeatherNow();
-    getWeatherDaily();  
+    getWeatherDaily();
     showInsideTemp();
     siteTime();
     database();
@@ -194,9 +196,9 @@ void loop(){
       //dht.humidity().getEvent(&event);
       //if(isnan(event.relative_humidity)) ;
       //else weather.humidity=event.relative_humidity;
-    showWeatherNow();
-    showCityName();
+    //showCityName();
     showTime();
+    showWeatherNow();
     showWeatherToday();
     showWeatherTomorrow();
     showWeatherAfterTomorrow();
@@ -219,7 +221,7 @@ void loop(){
   }
 
   uint16_t sleep;
-  if(html.sleep==0) sleep=600;
+  if(html.sleep==0) sleep=60;
   else sleep=27*html.sleep;
   for(uint16_t i=0;i<sleep;i++){
     rssi=viewRSSI(connected_ssid);
@@ -370,7 +372,7 @@ void read_eeprom(void){
   if(rtcData.crc_pass!=calculateCRC32(((uint8_t*) &rtcData.AP_PASS),sizeof(rtcData.AP_PASS))) strcpy(rtcData.AP_PASS,DEFAULT_AP_PASS);
 
   String fData;
-  File f=SPIFFS.open("/bat.json","r");
+  File f=SPIFFS.open("/save/bat.json","r");
   if(f){
     fData=f.readString();
     f.close();
@@ -383,7 +385,7 @@ void read_eeprom(void){
   }
     
   String fileData;
-  File file=SPIFFS.open("/settings.json","r");
+  File file=SPIFFS.open("/save/settings.json","r");
   if(file){
     fileData=file.readString();
     file.close();
@@ -437,7 +439,7 @@ void read_eeprom(void){
 
 void read_ssids(void){
   String fData;
-  File f=SPIFFS.open("/ssids.json","r");
+  File f=SPIFFS.open("/save/ssids.json","r");
   if(f){
     fData=f.readString();
     f.close();
@@ -477,7 +479,7 @@ void save_eeprom(void){
   root["mask"]    =html.mask;
   root["gateway"] =html.gateway;
   root["mac_out"] =html.sensor;
-  File file=SPIFFS.open("/settings.json","w");
+  File file=SPIFFS.open("/save/settings.json","w");
   if(file){
     root.printTo(file);
     file.close();  
@@ -491,7 +493,7 @@ void save_ssids(void){
   bool ad=true;
   String ssids[20];
   String fData;
-  File f=SPIFFS.open("/ssids.json","r");
+  File f=SPIFFS.open("/save/ssids.json","r");
   if(f){
     fData=f.readString();
     f.close();
@@ -530,7 +532,7 @@ void save_ssids(void){
     nets.add(html.ssid);
     nets.add(html.pass);
   }
-  File file=SPIFFS.open("/ssids.json","w");
+  File file=SPIFFS.open("/save/ssids.json","w");
   if(file){
     root.printTo(file);
     file.close();
@@ -550,4 +552,3 @@ uint32_t calculateCRC32(const uint8_t *data,size_t length){
   }
   return crc;
 }
-
