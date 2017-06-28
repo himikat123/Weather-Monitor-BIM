@@ -1,4 +1,4 @@
-/* Weather Station v2.3
+/* Weather Monitor BIM v2.4
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -57,45 +57,108 @@ extern uint8_t BigFontRu[];
 extern uint8_t DotMatrix_M_Num[];
 
 void setup(){
-   //Serial port
+    //Serial port
   Serial.begin(115200);
   while (!Serial);
-   //SPIFS
+    //SPIFS
   if(!SPIFFS.begin()) while(1) yield();
-   //PINs
+    //PINs
   pinMode(BUTTON,INPUT);
   pinMode(BACKLIGHT,OUTPUT);
-   //LCD
+    //LCD
   myGLCD.InitLCD();
   analogWrite(BACKLIGHT,10);
   drawFSJpeg("/pic/logo.jpg",0,0);
   myGLCD.setColor(VGA_BLACK);
   myGLCD.fillRect(0,0,319,18);
-   //EEPROM 
+    //EEPROM 
   read_eeprom();
   analogWrite(BACKLIGHT,html.bright*10);
-   //WIFI MODE
+    //WIFI MODE
   WiFi.mode(WIFI_STA);
-   //NTP
+    //NTP
   ntp=ntpClient::getInstance("time.windows.com",1);
   ntp->setInterval(15,1800);
   ntp->setTimeZone(html.zone);
   ntp->setDayLight(html.adj);
   ntp->begin();
-   //DS18B20
+    //DS18B20
   sensors.begin();
   sensors.getAddress(insideThermometer,0); 
   sensors.setResolution(insideThermometer,9);
   sensors.requestTemperatures();
   tempInside=sensors.getTempC(insideThermometer);
-   //DHT22
+    //DHT22
   //dht.begin();
   //sensor_t sensor;
   //dht.temperature().getSensor(&sensor);
   //dht.humidity().getSensor(&sensor);
-   //battery
+    //battery
   showBatteryLevel();
-   // WiFi
+    // WiFi
+  connectToWiFi();
+}
+
+void loop(){
+  if(WiFi.status()==WL_CONNECTED){
+    showBatteryLevel();
+    showWiFiLevel(rssi);
+    getCoordinates();
+    getWeatherNow();
+    getWeatherDaily();
+    showInsideTemp();
+    siteTime();
+    database();
+    out();
+      //sensors_event_t event;
+      //dht.humidity().getEvent(&event);
+      //if(isnan(event.relative_humidity)) ;
+      //else weather.humidity=event.relative_humidity;
+    //showCityName();
+    showTime();
+    showWeatherNow();
+    showWeatherToday();
+    showWeatherTomorrow();
+    showWeatherAfterTomorrow();
+  }
+  else{
+    myGLCD.setColor(VGA_WHITE);
+    myGLCD.setBackColor(0xCE79);
+    myGLCD.setFont(SmallFontRu);
+    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
+    sprintf(text_buf,"%-35.35s",text_buf);
+    text_buf[30]='\0';
+    myGLCD.print(text_buf,2,2);
+    delay(10000);
+    analogWrite(BACKLIGHT,0);
+    if(html.sleep==0) ESP.reset();
+    else{
+      myGLCD.lcdOff();
+      ESP.deepSleep(0);
+    }
+  }
+
+  uint16_t sleep;
+  if(html.sleep==0) sleep=40;
+  else sleep=27*html.sleep;
+  for(uint16_t i=0;i<sleep;i++){
+    rssi=viewRSSI(String(WiFi.SSID()));
+    showBatteryLevel();
+    showWiFiLevel(rssi);
+    showTime();
+    is_settings();
+    if(html.sleep==0) showInsideTemp();
+  }
+  if(html.sleep!=0){
+    analogWrite(BACKLIGHT,html.bright*3);
+    delay(5000);
+    analogWrite(BACKLIGHT,0);
+    myGLCD.lcdOff();
+    ESP.deepSleep(0);
+  }
+}
+
+void connectToWiFi(void){
   myGLCD.drawBitmap(273,2,16,16,nowifi,1);
   is_settings();
   myGLCD.setColor(VGA_WHITE);
@@ -104,7 +167,7 @@ void setup(){
   if(!ssids.num){
     showSettingsMode();
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
+    WiFi.softAP(html.ap_ssid,html.ap_pass);
     web_settings();
     while(1){
       webServer.handleClient();
@@ -114,12 +177,13 @@ void setup(){
     myGLCD.setFont(SmallFontRu);
     if(WiFi.status()!=WL_CONNECTED){
       uint8_t n=WiFi.scanNetworks();
-      int rssi=0;
+      //int rssi=0;
       if(n!=0){
         for(uint8_t i=0;i<n;i++){
           for(uint8_t k=0;k<ssids.num;k++){
             delay(1);
             if(WiFi.SSID(i)==ssids.ssid[k]){
+              rssi=WiFi.RSSI(i);
               connected_ssid=ssids.ssid[k];
               ssids.ssid[k].toCharArray(ssid,(ssids.ssid[k].length())+1);
               ssids.pass[k].toCharArray(password,(ssids.pass[k].length())+1);
@@ -165,6 +229,8 @@ void setup(){
       }
     }
  connectedd:
+    WiFi.setAutoConnect(true);
+    WiFi.setAutoReconnect(true);
     if(html.typ==1){
       IPAddress ip;
       IPAddress subnet;
@@ -172,7 +238,8 @@ void setup(){
       if(ip.fromString(html.ip) and gateway.fromString(html.gateway) and subnet.fromString(html.mask)){
         WiFi.config(ip,gateway,subnet);
       }
-    } 
+    }
+    rssi=viewRSSI(String(WiFi.SSID())); 
   }
   WiFi.SSID().toCharArray(ssid,(WiFi.SSID().length())+1);
   sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connected_to),ssid);
@@ -181,71 +248,11 @@ void setup(){
   myGLCD.print(text_buf,2,2);
 }
 
-void loop(){
-  if(WiFi.status()==WL_CONNECTED){
-    showBatteryLevel();
-    showWiFiLevel(rssi);
-    getCoordinates();
-    getWeatherNow();
-    getWeatherDaily();
-    showInsideTemp();
-    siteTime();
-    database();
-    out();
-      //sensors_event_t event;
-      //dht.humidity().getEvent(&event);
-      //if(isnan(event.relative_humidity)) ;
-      //else weather.humidity=event.relative_humidity;
-    //showCityName();
-    showTime();
-    showWeatherNow();
-    showWeatherToday();
-    showWeatherTomorrow();
-    showWeatherAfterTomorrow();
-  }
-  else{
-    myGLCD.setColor(VGA_WHITE);
-    myGLCD.setBackColor(VGA_BLACK);
-    myGLCD.setFont(SmallFontRu);
-    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-    sprintf(text_buf,"%-30s",text_buf);
-    text_buf[30]='\0';
-    myGLCD.print(text_buf,2,2);
-    delay(10000);
-    analogWrite(BACKLIGHT,0);
-    if(html.sleep==0) ESP.reset();
-    else{
-      myGLCD.lcdOff();
-      ESP.deepSleep(0);
-    }
-  }
-
-  uint16_t sleep;
-  if(html.sleep==0) sleep=60;
-  else sleep=27*html.sleep;
-  for(uint16_t i=0;i<sleep;i++){
-    rssi=viewRSSI(connected_ssid);
-    showBatteryLevel();
-    showWiFiLevel(rssi);
-    showTime();
-    is_settings();
-    if(html.sleep==0) showInsideTemp();
-  }
-  if(html.sleep!=0){
-    analogWrite(BACKLIGHT,html.bright*3);
-    delay(5000);
-    analogWrite(BACKLIGHT,0);
-    myGLCD.lcdOff();
-    ESP.deepSleep(0);
-  }
-}
-
 int viewRSSI(String ssid){
   uint8_t n=WiFi.scanNetworks();
   int rssi=0;
   if(n!=0){
     for(uint8_t i=0;i<n;i++){
-      delay(1);
       if(WiFi.SSID(i)==ssid) rssi=WiFi.RSSI(i);
     }  
   }
@@ -354,7 +361,7 @@ void is_settings(void){
   if(!digitalRead(BUTTON)){
     showSettingsMode();
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(rtcData.AP_SSID,rtcData.AP_PASS);
+    WiFi.softAP(html.ap_ssid,html.ap_pass);
     web_settings();
     while(1){
       webServer.handleClient();
@@ -367,9 +374,9 @@ void read_eeprom(void){
   EEPROM.get(140,html.id);
   EEPROM.end();
   
-  ESP.rtcUserMemoryRead(0,(uint32_t*) &rtcData,sizeof(rtcData));
-  if(rtcData.crc_ssid!=calculateCRC32(((uint8_t*) &rtcData.AP_SSID),sizeof(rtcData.AP_SSID))) strcpy(rtcData.AP_SSID,DEFAULT_AP_SSID);
-  if(rtcData.crc_pass!=calculateCRC32(((uint8_t*) &rtcData.AP_PASS),sizeof(rtcData.AP_PASS))) strcpy(rtcData.AP_PASS,DEFAULT_AP_PASS);
+  //ESP.rtcUserMemoryRead(0,(uint32_t*) &rtcData,sizeof(rtcData));
+  //if(rtcData.crc_ssid!=calculateCRC32(((uint8_t*) &rtcData.AP_SSID),sizeof(rtcData.AP_SSID))) strcpy(rtcData.AP_SSID,DEFAULT_AP_SSID);
+  //if(rtcData.crc_pass!=calculateCRC32(((uint8_t*) &rtcData.AP_PASS),sizeof(rtcData.AP_PASS))) strcpy(rtcData.AP_PASS,DEFAULT_AP_PASS);
 
   String fData;
   File f=SPIFFS.open("/save/bat.json","r");
@@ -385,36 +392,38 @@ void read_eeprom(void){
   }
     
   String fileData;
-  File file=SPIFFS.open("/save/settings.json","r");
+  File file=SPIFFS.open("/save/save.json","r");
   if(file){
     fileData=file.readString();
     file.close();
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root=jsonBuffer.parseObject(fileData);
     if(root.success()){
-      String ssid =root["ssid"];  
-      String pass =root["pass"];
-      String city =root["city"];
-      String appid=root["appid"];
-      html.zone   =root["zone"];
-      html.bright =root["bright"];
-      html.adj    =root["daylight"];
-      html.units  =root["units"];
-      html.pres   =root["press"];
-      html.timef  =root["time"];
-      html.lang   =root["lng"];
-      html.sleep  =root["sleep"];
-      html.typ    =root["type"];
-      String ip   =root["ip"];
-      String mask =root["mask"];
-      String gw   =root["gateway"];
-      String mac  =root["mac_out"];
+      String ap_ssid =root["AP_SSID"];  
+      String ap_pass =root["AP_PASS"];
+      String city =root["CITY"];
+      String appid=root["APPID"];
+      html.zone   =root["ZONE"];
+      html.bright =root["BRIGHT"];
+      html.adj    =root["DAYLIGHT"];
+      html.units  =root["UNITS"];
+      html.pres   =root["PRES"];
+      html.timef  =root["TIME"];
+      html.lang   =root["LANG"];
+      html.sleep  =root["SLEEP"];
+      html.typ    =root["TYPE"];
+      String ip   =root["IP"];
+      String mask =root["MASK"];
+      String gw   =root["GATEWAY"];
+      String mac  =root["MAC"];
       html.sensor=mac;
       html.ip=ip;
       html.mask=mask;
       html.gateway=gw;
-      html.ssid=ssid;
-      html.pass=pass;
+      ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
+      ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
+      //html.ap_ssid=ap_ssid;
+      //html.ap_pass=ap_pass;
       html.city=city;
       html.appid=appid;
     }
@@ -434,12 +443,8 @@ void read_eeprom(void){
     case 3:urlLang="de";break;
     default:urlLang="en";break;
   }
-  read_ssids();
-}
-
-void read_ssids(void){
-  String fData;
-  File f=SPIFFS.open("/save/ssids.json","r");
+  //fData;
+  f=SPIFFS.open("/save/ssids.json","r");
   if(f){
     fData=f.readString();
     f.close();
@@ -455,100 +460,3 @@ void read_ssids(void){
   } 
 }
 
-void save_eeprom(void){
-  rtcData.crc_ssid=calculateCRC32(((uint8_t*) &rtcData.AP_SSID),sizeof(rtcData.AP_SSID));
-  rtcData.crc_pass=calculateCRC32(((uint8_t*) &rtcData.AP_PASS),sizeof(rtcData.AP_PASS));  
-  ESP.rtcUserMemoryWrite(0,(uint32_t*) &rtcData,sizeof(rtcData));
-
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& root=jsonBuffer.createObject();
-  root["ssid"]    =html.ssid;
-  root["pass"]    =html.pass;
-  root["city"]    =html.city;
-  root["appid"]   =html.appid;
-  root["zone"]    =html.zone;
-  root["bright"]  =html.bright;
-  root["daylight"]=html.adj;
-  root["units"]   =html.units;
-  root["press"]   =html.pres;
-  root["time"]    =html.timef;
-  root["lng"]     =html.lang;
-  root["sleep"]   =html.sleep;
-  root["type"]    =html.typ;
-  root["ip"]      =html.ip;
-  root["mask"]    =html.mask;
-  root["gateway"] =html.gateway;
-  root["mac_out"] =html.sensor;
-  File file=SPIFFS.open("/save/settings.json","w");
-  if(file){
-    root.printTo(file);
-    file.close();  
-  }
-  save_ssids();
-}
-
-void save_ssids(void){
-  volatile int n=0,num=1;
-  uint8_t i=0;
-  bool ad=true;
-  String ssids[20];
-  String fData;
-  File f=SPIFFS.open("/save/ssids.json","r");
-  if(f){
-    fData=f.readString();
-    f.close();
-    DynamicJsonBuffer jsonBuf;
-    JsonObject& json=jsonBuf.parseObject(fData);
-    if(json.success()){      
-      num=atoi(json["num"]);
-      n=num*2;
-      for(i=0;i<n;i+=2){
-        char s1[32],s2[32];
-        json["nets"][i].as<String>().toCharArray(s1,(json["nets"][i].as<String>().length())+1);
-        html.ssid.toCharArray(s2,(html.ssid.length())+1);
-        if(strcmp(s1,s2)==0){
-          ssids[i]=json["nets"][i].as<String>();
-          ssids[i+1]=html.pass;
-          ad=false;
-        }
-        else{
-          ssids[i]=json["nets"][i].as<String>();
-          ssids[i+1]=json["nets"][i+1].as<String>();
-        }
-      }
-    }
-  }
-  else{
-    num=0;
-    i=0;
-  }
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& root=jsonBuffer.createObject();
-  if(num<9 and ad) num++;
-  root["num"]=num;
-  JsonArray& nets=root.createNestedArray("nets");
-  for(i=0;i<n;i++) nets.add(ssids[i]);
-  if(num<9 and ad){
-    nets.add(html.ssid);
-    nets.add(html.pass);
-  }
-  File file=SPIFFS.open("/save/ssids.json","w");
-  if(file){
-    root.printTo(file);
-    file.close();
-  }
-}
-
-uint32_t calculateCRC32(const uint8_t *data,size_t length){
-  uint32_t crc=0xffffffff;
-  while(length--){
-    uint8_t c=*data++;
-    for(uint32_t i=0x80;i>0;i>>=1){
-      bool bit=crc&0x80000000;
-      if(c&i) bit=!bit;
-      crc<<=1;
-      if(bit) crc^=0x04c11db7;
-    }
-  }
-  return crc;
-}

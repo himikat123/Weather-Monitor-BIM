@@ -15,10 +15,10 @@ void showSettingsMode(void){
   myGLCD.print(text_buf,160-((strlen(text_buf)+1)/2*8),90);
   UTF8(settings_lng[html.lang].str3);
   myGLCD.print(text_buf,160-((strlen(text_buf)+1)/2*8),105);
-  sprintf(text_buf,"%s \"%s\"",settings_lng[html.lang].str4,rtcData.AP_SSID);
+  sprintf(text_buf,"%s \"%s\"",settings_lng[html.lang].str4,html.ap_ssid);
   UTF8(text_buf);
   myGLCD.print(text_buf,160-((strlen(text_buf)+1)/2*8),120);
-  sprintf(text_buf,"%s \"%s\".",settings_lng[html.lang].str5,rtcData.AP_PASS);
+  sprintf(text_buf,"%s \"%s\".",settings_lng[html.lang].str5,html.ap_pass);
   UTF8(text_buf);
   myGLCD.print(text_buf,160-((strlen(text_buf)+1)/2*8),135);
   UTF8(settings_lng[html.lang].str6);
@@ -35,16 +35,19 @@ void showWiFiLevel(int myRSSI){
   #define Ant100 0xBA
   uint8_t ANT=Ant100;
   uint8_t level_wifi=abs(myRSSI);
-  if(level_wifi<51) ANT=Ant100;
-  if((level_wifi>50)&&(level_wifi<66)) ANT=Ant80;
-  if((level_wifi>65)&&(level_wifi<81)) ANT=Ant60;
-  if((level_wifi>80)&&(level_wifi<96)) ANT=Ant40;
-  if(level_wifi>95) ANT=Ant20;
-  myGLCD.setColor(VGA_WHITE);
-  myGLCD.setBackColor(back);
-  myGLCD.setFont(BigFontRu);
-  sprintf(text_buf,"%c",ANT);
-  myGLCD.print(text_buf,273,0);
+  if(level_wifi==0) myGLCD.drawBitmap(273,2,16,16,nowifi2,1);
+  else{
+    if((level_wifi>0)&&(level_wifi<51)) ANT=Ant100;
+    if((level_wifi>50)&&(level_wifi<66)) ANT=Ant80;
+    if((level_wifi>65)&&(level_wifi<81)) ANT=Ant60;
+    if((level_wifi>80)&&(level_wifi<96)) ANT=Ant40;
+    if(level_wifi>95) ANT=Ant20;
+    myGLCD.setColor(VGA_WHITE);
+    myGLCD.setBackColor(back);
+    myGLCD.setFont(BigFontRu);
+    sprintf(text_buf,"%c",ANT);
+    myGLCD.print(text_buf,273,0);
+  }
 }
 
 void showBatteryLevel(void){
@@ -190,15 +193,18 @@ void showWeatherToday(void){
   printCent(str,x,x+96,y,color,VGA_TRANSPARENT,SmallFontRu);
     //temperature day1
   str=dtostrf(weather.day1,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+15,color);
     //temperature night1
   str=dtostrf(weather.night1,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+31,color);
     //wind day1
   str=UTF8(WeatherNow[html.lang].Wind);
   str+=dtostrf(weather.speed1,1,1,text_buf);
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
+  if(rssi==0) str="---";
   printCent(str,x,x+96,y+49,color,VGA_TRANSPARENT,SmallFontRu);
 }
 
@@ -215,15 +221,18 @@ void showWeatherTomorrow(void){
   printCent(str,x,x+96,y,color,VGA_TRANSPARENT,SmallFontRu);
     //temperature day2
   str=dtostrf(weather.day2,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+15,color);
     //temperature night2
   str=dtostrf(weather.night2,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+31,color);
     //wind day2
   str=UTF8(WeatherNow[html.lang].Wind);
   str+=dtostrf(weather.speed2,1,1,text_buf);
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
+  if(rssi==0) str="---";
   printCent(str,x,x+96,y+49,color,VGA_TRANSPARENT,SmallFontRu);
 }
 
@@ -242,15 +251,18 @@ void showWeatherAfterTomorrow(void){
   printCent(str,x,x+96,y,color,VGA_TRANSPARENT,SmallFontRu);
     //temperature day3
   str=dtostrf(weather.day3,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+15,color);
     //temperature night3
   str=dtostrf(weather.night3,1,1,text_buf);
+  if(rssi==0) str="---";
   printTemp(str,x+94,y+31,color);
     //wind day3
   str=UTF8(WeatherNow[html.lang].Wind);
   str+=dtostrf(weather.speed3,1,1,text_buf);
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
+  if(rssi==0) str="---";
   printCent(str,x,x+96,y+49,color,VGA_TRANSPARENT,SmallFontRu);
 }
 
@@ -277,6 +289,7 @@ void showWeatherNow(void){
   else str=dtostrf(weather.temp,1,1,text_buf);
   if(html.units) str+="^F";
   else str+="^C";
+  if(rssi==0) str="---";
   int e=printCent(str,x+1,x+207,y+35,color,VGA_TRANSPARENT,BigFontRu);
   if(out){
     myGLCD.setColor(VGA_BLUE);
@@ -288,6 +301,7 @@ void showWeatherNow(void){
   if(html.units) str+=UTF8(WeatherNow[html.lang].miles_hour);
   else str+=UTF8(WeatherNow[html.lang].meter_sec);
   str+=" ";
+  if(rssi==0) str="---";
   int w=printCent(str,x+1,x+207,y+65,color,VGA_TRANSPARENT,BigFontRu);
     //wind direction
   float deg=round(weather.deg/45)*45;
@@ -314,7 +328,7 @@ void showWeatherNow(void){
     out=false;
   }
   str+='%';
-  
+  if(rssi==0) str="---";
   e=printCent(str,x+1,x+207,y+95,color,VGA_TRANSPARENT,BigFontRu);
   if(out){
     myGLCD.setColor(VGA_BLUE);
@@ -340,6 +354,7 @@ void showWeatherNow(void){
     str+=UTF8(WeatherNow[html.lang].mm);
   }
   if(out) str+=" ";
+  if(rssi==0) str="---";
   e=printCent(str,x+1,x+207,y+125,color,VGA_TRANSPARENT,BigFontRu);
   if(out){
     myGLCD.setColor(VGA_BLUE);
@@ -351,16 +366,23 @@ void showWeatherNow(void){
   #define Bat50 0xBD
   #define Bat75 0xBE
   #define Bat100 0xBF
+  char BAT=Bat0;
   if(updated<1800){
     myGLCD.setColor(VGA_WHITE);
     myGLCD.setBackColor(0xCE79);
     myGLCD.setFont(BigFontRu);
-    char BAT=Bat0;
     if(outside.bat==1) myGLCD.setColor(VGA_RED);
     if(outside.bat==2) BAT=Bat25;
     if(outside.bat==3) BAT=Bat50;
     if(outside.bat==4) BAT=Bat75;
     if(outside.bat>=5) BAT=Bat100;
+    sprintf(text_buf,"%c",BAT);
+    myGLCD.print(text_buf,5,0);
+  }
+  else{
+    myGLCD.setColor(0xCE79);
+    myGLCD.setBackColor(0xCE79);
+    myGLCD.setFont(BigFontRu);
     sprintf(text_buf,"%c",BAT);
     myGLCD.print(text_buf,5,0);
   }

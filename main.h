@@ -1,9 +1,10 @@
 extern unsigned int nowifi[0x0100];
+extern unsigned int nowifi2[0x0100];
 
 String city;
 String country;
 String lang;
-String fw="2.3";
+String fw="2.4";
 String vers="Weather monitor v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -38,13 +39,6 @@ struct{
 } ssids;
 
 struct{
-  uint32_t crc_ssid;
-  uint32_t crc_pass;
-  char AP_SSID[32];
-  char AP_PASS[32];
-} rtcData;
-
-struct{
   int min=600;
   int max=620;
 } battery;
@@ -54,7 +48,6 @@ struct{
   const char* lon;
   const char* alt;
   float temp=200;
-  //float temp_in;
   int pres=2000;
   int humidity=200;
   int bat=9;
@@ -62,8 +55,8 @@ struct{
 } outside;
 
 struct html_structure{
-  String      ssid;
-  String      pass;
+  char        ap_ssid[32];
+  char        ap_pass[32];
   String      city;
   int8_t      zone=0;
   String      appid;
