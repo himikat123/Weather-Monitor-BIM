@@ -278,7 +278,8 @@ void siteTime(){
 void database(void){
   byte mac[6];
   WiFi.macAddress(mac);
-  if((html.id[0]==0xFF)or(html.id[0]==0)){
+  int id=atoi(html.id);
+  if(id==0){
     url=site;
     url+="get_id.php?MAC=";
     url+=String(mac[5],HEX)+"-";
@@ -293,6 +294,7 @@ void database(void){
     if(httpCode>0){
       if(httpCode==HTTP_CODE_OK){
         httpData=client.getString();
+        Serial.print("http data ");Serial.println(httpData);
         char myID[32];
         httpData.toCharArray(myID,10);
         if(myID>0){
@@ -373,11 +375,12 @@ void read_eeprom(void){
   EEPROM.begin(512);
   EEPROM.get(140,html.id);
   EEPROM.end();
+  Serial.print("html.id ");Serial.println(String(html.id));
+  int id=atoi(html.id);
+  Serial.print("atoi ");Serial.println(id);
+  String n="0";
+  if(id==0) n.toCharArray(html.id,(n.length())+1); 
   
-  //ESP.rtcUserMemoryRead(0,(uint32_t*) &rtcData,sizeof(rtcData));
-  //if(rtcData.crc_ssid!=calculateCRC32(((uint8_t*) &rtcData.AP_SSID),sizeof(rtcData.AP_SSID))) strcpy(rtcData.AP_SSID,DEFAULT_AP_SSID);
-  //if(rtcData.crc_pass!=calculateCRC32(((uint8_t*) &rtcData.AP_PASS),sizeof(rtcData.AP_PASS))) strcpy(rtcData.AP_PASS,DEFAULT_AP_PASS);
-
   String fData;
   File f=SPIFFS.open("/save/bat.json","r");
   if(f){
