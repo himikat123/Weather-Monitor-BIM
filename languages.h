@@ -1,3 +1,22 @@
+struct saved_text{
+  char* saved;
+  char* not_saved;
+};
+
+struct saved_text saved[4]={
+  "saved",
+  "did not save",
+    
+  "сохранено",
+  "не сохранено",
+    
+  "salvat",
+  "nu este salvat",
+    
+  "gelagert",
+  "nicht gespeichert",
+};
+
 struct status_text{
   char* connecting_to;
   char* unable_to_connect_to;
@@ -6,7 +25,7 @@ struct status_text{
   char* not_found;
 };
 
-struct status_text status_lng[6]={
+struct status_text status_lng[4]={
   "Connecting to",
   "Unable to connect to",
   "Connected to",

@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v2.4
+/* Weather Monitor BIM v2.5
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -375,9 +375,7 @@ void read_eeprom(void){
   EEPROM.begin(512);
   EEPROM.get(140,html.id);
   EEPROM.end();
-  Serial.print("html.id ");Serial.println(String(html.id));
   int id=atoi(html.id);
-  Serial.print("atoi ");Serial.println(id);
   String n="0";
   if(id==0) n.toCharArray(html.id,(n.length())+1); 
   

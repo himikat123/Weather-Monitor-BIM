@@ -104,9 +104,9 @@ void web_settings(void)
     if(file){
       file.print(webServer.arg("JS"));
       file.close();
-      webServer.send(200,"text/plain","Saved");
+      webServer.send(200,"text/plain",saved[html.lang].saved);
     }
-    else webServer.send(200,"text/plain","Did not save");
+    else webServer.send(200,"text/plain",saved[html.lang].not_saved);
     file=SPIFFS.open("/save/jssids.json","w");
     if(file){
       file.print(webServer.arg("JSSIDS"));
