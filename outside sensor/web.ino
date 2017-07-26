@@ -95,93 +95,32 @@ void handleFileList(){
   webServer.send(200,"text/json",output);
 }
 
-void sendContent(void){
-  String mac_addr;
-  byte mac[6];
-  WiFi.macAddress(mac);
-  mac_addr=String(mac[5],HEX)+":";
-  mac_addr+=String(mac[4],HEX)+":";
-  mac_addr+=String(mac[3],HEX)+":";
-  mac_addr+=String(mac[2],HEX)+":";
-  mac_addr+=String(mac[1],HEX)+":";
-  mac_addr+=String(mac[0],HEX);
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& root=jsonBuffer.createObject();
-  root["ver"]      =vers;                             //text
-  root["settings"] =web_lng[html.lang].settings;      //text
-  root["ssid"]     =web_lng[html.lang].YourSSID;      //text
-  root["ssidval"]  =html.ssid;                        //value ssid
-  root["pass"]     =web_lng[html.lang].YourPASS;      //text
-  root["passval"]  =html.pass;                        //value password
-  root["lang"]     =web_lng[html.lang].Lang;          //text
-  root["data"]     =web_lng[html.lang].data;          //text
-  root["temp"]     =web_lng[html.lang].temp;          //text
-  root["c"]        =mySensor.readTempC();             //temperature celsius
-  root["f"]        =mySensor.readTempC()*1.8+32;      //temperature fahrenheit
-  root["pres"]     =web_lng[html.lang].pres;          //text
-  root["mm"]       =web_lng[html.lang].mm;            //text
-  root["hpa"]      =web_lng[html.lang].hpa;           //text
-  root["mm_val"]   =mySensor.readFloatPressure()/100*0.75; //pressure mmHg
-  root["hpa_val"]  =mySensor.readFloatPressure()/100; //pressure hPa
-  root["hum"]      =web_lng[html.lang].hum;           //text
-  root["hum_val"]  =mySensor.readFloatHumidity();     //humidity
-  root["submit"]   =web_lng[html.lang].SaveAll;       //text
-  root["shPass"]   =web_lng[html.lang].show_password; //text
-  root["Assid"]    =web_lng[html.lang].ap_ssid;       //text
-  root["Apass"]    =web_lng[html.lang].ap_pass;       //text
-  root["mac"]      =mac_addr;                         //mac address
-  root["site"]     =site;                             //site address 
-  root["copy"]     =copy;                             //email address
-  root["type"]     =web_lng[html.lang].type;          //text
-  root["dyn"]      =web_lng[html.lang].dyn;           //text
-  root["stat"]     =web_lng[html.lang].stat;          //text
-  root["ip"]       =web_lng[html.lang].ip;            //text
-  root["mask"]     =web_lng[html.lang].mask;          //text
-  root["gateway"]  =web_lng[html.lang].gateway;       //text
-  root["ip_err"]   =web_lng[html.lang].ip_err;        //text
-  root["mask_err"] =web_lng[html.lang].mask_err;      //text
-  root["gw_err"]   =web_lng[html.lang].gw_err;        //text
-  root["APssidval"]=rtcData.AP_SSID;                  //value ap ssid
-  root["APpassval"]=rtcData.AP_PASS;                  //value ap pass 
-  root["lng"]      =html.lang;                        //selected language
-  root["ipval"]    =html.ip;                          //value ip
-  root["maskval"]  =html.mask;                        //value mask
-  root["gwval"]    =html.gateway;                     //value gateway
-  root["typ"]      =html.typ;                         //selected connection type
-  
-  char buffer[1600];
-  root.printTo(buffer,sizeof(buffer));
-  webServer.send(200,"text/json",buffer);
-}
-
 void web_settings(void)
 {
   SPIFFS.begin();
   MDNS.begin(host);
-  webServer.on("/settings",HTTP_POST,[](){
-    html.ssid=webServer.arg("SSID");
-    html.pass=webServer.arg("PASS");
-    html.lang=webServer.arg("LANG").toInt();
-    html.ip=webServer.arg("IP");
-    html.mask=webServer.arg("MASK");
-    html.gateway=webServer.arg("GATEWAY");
-    html.typ=webServer.arg("TYPE").toInt();
-    webServer.arg("AP_SSID").toCharArray(rtcData.AP_SSID,(webServer.arg("AP_SSID").length())+1);
-    webServer.arg("AP_PASS").toCharArray(rtcData.AP_PASS,(webServer.arg("AP_PASS").length())+1);
-    save_eeprom();
-    webServer.send(200,"text/plain","Saved");
+  
+  webServer.on("/esp/settings.php",HTTP_POST,[](){
+    File file=SPIFFS.open("/save/save.json","w");
+    if(file){
+      file.print(webServer.arg("JS"));
+      file.close();
+      webServer.send(200,"text/plain","Saved");
+    }
+    else webServer.send(200,"text/plain","Did not save");
+    file=SPIFFS.open("/save/jssids.json","w");
+    if(file){
+      file.print(webServer.arg("JSSIDS"));
+      file.close();
+    }
+    file=SPIFFS.open("/save/ssids.json","w");
+    if(file){
+      file.print(webServer.arg("SSIDS"));
+      file.close();
+    }
   });
   
-  webServer.on("/content",HTTP_POST,[](){
-    sendContent();
-  });
-  
-  webServer.on("/lang",HTTP_POST,[](){
-    html.lang=webServer.arg("CHLNG").toInt();
-    sendContent();
-  });  
-  
-  webServer.on("/ssid",HTTP_POST,[](){
+  webServer.on("/esp/ssid.php",HTTP_POST,[](){
     String json="{";
     uint8_t n=WiFi.scanNetworks();
     for(uint8_t i=0;i<n;i++){
@@ -189,29 +128,64 @@ void web_settings(void)
       json+=WiFi.SSID(i);
       json+="\":\"";
       json+=abs(WiFi.RSSI(i));
-      json+="\"";
-      if((i+1)!=n) json+=",";
+      json+="\",";
     }
-    json+="}";
+    json+="\"ver\":\"";
+    json+=vers;
+    json+="\",\"MAC\":\"";
+    json+=MacAddr;
+    json+="\",\"C\":\"";
+    json+=get_temp(1);
+    json+="&degC\",\"F\":\"";
+    json+=get_temp(0);
+    json+="&degF\",\"MM\":\"";
+    json+=round(get_pres()*0.75);
+    json+=web_lng[html.lang].mmHg;
+    json+="\",\"HPA\":\"";
+    json+=get_pres();
+    json+=web_lng[html.lang].hPa;
+    json+="\",\"HUM\":\"";
+    json+=get_humidity();
+    json+="%\"}";
     webServer.send(200,"text/json",json);
-  });
-
-  webServer.on("/data",HTTP_POST,[](){
-    float p=mySensor.readFloatPressure()/100;
-    String j="{\"c\":";
-    j+=mySensor.readTempC();
-    j+=",\"f\":";
-    j+=mySensor.readTempF();
-    j+=",\"mm_val\":";
-    j+=p*0.75;
-    j+=",\"hpa_val\":";
-    j+=p;
-    j+=",\"hum_val\":";
-    j+=mySensor.readFloatHumidity();
-    j+="}";
-    webServer.send(200,"text/json",j);
+    if(html.temp==3) sensors.requestTemperatures();
   });
   
+  webServer.on("/esp/temp.php",HTTP_POST,[](){
+    html.temp=round(webServer.arg("SENSOR").toFloat());
+    sensors_init();
+    String json="{\"C\":\"";
+    json+=get_temp(1);
+    json+="&degC\",\"F\":\"";
+    json+=get_temp(0);
+    json+="&degF\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/pres.php",HTTP_POST,[](){
+    html.pres=round(webServer.arg("SENSOR").toFloat());
+    sensors_init();
+    String json="{\"HPA\":\"";
+    json+=get_pres();
+    json+=" ";
+    json+=web_lng[html.lang].hPa;
+    json+="\",\"MM\":\"";
+    json+=get_pres()*0.75;
+    json+=" ";
+    json+=web_lng[html.lang].mmHg;
+    json+="\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/hum.php",HTTP_POST,[](){
+    html.hum=round(webServer.arg("SENSOR").toFloat());
+    sensors_init();
+    String json="{\"HUM\":\"";
+    json+=get_humidity();
+    json+="%\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
   webServer.on("/list",HTTP_GET,handleFileList);
   webServer.on("/edit",HTTP_GET,[](){
     if(!handleFileRead("/edit.htm")) webServer.send(404,"text/plain","FileNotFound");

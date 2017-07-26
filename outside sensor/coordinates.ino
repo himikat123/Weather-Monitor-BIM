@@ -1,5 +1,5 @@
 void getCoordinates(void){
-  servak="api.2ip.com.ua";
+  servak="api.2ip.ua";
   url="http://"+servak+"/geo.json?ip=";
   coordinatesRequest();
   parseCoordinates();

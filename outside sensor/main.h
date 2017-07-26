@@ -1,6 +1,7 @@
+String MacAddr="";
 String lang;
-String fw="1.0_BME280";
-String vers="Outside sensor v1.0";
+String fw="1.1";
+String vers="v"+fw;
 float tempOutside;
 int bat_level=0;
 char ssid[32]="";
@@ -12,18 +13,9 @@ char text_buf[255];
 String httpData;
 const char* host="settings";
 const char* copy="© himikat123@gmail.com";
-char DEFAULT_AP_SSID[15]="OutsideSensor";
-char DEFAULT_AP_PASS[11]="1234567890";
 const char* latitude;
 const char* longitude;
 const char* altitude="";
-
-struct{
-  uint32_t crc_ssid;
-  uint32_t crc_pass;
-  char AP_SSID[32];
-  char AP_PASS[32];
-} rtcData;
 
 struct{
   int min=600;
@@ -38,13 +30,22 @@ struct{
 } outside;
 
 struct html_structure{
-  String      ssid;
-  String      pass;
+  char        ap_ssid[32];
+  char        ap_pass[32];
   uint8_t     lang=0;
   int         typ;
   String      ip;
   String      mask;
   String      gateway;
+  int         temp;
+  int         pres;
+  int         hum;
 };
 html_structure html;
+
+struct{
+  uint8_t num;
+  String ssid[10];
+  String pass[10];
+} ssids;
 
