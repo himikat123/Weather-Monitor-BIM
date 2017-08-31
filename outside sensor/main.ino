@@ -1,4 +1,4 @@
-/* Outside sensor v1.1
+/* Outside sensor v1.2
    © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2017
    http://esp8266.atwebpages.com
 */
@@ -23,9 +23,9 @@
 #include <Sodaq_BMP085.h>
 
 extern "C" {
-#include "main.h"
-#include "languages.h"
-}
+  #include "main.h"
+  #include "languages.h"
+} 
 
 #define site "http://esp8266.atwebpages.com/api/"
 #define BUTTON         0
@@ -89,6 +89,8 @@ void loop(){
     Serial.print("Longitude "); Serial.println(longitude);
     Serial.print("Altitude "); Serial.println(altitude);
     float temp=get_temp(1);
+    int pres=get_pres();
+    int humid=get_humidity();
     url=site;
     url+="sensor.php?MAC=";
     url+=MacAddr;
@@ -101,9 +103,9 @@ void loop(){
     url+="&TEMP=";
     url+=temp;
     url+="&PRES=";
-    url+= get_pres();
+    url+=pres;
     url+="&HUM=";
-    url+=get_humidity();
+    url+=humid;
     url+="&BAT=";
     url+=bat_level;
     url+="&FW=";
@@ -120,12 +122,12 @@ void loop(){
     Serial.println(httpData);
     client.end();
     httpData="";
+    if(html.narod) sendToNarodmon(temp,pres,humid);    
     is_settings();
-    //delay(1000);
     Serial.println("going sleep");
     led(0,0,0);
     mySensor.settings.runMode=0;
-    ESP.deepSleep(1200000000);
+    ESP.deepSleep(900000000);
   }
   else{
     Serial.print("network "); Serial.println(" was not found");
@@ -133,8 +135,29 @@ void loop(){
     Serial.println("going sleep");
     led(0,0,0);
     mySensor.settings.runMode=0;
-    ESP.deepSleep(120000000);
+    ESP.deepSleep(90000000);
   }
+}
+
+void sendToNarodmon(float temp,int pres,int hum){
+  Serial.println("sending data to narodmon");
+  WiFiClient client;
+  String mac=WiFi.macAddress();
+  mac.replace(":","");
+  String buf="#BIM"+mac+"#BIM";
+  buf+="#"+String(latitude);
+  buf+="#"+String(longitude);
+  buf+="\n#T"+mac+"#"; 
+  buf+=String(temp);
+  buf+="\n#H"+mac+"#";
+  buf+=String(hum);
+  buf+="\n#P"+mac+"#";
+  buf+=String(pres);
+  buf+="\n#B"+mac+"#";
+  buf+=String(bat_level);
+  buf+="\n##\r\n";
+  if(!client.connect("narodmon.ru",8283)) Serial.println("send to narodmon failed");
+  else client.print(buf); while(client.available()){}
 }
 
 void connectToWiFi(void){
@@ -377,6 +400,7 @@ void read_eeprom(void){
       html.hum    =root["HUM"];
       html.lang   =root["LANG"];
       html.typ    =root["TYPE"];
+      html.narod  =root["NARODMON"];
       String ip   =root["IP"];
       String mask =root["MASK"];
       String gw   =root["GATEWAY"];
@@ -387,7 +411,7 @@ void read_eeprom(void){
       ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
     }
   }
-  if(html.lang>3 or html.lang<0) html.lang=0;
+  if(html.lang>5 or html.lang<0) html.lang=0;
   if(html.temp>3 or html.temp<0) html.temp=0;
   if(html.pres>1 or html.pres<0) html.pres=0;
   if(html.hum>1 or html.hum<0) html.hum=0;

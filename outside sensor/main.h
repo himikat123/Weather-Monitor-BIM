@@ -1,6 +1,6 @@
 String MacAddr="";
 String lang;
-String fw="1.1";
+String fw="1.2";
 String vers="v"+fw;
 float tempOutside;
 int bat_level=0;
@@ -40,6 +40,7 @@ struct html_structure{
   int         temp;
   int         pres;
   int         hum;
+  bool        narod;
 };
 html_structure html;
 
