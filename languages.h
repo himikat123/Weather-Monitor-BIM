@@ -3,18 +3,24 @@ struct saved_text{
   char* not_saved;
 };
 
-struct saved_text saved[4]={
-  "saved",
-  "did not save",
+struct saved_text saved[6]={
+  "Saved",
+  "Did not save",
     
-  "сохранено",
-  "не сохранено",
+  "Сохранено",
+  "Не сохранено",
     
-  "salvat",
-  "nu este salvat",
+  "Salvat",
+  "Nu este salvat",
     
-  "gelagert",
-  "nicht gespeichert",
+  "Gerettet",
+  "Nicht gespeichert",
+
+  "Išsaugota",
+  "Nepasaugotas",
+  
+  "Salvestatud",
+  "Ei salvestatud"
 };
 
 struct status_text{
@@ -25,30 +31,42 @@ struct status_text{
   char* not_found;
 };
 
-struct status_text status_lng[4]={
+struct status_text status_lng[6]={
   "Connecting to",
-  "Unable to connect to",
+  "Unable to connect to the network",
   "Connected to",
   "Network ",
   " not found",
   
   "Соединение с",
-  "Не удается подключиться к",
+  "Не удается подключиться к сети",
   "Подключено к",
   "Сеть ",
   " не найдена",
   
   "Conectare cu",
-  "Nu se poate conecta la",
+  "Nu se poate conecta la rețea",
   "Conectat la",
-  "Retea ",
-  " not found",
+  "Rețeaua ",
+  " nu a fost găsită",
   
-  "Connecting to",
-  "Unable to connect to",
-  "Connected to",
-  "Network ",
-  " not found"
+  "Verbinden mit",
+  "keine Verbindung zum Netzwerk",
+  "Angeschlossen",
+  "Netzwerk ",
+  " nicht gefunden",
+
+  "Prisijungiama prie",
+  "Nepavyko prisijungti prie tinklo",
+  "Sujungta su",
+  "Tinklas ",
+  " nerastas",
+
+  "Ühend",
+  "Võrku ei saa ühendust luua",
+  "Ühendatud",
+  "Võrk ",
+  " ei leitud"
 };
 
 struct settings_text{
@@ -61,14 +79,14 @@ struct settings_text{
   char* str7;
 };
 
-struct settings_text settings_lng[4]={
+struct settings_text settings_lng[6]={
   "To enter setup",
   "connect your laptop",
   "tablet or smartphone to",
   " ",
   "password",
   "Open your browser and enter",
-  "address 192.168.4.1",
+  "address http://192.168.4.1",
 
   "Чтоб войти в настройки",
   "подключите ваш ноутбук,",
@@ -76,7 +94,7 @@ struct settings_text settings_lng[4]={
   "сети",
   "пароль",
   "Откройте браузер и введите",
-  "адрес 192.168.4.1",
+  "адрес http://192.168.4.1",
 
   "Pentru a intra în setări",
   "conectați laptopul,",
@@ -84,132 +102,69 @@ struct settings_text settings_lng[4]={
   "la rețeaua",
   "parola",
   "și introduceți adresa",
-  "192.168.4.1 în browser",
+  "http://192.168.4.1 în browser",
 
   "So geben sie setup",
   "schließen sie Ihren laptop",
   "tablet oder smartphone",
   "network",
   "passwort",
-  "Öffnen sie Ihren browser",
-  "und geben Sie adresse 192.168.4.1",
+  "Öffnen sie Ihren browser und geben",
+  "Sie adresse http://192.168.4.1",
+
+  "Norint patekti į nustatymus",
+  "prijunkite savo nešiojamą kompiuterį",
+  "arba išmanujį įrenginį prie",
+  "tinklo",
+  "slaptažodis",
+  "Atidarykite naršyklę",
+  "ir įveskite adresą http://192.168.4.1",
+
+  "Seadete sisestamiseks",
+  "ühendage oma sülearvuti",
+  "tahvelarvuti või nutitelefoni",
+  "võrgu",
+  "parooli",
+  "Avage veebibrauser ja",
+  "sisestage http://192.168.4.1 aadress"
 };
 
-struct Month{
-  char* January;
-  char* February;
-  char* March;
-  char* April;
-  char* May;
-  char* June;
-  char* July;
-  char* August;
-  char* September;
-  char* October;
-  char* November;
-  char* December;
+char* Month[12][6]={
+  {" January ",  " Января ",  " Ianuarie ",  " Januar ",   " Sausis ",   " Jaanuar "},
+  {" February ", " Февраля ", " Februarie ", " Februar ",  " Vasaris ",  " Veebruar "},
+  {" March ",    " Марта ",   " Martie ",    " März ",     " Kovas ",    " Märts "},
+  {" April ",    " Апреля ",  " Aprilie ",   " April ",    " Balandis ", " Aprill "},
+  {" May ",      " Мая ",     " Mai ",       " Mai" ,      " Gegužės ",  " Mai "},
+  {" June ",     " Июня ",    " Iunie ",     " Juni ",     " Birželis ", " Juuni "},
+  {" July ",     " Июля ",    " Iulie ",     " Juli ",     " Liepa ",    " Juuli "},
+  {" August ",   " Августа ", " August ",    " August ",   " Rugpjūtis "," August "},
+  {" September "," Сентября "," Septembrie "," September "," Rugsėjis ", " September "},
+  {" October ",  " Октября ", " Octombrie ", " Oktober ",  " Spalis ",   " Oktoober "},
+  {" November ", " Ноября ",  " Noiembrie ", " November ", " Lapkritis "," November "},
+  {" December ", " Декабря ", " Decembrie ", " Dezember ", " Gruedis ",  " Detsember "}
 };
 
-struct Month Mon_lng[4]={
-  "Jan",
-  "Feb",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "Sept",
-  "Oct",
-  "Nov",
-  "Decr",
-    
-  "Января",
-  "Февр",
-  "Марта",
-  "Апреля",
-  "Мая",
-  "Июня",
-  "Июля",
-  "Авг",
-  "Сент",
-  "Окт",
-  "Ноября",
-  "Дек",
-
-  "Ian",
-  "Feb",
-  "Martie",
-  "Apr",
-  "Mai",
-  "Iunie",
-  "Iulie",
-  "August",
-  "Sept",
-  "Oct",
-  "Noiemb",
-  "Dec",
-
-  "Januar",
-  "Feb",
-  "März",
-  "April",
-  "Mai",
-  "Juni",
-  "Juli",
-  "August",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Dez"
+char* Weekday[7][6]={
+  {"Sunday",   "Воскресенье","Duminică","Sonntag",   "Sekmadienis","Pühapäev"},
+  {"Monday",   "Понедельник","Luni",    "Montag",    "Pirmadienis","Esmaspäev"},
+  {"Tuesday",  "Вторник",    "Marți",   "Dienstag",  "Antradienis","Teisipäev"},
+  {"Wednesday","Среда",      "Miercuri","Mittwoch",  "Trečiadieni","Kolmapäev"},
+  {"Thursday", "Четверг",    "Joi",     "Donnerstag","Ketvirtadie","Neljapäev"},
+  {"Friday",   "Пятница",    "Vineri",  "Freitag",   "Penktadieni","Reede"},
+  {"Saturday", "Суббота",    "Sâmbătă", "Sonnabend", "Šeštadienis","Laupäev"}
 };
 
-struct Weekday{
-  char* Sunday;
-  char* Monday;
-  char* Tuesday;
-  char* Wednesday;
-  char* Thursday;
-  char* Friday;
-  char* Saturday;
-};
-
-struct Weekday Week_lng[4]={
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-
-  "Воскресенье",
-  "Понедельник",
-  "Вторник",
-  "Среда",
-  "Четверг",
-  "Пятница",
-  "Суббота",
-
-  "Duminică",
-  "Luni",
-  "Marți",
-  "Miercuri",
-  "Joi",
-  "Vineri",
-  "Sâmbătă",
-
-  "Sonntag",
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Sonnabend"
+char* WD[7][6]={
+  {"Su","Вс","D", "So","S", "P"},
+  {"Mo","Пн","L", "Mo","Pr","E"},
+  {"Tu","Вт","Ma","Di","A", "T"},
+  {"We","Ср","Mi","Mi","T", "K"},
+  {"Th","Чт","J", "Do","K", "N"},
+  {"Fr","Пт","V", "Fr","Pn","R"},
+  {"Sa","Сб","S", "Sa","Š", "L"}
 };
 
 struct Weather_now{
-  char* Now;
   char* Wind;
   char* meter_sec;
   char* miles_hour;
@@ -219,74 +174,73 @@ struct Weather_now{
   char* hpa;
   char* AM;
   char* PM;
+  char* dew;
 };
 
-struct Weather_now WeatherNow[4]={
-  "Now",
-  "Wind",
+struct Weather_now WeatherNow[6]={
+  "Wind ",
   "m/s",
   "mph",
   "Humidity",
   "Pressure",
-  "mmHg",
+  "mm",
   "hPa",
   "AM",
   "PM",
+  "Dew point ",
 
-  "Сейчас",
-  "Ветер",
+  "Ветер ",
   "м/с",
   "м/ч",
   "Влажность",
   "Давление",
-  "мм рт.ст",
+  "мм",
   "гПа",
   "ДП",
   "ПП",
+  "Точка росы ",
 
-  "La moment",
-  "Vîntul",
+  "Vîntul ",
   "m/s",
   "mph",
   "Umiditatea",
   "Presiunea",
-  "mmHg",
+  "mm",
   "hPa",
   "AM",
   "PM",
+  "Punct de condensare ",
 
-  "Jetzt",
-  "Wind",
+  "Wind ",
   "m/s",
   "mph",
   "Luftfeuchte",
   "Luftdruck",
-  "mmHg",
+  "mm",
   "hPa",
   "AM",
-  "PM"
-};
+  "PM",
+  "Taupunkt ",
 
-struct Weather_daily{
-  char* Today;
-  char* Tomorrow;
-  char* AfterTomorrow;
-};
+  "Vėjas ",
+  "m/s",
+  "mph",
+  "Drėgnumas",
+  "Slėgis",
+  "mm",
+  "hPa",
+  "AM",
+  "PM",
+  "Rasos taškas ",
 
-struct Weather_daily WeatherDaily[4]={
-  "Today",
-  "Tomorrow",
-  "AfterTomorrow",
-
-  "Сегодня",
-  "Завтра",
-  "Послезавтра",
-
-  "Astăzi",
-  "Mâine",
-  "Poimâine",
-  
-  "Heute",
-  "Morgen",
-  "Übermorgen",
+  "Tuul ",
+  "m/s",
+  "ml/h",
+  "Niiskus",
+  "Õhurõhu",
+  "mm",
+  "hPa",
+  "AM",
+  "PM",
+  "Kastepunkt "
 };

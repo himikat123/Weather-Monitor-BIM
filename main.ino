@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v2.5
+/* Weather Monitor BIM v2.6
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -24,9 +24,6 @@
 #include <Print.h>
 #include <pgmspace.h>
 #include <SPI.h>
-//#include <Adafruit_Sensor.h>
-//#include <DHT.h>
-//#include <DHT_U.h>
 
 extern "C"{
   #include "main.h"
@@ -40,8 +37,6 @@ extern "C"{
 #define CS 15
 #define RES 5
 #define DC 4
-//#define DHTPIN 2
-//#define DHTTYPE DHT22
 
 UTFT myGLCD(ILI9341_S5P,CS,RES,DC);
 UTFT_Geometry geo(&myGLCD);
@@ -50,7 +45,6 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer;
 ESP8266WebServer webServer(80);
 File fsUploadFile;
-//DHT_Unified dht(DHTPIN, DHTTYPE);
 
 extern uint8_t SmallFontRu[];
 extern uint8_t BigFontRu[];
@@ -69,7 +63,7 @@ void setup(){
   myGLCD.InitLCD();
   analogWrite(BACKLIGHT,10);
   drawFSJpeg("/pic/logo.jpg",0,0);
-  myGLCD.setColor(VGA_BLACK);
+  myGLCD.setColor(back_color);
   myGLCD.fillRect(0,0,319,18);
     //EEPROM 
   read_eeprom();
@@ -88,11 +82,6 @@ void setup(){
   sensors.setResolution(insideThermometer,9);
   sensors.requestTemperatures();
   tempInside=sensors.getTempC(insideThermometer);
-    //DHT22
-  //dht.begin();
-  //sensor_t sensor;
-  //dht.temperature().getSensor(&sensor);
-  //dht.humidity().getSensor(&sensor);
     //battery
   showBatteryLevel();
     // WiFi
@@ -100,26 +89,10 @@ void setup(){
 }
 
 void loop(){
-  if(WiFi.status()==WL_CONNECTED){
+  if(WiFi.status()==WL_CONNECTED){ 
     showBatteryLevel();
     showWiFiLevel(rssi);
-    getCoordinates();
-    getWeatherNow();
-    getWeatherDaily();
-    showInsideTemp();
-    siteTime();
-    database();
-    out();
-      //sensors_event_t event;
-      //dht.humidity().getEvent(&event);
-      //if(isnan(event.relative_humidity)) ;
-      //else weather.humidity=event.relative_humidity;
-    //showCityName();
-    showTime();
-    showWeatherNow();
-    showWeatherToday();
-    showWeatherTomorrow();
-    showWeatherAfterTomorrow();
+    update_weather();
   }
   else{
     myGLCD.setColor(VGA_WHITE);
@@ -142,12 +115,14 @@ void loop(){
   if(html.sleep==0) sleep=40;
   else sleep=27*html.sleep;
   for(uint16_t i=0;i<sleep;i++){
+    if(i==135 and i==270 and i==450 and i==540 and i==675) update_weather();
     rssi=viewRSSI(String(WiFi.SSID()));
     showBatteryLevel();
     showWiFiLevel(rssi);
     showTime();
     is_settings();
-    if(html.sleep==0) showInsideTemp();
+    showInsideTemp();
+    yield();
   }
   if(html.sleep!=0){
     analogWrite(BACKLIGHT,html.bright*3);
@@ -158,11 +133,27 @@ void loop(){
   }
 }
 
+void update_weather(void){
+  getCoordinates();
+  siteTime();
+  showTime();
+  getWeatherNow();
+  getWeatherDaily();
+  showInsideTemp();
+  out();
+  showWeatherNow();
+  showWeatherToday();
+  showWeatherTomorrow();
+  showWeatherAfterTomorrow();
+  database();
+  yield();
+}
+
 void connectToWiFi(void){
-  myGLCD.drawBitmap(273,2,16,16,nowifi,1);
+  myGLCD.drawBitmap(273,0,16,16,nowifi,1);
   is_settings();
   myGLCD.setColor(VGA_WHITE);
-  myGLCD.setBackColor(VGA_BLACK);
+  myGLCD.setBackColor(back_color);
   myGLCD.setFont(SmallFontRu);
   if(!ssids.num){
     showSettingsMode();
@@ -177,7 +168,6 @@ void connectToWiFi(void){
     myGLCD.setFont(SmallFontRu);
     if(WiFi.status()!=WL_CONNECTED){
       uint8_t n=WiFi.scanNetworks();
-      //int rssi=0;
       if(n!=0){
         for(uint8_t i=0;i<n;i++){
           for(uint8_t k=0;k<ssids.num;k++){
@@ -212,8 +202,7 @@ void connectToWiFi(void){
             myGLCD.print(text_buf,2,2);
             if(WiFi.status()==WL_CONNECTED) goto connectedd;
           }    
-          sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-          sprintf(text_buf,"%-30s",text_buf);
+          sprintf(text_buf,"%-30s",UTF8(status_lng[html.lang].unable_to_connect_to));
           text_buf[30]='\0';
           myGLCD.print(text_buf,2,2);
           delay(5000);
@@ -423,14 +412,12 @@ void read_eeprom(void){
       html.gateway=gw;
       ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
       ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
-      //html.ap_ssid=ap_ssid;
-      //html.ap_pass=ap_pass;
       html.city=city;
       html.appid=appid;
     }
   }
   if(html.sleep>100) html.sleep=1;
-  if(html.lang>3) html.lang=0;
+  if(html.lang>5) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
   if(html.units>1) html.units=0;
@@ -442,9 +429,10 @@ void read_eeprom(void){
     case 1:urlLang="ru";break;
     case 2:urlLang="ro";break;
     case 3:urlLang="de";break;
+    case 4:urlLang="lt";break;
+    case 5:urlLang="et";break;
     default:urlLang="en";break;
   }
-  //fData;
   f=SPIFFS.open("/save/ssids.json","r");
   if(f){
     fData=f.readString();

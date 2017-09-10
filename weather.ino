@@ -1,5 +1,5 @@
 void getCoordinates(void){
-  servak="api.2ip.com.ua";
+  servak="api.2ip.ua";
   url="http://"+servak+"/geo.json?ip=";
   coordinatesRequest();
   parseCoordinates();
@@ -64,7 +64,7 @@ bool parseWeatherNow(){
 
   if(!root.success()) return false;
 
-  weather.main     = root["weather"][0]["main"];
+  weather.id       = root["weather"][0]["id"];
   weather.descript = root["weather"][0]["description"];
   weather.icon     = root["weather"][0]["icon"];
   weather.temp     = root["main"]["temp"];
@@ -73,8 +73,20 @@ bool parseWeatherNow(){
   weather.speed    = root["wind"]["speed"];
   weather.deg      = root["wind"]["deg"];
   weather.country  = root["sys"]["country"];
+  weather.sunrise  = root["sys"]["sunrise"];
+  weather.sunset   = root["sys"]["sunset"];
   weather.city     = root["name"];
-
+  int dayLight=0;
+  if(ntp->getDayLight()) dayLight=3600;
+  time_t time_now=now()-html.zone*3600-dayLight;
+  if(time_now>weather.sunrise and time_now<weather.sunset) weather.isDay=true;
+  else weather.isDay=false;
+  if(time_now<weather.sunrise) weather.isDay=true;
+  //Serial.print("sunrise ");Serial.println(weather.sunrise);
+  //Serial.print("now ");Serial.println(now());
+  //Serial.print("time now ");Serial.println(time_now);
+  //Serial.print("sunset ");Serial.println(weather.sunset);
+  //Serial.print("weather.isDay ");Serial.println(weather.isDay);Serial.println();
   httpData="";
   return true;
 }
