@@ -1,18 +1,36 @@
 void getCoordinates(void){
-  servak="api.2ip.ua";
-  url="http://"+servak+"/geo.json?ip=";
-  coordinatesRequest();
+  String url="http://api.2ip.ua/geo.json?ip=";
+  coordinatesRequest(url);
   parseCoordinates();
 }
 
 void getWeatherNow(void){
-  String Units;
+  String Units,url;
   if(html.units) Units="imperial";
   else Units="metric";
-  servak="api.openweathermap.org";
-  if(html.city.indexOf("auto")!=-1) url="http://"+servak+"/data/2.5/weather?lat="+weather.latitude+"&lon="+weather.longitude+"&units="+Units+"&appid="+html.appid+"&lang="+urlLang;
-  else url="http://"+servak+"/data/2.5/weather?q="+html.city+"&units="+Units+"&appid="+html.appid+"&lang="+urlLang;
-  if(weatherNowRequest() and parseWeatherNow()){
+  if(html.city.indexOf("auto")!=-1){
+    url="http://api.openweathermap.org/data/2.5/weather?lat=";
+    url+=weather.latitude;
+    url+="&lon=";
+    url+=weather.longitude;
+    url+="&units=";
+    url+=Units;
+    url+="&appid=";
+    url+=html.appid;
+    url+="&lang=";
+    url+=urlLang;
+  }
+  else{
+    url="http://api.openweathermap.org/data/2.5/weather?q=";
+    url+=html.city;
+    url+="&units=";
+    url+=Units;
+    url+="&appid=";
+    url+=html.appid;
+    url+="&lang=";
+    url+=urlLang;
+  }
+  if(weatherNowRequest(url) and parseWeatherNow()){
     country=weather.country;
     city=weather.city;
     lang=html.lang;
@@ -25,11 +43,16 @@ void getWeatherNow(void){
 }
 
 void getWeatherDaily(void){
-  String Units;
+  String Units,url;
   if(html.units) Units="imperial";
   else Units="metric";
-  url="http://"+servak+"/data/2.5/forecast/daily?q="+weather.city+"&mode=json&units="+Units+"&cnt=4&appid="+html.appid;
-  if(weatherDailyRequest() and parseWeatherDaily()){
+  url="http://api.openweathermap.org/data/2.5/forecast/daily?q=";
+  url+=weather.city;
+  url+="&mode=json&units=";
+  url+=Units;
+  url+="&cnt=4&appid=";
+  url+=html.appid;
+  if(weatherDailyRequest(url) and parseWeatherDaily()){
     dtostrf(weather.day1,1,1,text_buf);
     dtostrf(weather.night1,1,1,text_buf);
     dtostrf(weather.speed1,1,1,text_buf);
@@ -42,7 +65,7 @@ void getWeatherDaily(void){
   }
 }
 
-bool weatherNowRequest(){
+bool weatherNowRequest(String url){
   HTTPClient client;
   bool find=false;
   client.begin(url);
@@ -82,16 +105,11 @@ bool parseWeatherNow(){
   if(time_now>weather.sunrise and time_now<weather.sunset) weather.isDay=true;
   else weather.isDay=false;
   if(time_now<weather.sunrise) weather.isDay=true;
-  //Serial.print("sunrise ");Serial.println(weather.sunrise);
-  //Serial.print("now ");Serial.println(now());
-  //Serial.print("time now ");Serial.println(time_now);
-  //Serial.print("sunset ");Serial.println(weather.sunset);
-  //Serial.print("weather.isDay ");Serial.println(weather.isDay);Serial.println();
   httpData="";
   return true;
 }
 
-bool weatherDailyRequest(){
+bool weatherDailyRequest(String url){
   HTTPClient client;
   bool find=false;
   client.begin(url);
@@ -135,7 +153,7 @@ bool parseWeatherDaily(){
   return true;
 }
 
-bool coordinatesRequest(){
+bool coordinatesRequest(String url){
   HTTPClient client;
   bool find=false;
   client.begin(url);

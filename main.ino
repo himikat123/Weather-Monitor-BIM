@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v2.6
+/* Weather Monitor BIM v2.6.1
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -79,7 +79,7 @@ void setup(){
     //DS18B20
   sensors.begin();
   sensors.getAddress(insideThermometer,0); 
-  sensors.setResolution(insideThermometer,9);
+  sensors.setResolution(insideThermometer,10);
   sensors.requestTemperatures();
   tempInside=sensors.getTempC(insideThermometer);
     //battery
@@ -249,7 +249,7 @@ int viewRSSI(String ssid){
 }
 
 void siteTime(){
-  url=site; 
+  String url=site; 
   url+="time.php";
   HTTPClient client;
   client.begin(url);
@@ -265,7 +265,7 @@ void siteTime(){
 }
 
 void database(void){
-  byte mac[6];
+  byte mac[6];String url;
   WiFi.macAddress(mac);
   int id=atoi(html.id);
   if(id==0){
@@ -321,7 +321,7 @@ void database(void){
 }
 
 void out(void){
-  url=site;
+  String url=site;
   url+="outside.php?MAC=";
   url+=html.sensor;
   HTTPClient client;
@@ -330,6 +330,7 @@ void out(void){
   if(httpCode>0){
     if(httpCode==HTTP_CODE_OK){
       httpData=client.getString();
+      Serial.println(httpData);
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root=jsonBuffer.parseObject(httpData);
       if(root.success()){

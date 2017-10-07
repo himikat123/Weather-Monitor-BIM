@@ -345,7 +345,7 @@ void showInsideTemp(void){
     myGLCD.drawRect(x+1,y+1,x+95,y+63);
     drawFSJpeg("/pic/home.jpg",x+3,y+16);
   }
-  if(html.sleep==0 and html.sleep>3){
+  if(html.sleep==0 or html.sleep>3){
     sensors.requestTemperatures();
     tempInside=sensors.getTempC(insideThermometer);
   }
