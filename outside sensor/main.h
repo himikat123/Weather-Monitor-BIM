@@ -1,9 +1,8 @@
 String MacAddr="";
 String lang;
-String fw="1.2";
+String fw="1.3";
 String vers="v"+fw;
 float tempOutside;
-int bat_level=0;
 char ssid[32]="";
 char password[32]="";
 String servak;
@@ -13,14 +12,11 @@ char text_buf[255];
 String httpData;
 const char* host="settings";
 const char* copy="© himikat123@gmail.com";
-const char* latitude;
-const char* longitude;
-const char* altitude="";
-
-struct{
-  int min=600;
-  int max=620;
-} battery;
+float latitude=0;
+float longitude=0;
+float altitude=0;
+float battery=0;
+int bat_level;
 
 struct{
   float temp;
@@ -41,6 +37,9 @@ struct html_structure{
   int         pres;
   int         hum;
   bool        narod;
+  int         k;
+  bool        thingspeak;
+  String      wr_key;
 };
 html_structure html;
 

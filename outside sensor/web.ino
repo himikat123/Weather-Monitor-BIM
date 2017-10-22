@@ -98,16 +98,14 @@ void handleFileList(){
 void web_settings(void)
 {
   SPIFFS.begin();
-  MDNS.begin(host);
-  
   webServer.on("/esp/settings.php",HTTP_POST,[](){
     File file=SPIFFS.open("/save/save.json","w");
     if(file){
       file.print(webServer.arg("JS"));
       file.close();
-      webServer.send(200,"text/plain","Saved");
+      webServer.send(200,"text/plain",saved[html.lang].saved);
     }
-    else webServer.send(200,"text/plain","Did not save");
+    else webServer.send(200,"text/plain",saved[html.lang].not_saved);
     file=SPIFFS.open("/save/jssids.json","w");
     if(file){
       file.print(webServer.arg("JSSIDS"));
@@ -146,9 +144,27 @@ void web_settings(void)
     json+=web_lng[html.lang].hPa;
     json+="\",\"HUM\":\"";
     json+=get_humidity();
-    json+="%\"}";
+    json+="%\",\"adc\":\"";
+    json+=analogRead(A0);
+    json+="\"}";
     webServer.send(200,"text/json",json);
     if(html.temp==3) sensors.requestTemperatures();
+  });
+
+  webServer.on("/esp/local.php",HTTP_GET,[](){
+    String json="{\"C\":";
+    json+=get_temp(1);
+    json+=",\"HPA\":";
+    json+=get_pres();
+    json+=",\"HUM\":";
+    json+=get_humidity();
+    json+="}";
+    webServer.send(200,"text/json",json);
+  });
+
+  webServer.on("/esp/lang.php",HTTP_POST,[](){
+    html.lang=(webServer.arg("LANG").toInt());
+    webServer.send(200,"text/plain","OK");
   });
   
   webServer.on("/esp/temp.php",HTTP_POST,[](){
