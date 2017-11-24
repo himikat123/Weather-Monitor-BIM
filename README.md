@@ -1,3 +1,3 @@
-# Weather-Monitor-BIM v2.6.1
+# Weather-Monitor-BIM v2.7
 
 http://esp8266.atwebpages.com
