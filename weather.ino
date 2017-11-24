@@ -100,7 +100,7 @@ bool parseWeatherNow(){
   weather.sunset   = root["sys"]["sunset"];
   weather.city     = root["name"];
   int dayLight=0;
-  if(ntp->getDayLight()) dayLight=3600;
+  if(summertime()) dayLight=3600;
   time_t time_now=now()-html.zone*3600-dayLight;
   if(time_now>weather.sunrise and time_now<weather.sunset) weather.isDay=true;
   else weather.isDay=false;

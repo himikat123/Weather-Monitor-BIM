@@ -39,39 +39,16 @@ void showBatteryLevel(void){
   myGLCD.setBackColor(back_color);
   myGLCD.setFont(BigFontRu);
   char bat=BAT0;
-  int level_battery=analogRead(A0);
-  if(level_battery>battery.max){
-    battery.max=level_battery;
-    save_bat();
-  }
-  if(level_battery<battery.min){
-    battery.min=level_battery;
-    save_bat();
-  }
-  
-  int b1=(battery.max-battery.min);
-  int b2=(battery.max+1-level_battery);
-  int b3=round(b1/b2);
-  if(b3==1) myGLCD.setColor(VGA_RED);
-  if(b3==2) bat=BAT25;
-  if(b3==3) bat=BAT50;
-  if(b3==4) bat=BAT75;
-  if(b3>=5) bat=BAT100;
+  int adc=analogRead(A0);
+  float Ubat=(float)adc/(float)html.k;
+  if(Ubat<3.3){analogWrite(BACKLIGHT,0);myGLCD.lcdOff();ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);}
+  if(Ubat>=3.3 and Ubat<3.5) myGLCD.setColor(VGA_RED);
+  if(Ubat>=3.5 and Ubat<3.7) bat=BAT25;
+  if(Ubat>=3.7 and Ubat<3.8) bat=BAT50;
+  if(Ubat>=3.8 and Ubat<3.9) bat=BAT75;
+  if(Ubat>=3.9) bat=BAT100;
   sprintf(text_buf,"%c",bat);
   myGLCD.print(text_buf,296,0);
-}
-
-void save_bat(void){
-  String save="{\"min\":";
-  save+=battery.min;
-  save+=",\"max\":";
-  save+=battery.max;
-  save+="}";
-  File file=SPIFFS.open("/save/bat.json","w");
-  if(file){
-    file.print(save);
-    file.close();
-  }
 }
 
 void weatherIcon(uint8_t picture,bool isDay,uint8_t x,uint8_t y){
@@ -196,7 +173,7 @@ void showWeatherAfterTomorrow(void){
 
 void showWeatherNow(void){
   int x=3,y=18; String str; int dayLight=0; bool out=false;
-  if(ntp->getDayLight()) dayLight=3600;
+  if(summertime()) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   myGLCD.setColor(back_color);
   myGLCD.fillRect(x-3,y-1,x+211,y+152); 

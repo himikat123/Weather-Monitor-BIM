@@ -95,16 +95,17 @@ void handleFileList(){
   webServer.send(200,"text/json",output);
 }
 
-void web_settings(void)
-{
+void web_settings(void){
   SPIFFS.begin();
-  MDNS.begin(host);
+  //MDNS.begin(host);
   webServer.on("/esp/settings.php",HTTP_POST,[](){
     File file=SPIFFS.open("/save/save.json","w");
     if(file){
       file.print(webServer.arg("JS"));
       file.close();
       webServer.send(200,"text/plain",saved[html.lang].saved);
+      Serial.print("html.lang ");Serial.println(html.lang);
+      Serial.print("saved ");Serial.println(saved[html.lang].saved);
     }
     else webServer.send(200,"text/plain",saved[html.lang].not_saved);
     file=SPIFFS.open("/save/jssids.json","w");
@@ -125,6 +126,12 @@ void web_settings(void)
     webServer.send(200,"text/plain",String(bright));
   });
 
+  webServer.on("/esp/br_n.php",HTTP_POST,[](){
+    int bright=webServer.arg("BR_N").toInt();
+    analogWrite(BACKLIGHT,bright*10);
+    webServer.send(200,"text/plain",String(bright));
+  });
+
   webServer.on("/esp/ssid.php",HTTP_POST,[](){
     String json="{";
     uint8_t n=WiFi.scanNetworks();
@@ -135,12 +142,19 @@ void web_settings(void)
       json+=abs(WiFi.RSSI(i));
       json+="\",";
     }
-    json+="\"ver\":\"";
+    json+="\"ver\":\" ";
     json+=vers;
     json+="\",\"myID\":";
     json+=html.id;
-    json+="}";
+    json+=",\"adc\":\"";
+    json+=analogRead(A0);
+    json+="\"}";
     webServer.send(200,"text/json",json);
+  });
+
+  webServer.on("/esp/lang.php",HTTP_POST,[](){
+    html.lang=(webServer.arg("LANG").toInt());
+    webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/list",HTTP_GET,handleFileList);
@@ -156,5 +170,6 @@ void web_settings(void)
     if(!handleFileRead(webServer.uri())) webServer.send(404,"text/plain","FileNotFound");
   });
   webServer.begin();
+  yield();
 }
 

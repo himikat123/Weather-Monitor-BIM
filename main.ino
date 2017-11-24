@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v2.6.1
+/* Weather Monitor BIM v2.7
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -116,6 +116,8 @@ void loop(){
   else sleep=27*html.sleep;
   for(uint16_t i=0;i<sleep;i++){
     if(i==135 and i==270 and i==450 and i==540 and i==675) update_weather();
+    if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
+    else analogWrite(BACKLIGHT,html.bright_n*10);
     rssi=viewRSSI(String(WiFi.SSID()));
     showBatteryLevel();
     showWiFiLevel(rssi);
@@ -248,6 +250,14 @@ int viewRSSI(String ssid){
   return rssi;
 }
 
+boolean summertime(){
+  if(month()<3 || month()>10) return false;
+  if(month()>3 && month()<10) return true;
+  if(month()==3 && (hour()+24*day()) >= (1+24*(31-(5*year()/4+4)%7)) || month()==10 && (hour()+24*day())<(1+24*(31-(5*year()/4+1)%7))) return true;
+  else return false;
+}
+
+
 void siteTime(){
   String url=site; 
   url+="time.php";
@@ -259,7 +269,8 @@ void siteTime(){
     char stamp[12];
     httpData.toCharArray(stamp,12);
     int dayLight=0;
-    if(ntp->getDayLight()) dayLight=3600;
+    setTime(atol(stamp)+(html.zone*3600));
+    if(summertime()) dayLight=3600;
     setTime(atol(stamp)+(html.zone*3600)+dayLight);
   }
 }
@@ -283,7 +294,6 @@ void database(void){
     if(httpCode>0){
       if(httpCode==HTTP_CODE_OK){
         httpData=client.getString();
-        Serial.print("http data ");Serial.println(httpData);
         char myID[32];
         httpData.toCharArray(myID,10);
         if(myID>0){
@@ -330,7 +340,6 @@ void out(void){
   if(httpCode>0){
     if(httpCode==HTTP_CODE_OK){
       httpData=client.getString();
-      Serial.println(httpData);
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root=jsonBuffer.parseObject(httpData);
       if(root.success()){
@@ -369,19 +378,6 @@ void read_eeprom(void){
   String n="0";
   if(id==0) n.toCharArray(html.id,(n.length())+1); 
   
-  String fData;
-  File f=SPIFFS.open("/save/bat.json","r");
-  if(f){
-    fData=f.readString();
-    f.close();
-    DynamicJsonBuffer jsonBuf;
-    JsonObject& json=jsonBuf.parseObject(fData);
-    if(json.success()){
-      battery.min=json["min"];  
-      battery.max=json["max"];
-    }
-  }
-    
   String fileData;
   File file=SPIFFS.open("/save/save.json","r");
   if(file){
@@ -392,21 +388,23 @@ void read_eeprom(void){
     if(root.success()){
       String ap_ssid =root["AP_SSID"];  
       String ap_pass =root["AP_PASS"];
-      String city =root["CITY"];
-      String appid=root["APPID"];
-      html.zone   =root["ZONE"];
-      html.bright =root["BRIGHT"];
-      html.adj    =root["DAYLIGHT"];
-      html.units  =root["UNITS"];
-      html.pres   =root["PRES"];
-      html.timef  =root["TIME"];
-      html.lang   =root["LANG"];
-      html.sleep  =root["SLEEP"];
-      html.typ    =root["TYPE"];
-      String ip   =root["IP"];
-      String mask =root["MASK"];
-      String gw   =root["GATEWAY"];
-      String mac  =root["MAC"];
+      String city    =root["CITY"];
+      String appid   =root["APPID"];
+      html.zone      =root["ZONE"];
+      html.bright    =root["BRIGHT"];
+      html.bright_n  =root["BRIGHT_N"];
+      html.adj       =root["DAYLIGHT"];
+      html.units     =root["UNITS"];
+      html.pres      =root["PRES"];
+      html.timef     =root["TIME"];
+      html.lang      =root["LANG"];
+      html.sleep     =root["SLEEP"];
+      html.typ       =root["TYPE"];
+      html.k         =root["K"];
+      String ip      =root["IP"];
+      String mask    =root["MASK"];
+      String gw      =root["GATEWAY"];
+      String mac     =root["MAC"];
       html.sensor=mac;
       html.ip=ip;
       html.mask=mask;
@@ -418,7 +416,7 @@ void read_eeprom(void){
     }
   }
   if(html.sleep>100) html.sleep=1;
-  if(html.lang>5) html.lang=0;
+  if(html.lang>6) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
   if(html.units>1) html.units=0;
@@ -432,11 +430,12 @@ void read_eeprom(void){
     case 3:urlLang="de";break;
     case 4:urlLang="lt";break;
     case 5:urlLang="et";break;
+    case 6:urlLang="ua";break;
     default:urlLang="en";break;
   }
-  f=SPIFFS.open("/save/ssids.json","r");
+  File f=SPIFFS.open("/save/ssids.json","r");
   if(f){
-    fData=f.readString();
+    String fData=f.readString();
     f.close();
     DynamicJsonBuffer jsonBuf;
     JsonObject& json=jsonBuf.parseObject(fData);

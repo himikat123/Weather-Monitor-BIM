@@ -3,7 +3,7 @@ struct saved_text{
   char* not_saved;
 };
 
-struct saved_text saved[6]={
+struct saved_text saved[7]={
   "Saved",
   "Did not save",
     
@@ -20,7 +20,10 @@ struct saved_text saved[6]={
   "Nepasaugotas",
   
   "Salvestatud",
-  "Ei salvestatud"
+  "Ei salvestatud",
+
+  "Збережено",
+  "Не збережено"
 };
 
 struct status_text{
@@ -31,7 +34,7 @@ struct status_text{
   char* not_found;
 };
 
-struct status_text status_lng[6]={
+struct status_text status_lng[7]={
   "Connecting to",
   "Unable to connect to the network",
   "Connected to",
@@ -66,7 +69,13 @@ struct status_text status_lng[6]={
   "Võrku ei saa ühendust luua",
   "Ühendatud",
   "Võrk ",
-  " ei leitud"
+  " ei leitud",
+
+  "З’єднання з",
+  "Не вдається підключитись до мережі",
+  "Підключено до",
+  "Мережу ",
+  " не знайдено"
 };
 
 struct settings_text{
@@ -79,7 +88,7 @@ struct settings_text{
   char* str7;
 };
 
-struct settings_text settings_lng[6]={
+struct settings_text settings_lng[7]={
   "To enter setup",
   "connect your laptop",
   "tablet or smartphone to",
@@ -126,42 +135,50 @@ struct settings_text settings_lng[6]={
   "võrgu",
   "parooli",
   "Avage veebibrauser ja",
-  "sisestage http://192.168.4.1 aadress"
+  "sisestage http://192.168.4.1 aadress",
+
+  "Для того щоб перейти",
+  "до налаштувань підключіть",
+  "ваш ноутбук, планшет чи смартфон",
+  "до мережі",
+  "пароль",
+  "Відкрийте браузер та наберіть",
+  "адресу http://192.168.4.1"
 };
 
-char* Month[12][6]={
-  {" January ",  " Января ",  " Ianuarie ",  " Januar ",   " Sausis ",   " Jaanuar "},
-  {" February ", " Февраля ", " Februarie ", " Februar ",  " Vasaris ",  " Veebruar "},
-  {" March ",    " Марта ",   " Martie ",    " März ",     " Kovas ",    " Märts "},
-  {" April ",    " Апреля ",  " Aprilie ",   " April ",    " Balandis ", " Aprill "},
-  {" May ",      " Мая ",     " Mai ",       " Mai" ,      " Gegužės ",  " Mai "},
-  {" June ",     " Июня ",    " Iunie ",     " Juni ",     " Birželis ", " Juuni "},
-  {" July ",     " Июля ",    " Iulie ",     " Juli ",     " Liepa ",    " Juuli "},
-  {" August ",   " Августа ", " August ",    " August ",   " Rugpjūtis "," August "},
-  {" September "," Сентября "," Septembrie "," September "," Rugsėjis ", " September "},
-  {" October ",  " Октября ", " Octombrie ", " Oktober ",  " Spalis ",   " Oktoober "},
-  {" November ", " Ноября ",  " Noiembrie ", " November ", " Lapkritis "," November "},
-  {" December ", " Декабря ", " Decembrie ", " Dezember ", " Gruedis ",  " Detsember "}
+char* Month[12][7]={
+  {" January ",  " Января ",  " Ianuarie ",  " Januar ",   " Sausis ",   " Jaanuar ",  " Січня "},
+  {" February ", " Февраля ", " Februarie ", " Februar ",  " Vasaris ",  " Veebruar ", " Лютого "},
+  {" March ",    " Марта ",   " Martie ",    " März ",     " Kovas ",    " Märts ",    " Березня "},
+  {" April ",    " Апреля ",  " Aprilie ",   " April ",    " Balandis ", " Aprill ",   " Квітня "},
+  {" May ",      " Мая ",     " Mai ",       " Mai" ,      " Gegužės ",  " Mai ",      " Травня "},
+  {" June ",     " Июня ",    " Iunie ",     " Juni ",     " Birželis ", " Juuni ",    " Червня "},
+  {" July ",     " Июля ",    " Iulie ",     " Juli ",     " Liepa ",    " Juuli ",    " Липня "},
+  {" August ",   " Августа ", " August ",    " August ",   " Rugpjūtis "," August ",   " Серпня "},
+  {" September "," Сентября "," Septembrie "," September "," Rugsėjis ", " September "," Вересня "},
+  {" October ",  " Октября ", " Octombrie ", " Oktober ",  " Spalis ",   " Oktoober ", " Жовтня "},
+  {" November ", " Ноября ",  " Noiembrie ", " November ", " Lapkritis "," November ", " Листопада "},
+  {" December ", " Декабря ", " Decembrie ", " Dezember ", " Gruedis ",  " Detsember "," Грудня "}
 };
 
-char* Weekday[7][6]={
-  {"Sunday",   "Воскресенье","Duminică","Sonntag",   "Sekmadienis","Pühapäev"},
-  {"Monday",   "Понедельник","Luni",    "Montag",    "Pirmadienis","Esmaspäev"},
-  {"Tuesday",  "Вторник",    "Marți",   "Dienstag",  "Antradienis","Teisipäev"},
-  {"Wednesday","Среда",      "Miercuri","Mittwoch",  "Trečiadieni","Kolmapäev"},
-  {"Thursday", "Четверг",    "Joi",     "Donnerstag","Ketvirtadie","Neljapäev"},
-  {"Friday",   "Пятница",    "Vineri",  "Freitag",   "Penktadieni","Reede"},
-  {"Saturday", "Суббота",    "Sâmbătă", "Sonnabend", "Šeštadienis","Laupäev"}
+char* Weekday[7][7]={
+  {"Sunday",   "Воскресенье","Duminică","Sonntag",   "Sekmadienis","Pühapäev", "Неділя"},
+  {"Monday",   "Понедельник","Luni",    "Montag",    "Pirmadienis","Esmaspäev","Понеділок"},
+  {"Tuesday",  "Вторник",    "Marți",   "Dienstag",  "Antradienis","Teisipäev","Вівторок"},
+  {"Wednesday","Среда",      "Miercuri","Mittwoch",  "Trečiadieni","Kolmapäev","Середа"},
+  {"Thursday", "Четверг",    "Joi",     "Donnerstag","Ketvirtadie","Neljapäev","Четвер"},
+  {"Friday",   "Пятница",    "Vineri",  "Freitag",   "Penktadieni","Reede",    "Пятниця"},
+  {"Saturday", "Суббота",    "Sâmbătă", "Sonnabend", "Šeštadienis","Laupäev",  "Субота"}
 };
 
-char* WD[7][6]={
-  {"Su","Вс","D", "So","S", "P"},
-  {"Mo","Пн","L", "Mo","Pr","E"},
-  {"Tu","Вт","Ma","Di","A", "T"},
-  {"We","Ср","Mi","Mi","T", "K"},
-  {"Th","Чт","J", "Do","K", "N"},
-  {"Fr","Пт","V", "Fr","Pn","R"},
-  {"Sa","Сб","S", "Sa","Š", "L"}
+char* WD[7][7]={
+  {"Su","Вс","D", "So","S", "P","Нд"},
+  {"Mo","Пн","L", "Mo","Pr","E","Пн"},
+  {"Tu","Вт","Ma","Di","A", "T","Вт"},
+  {"We","Ср","Mi","Mi","T", "K","Ср"},
+  {"Th","Чт","J", "Do","K", "N","Чт"},
+  {"Fr","Пт","V", "Fr","Pn","R","Пт"},
+  {"Sa","Сб","S", "Sa","Š", "L","Сб"}
 };
 
 struct Weather_now{
@@ -177,7 +194,7 @@ struct Weather_now{
   char* dew;
 };
 
-struct Weather_now WeatherNow[6]={
+struct Weather_now WeatherNow[7]={
   "Wind ",
   "m/s",
   "mph",
@@ -242,5 +259,16 @@ struct Weather_now WeatherNow[6]={
   "hPa",
   "AM",
   "PM",
-  "Kastepunkt "
+  "Kastepunkt ",
+
+  "Вітер ",
+  "м/с",
+  "мл/г",
+  "Вологість",
+  "Тиск",
+  "мм",
+  "гПа",
+  "ДП",
+  "ПП",
+  "Точка роси "
 };

@@ -14,7 +14,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="2.6.1";
+String fw="2.7";
 String vers="BIM v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -27,7 +27,6 @@ float tempInside;
 char ssid[32]="";
 char password[32]="";
 String connected_ssid;
-//String url;
 int rssi;
 ntpClient *ntp;
 String httpData;
@@ -41,7 +40,7 @@ const char* copy="© himikat123@gmail.com";
 char DEFAULT_AP_SSID[15]="WeatherMonitor";
 char DEFAULT_AP_PASS[11]="1234567890";
 int text_color=VGA_WHITE;
-int out_color=0xEF7F;
+int out_color=0xFFF6;//0xEF7F;
 int back_color=0x02F3;
 time_t startTime=0;
 
@@ -50,11 +49,6 @@ struct{
   String ssid[10];
   String pass[10];
 } ssids;
-
-struct{
-  int min=600;
-  int max=620;
-} battery;
 
 struct{
   const char* lat;
@@ -80,8 +74,10 @@ struct html_structure{
   uint8_t     pres=0;
   uint8_t     timef=0;
   int         bright=0;
+  int         bright_n=0;
   int         sleep=1;
   int         typ;
+  int         k;
   String      ip;
   String      mask;
   String      gateway;
@@ -106,34 +102,19 @@ struct weather_structure{
   time_t      sunset;
   bool        isDay=true;
 
-  //const char* main1;
   const char* icon1;
-  //const char* descript1;
   float day1;
   float night1;
-  //float pressure1;
-  //byte  humidity1;
   float speed1;
-  //float deg1;
-
-  //const char* main2;
+  
   const char* icon2;
-  //const char* descript2;
   float day2;
   float night2;
-  //float pressure2;
-  //byte  humidity2;
   float speed2;
-  //float deg2;
-
-  //const char* main3;
+  
   const char* icon3;
-  //const char* descript3;
   float day3;
   float night3;
-  //float pressure3;
-  //byte  humidity3;
   float speed3;
-  //float deg3;
 };
 weather_structure weather;
