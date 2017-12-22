@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v2.7
+/* Weather Monitor BIM v3.0
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
  * http://esp8266.atwebpages.com
  */
@@ -9,8 +9,12 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
+#include "SparkFunBME280.h"
+#include "Wire.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <DHT.h>
+#include <DHT_U.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include <NtpClientLib.h>
@@ -24,6 +28,7 @@
 #include <Print.h>
 #include <pgmspace.h>
 #include <SPI.h>
+#include <Ticker.h>
 
 extern "C"{
   #include "main.h"
@@ -32,19 +37,25 @@ extern "C"{
 
 #define site "http://esp8266.atwebpages.com/api/"
 #define ONE_WIRE_BUS 2
-#define BUTTON 0
-#define BACKLIGHT 12
-#define CS 15
-#define RES 5
-#define DC 4
+#define DHTPIN       0
+#define DHTTYPE      DHT22
+#define BUTTON       0
+#define BACKLIGHT    12
+#define CS           15
+#define RES          5
+#define DC           4
 
 UTFT myGLCD(ILI9341_S5P,CS,RES,DC);
 UTFT_Geometry geo(&myGLCD);
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer;
+BME280 mySensor;
+DHT_Unified dht(DHTPIN, DHTTYPE);
 ESP8266WebServer webServer(80);
 File fsUploadFile;
+Ticker updater;
+Ticker sleeper;
 
 extern uint8_t SmallFontRu[];
 extern uint8_t BigFontRu[];
@@ -67,6 +78,7 @@ void setup(){
   myGLCD.fillRect(0,0,319,18);
     //EEPROM 
   read_eeprom();
+    //Backlight
   analogWrite(BACKLIGHT,html.bright*10);
     //WIFI MODE
   WiFi.mode(WIFI_STA);
@@ -76,71 +88,82 @@ void setup(){
   ntp->setTimeZone(html.zone);
   ntp->setDayLight(html.adj);
   ntp->begin();
-    //DS18B20
-  sensors.begin();
-  sensors.getAddress(insideThermometer,0); 
-  sensors.setResolution(insideThermometer,10);
-  sensors.requestTemperatures();
-  tempInside=sensors.getTempC(insideThermometer);
+    //i2c
+  Wire.pins(ONE_WIRE_BUS,DHTPIN);
+    //Sensors
+  sensors_init();
     //battery
   showBatteryLevel();
     // WiFi
   connectToWiFi();
+    // Ticker
+  updater.attach(1200,updateWeather);
+  if(html.sleep==0) sleeper.attach(1201,goSleep);
+  else sleeper.attach(html.sleep*60,goSleep);
 }
 
 void loop(){
-  if(WiFi.status()==WL_CONNECTED){ 
-    showBatteryLevel();
-    showWiFiLevel(rssi);
-    update_weather();
+  if(update_flag){
+    if(WiFi.status()==WL_CONNECTED){ 
+      showBatteryLevel();
+      showWiFiLevel(rssi);
+      update_weather();
+      if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
+      else analogWrite(BACKLIGHT,html.bright_n*10);
+    }
+    else{
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.setBackColor(0xCE79);
+      myGLCD.setFont(SmallFontRu);
+      sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
+      sprintf(text_buf,"%-35.35s",text_buf);
+      text_buf[30]='\0';
+      myGLCD.print(text_buf,2,2);
+      delay(10000);
+      analogWrite(BACKLIGHT,0);
+      if(html.sleep==0) ESP.reset();
+      else{
+        myGLCD.lcdOff();
+        ESP.deepSleep(0);
+      }
+    }
+    update_flag=false;
   }
   else{
-    myGLCD.setColor(VGA_WHITE);
-    myGLCD.setBackColor(0xCE79);
-    myGLCD.setFont(SmallFontRu);
-    sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-    sprintf(text_buf,"%-35.35s",text_buf);
-    text_buf[30]='\0';
-    myGLCD.print(text_buf,2,2);
-    delay(10000);
-    analogWrite(BACKLIGHT,0);
-    if(html.sleep==0) ESP.reset();
-    else{
+    showTime();
+    is_settings();
+    showInsideTemp();
+    rssi=viewRSSI(String(WiFi.SSID()));
+    showBatteryLevel();
+    showWiFiLevel(rssi);
+    if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
+    else analogWrite(BACKLIGHT,html.bright_n*10);
+    yield();
+    if(html.sleep and sleep_flag){
+      sleep_flag=false;
+      analogWrite(BACKLIGHT,html.bright*3);
+      delay(5000);
+      analogWrite(BACKLIGHT,0);
       myGLCD.lcdOff();
       ESP.deepSleep(0);
     }
   }
+}
 
-  uint16_t sleep;
-  if(html.sleep==0) sleep=40;
-  else sleep=27*html.sleep;
-  for(uint16_t i=0;i<sleep;i++){
-    if(i==135 and i==270 and i==450 and i==540 and i==675) update_weather();
-    if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
-    else analogWrite(BACKLIGHT,html.bright_n*10);
-    rssi=viewRSSI(String(WiFi.SSID()));
-    showBatteryLevel();
-    showWiFiLevel(rssi);
-    showTime();
-    is_settings();
-    showInsideTemp();
-    yield();
-  }
-  if(html.sleep!=0){
-    analogWrite(BACKLIGHT,html.bright*3);
-    delay(5000);
-    analogWrite(BACKLIGHT,0);
-    myGLCD.lcdOff();
-    ESP.deepSleep(0);
-  }
+void updateWeather(){
+  update_flag=true;
+}
+
+void goSleep(){
+  sleep_flag=true;
 }
 
 void update_weather(void){
-  getCoordinates();
+  if(html.provider==0) getCoordinates();
   siteTime();
-  showTime();
   getWeatherNow();
-  getWeatherDaily();
+  getWeatherDaily();  
+  showTime();
   showInsideTemp();
   out();
   showWeatherNow();
@@ -152,7 +175,9 @@ void update_weather(void){
 }
 
 void connectToWiFi(void){
-  myGLCD.drawBitmap(273,0,16,16,nowifi,1);
+  if(html.battery==0) myGLCD.drawBitmap(273,0,16,16,nowifi,1);
+  if(html.battery==1) myGLCD.drawBitmap(265,0,16,16,nowifi,1);
+  if(html.battery==2) myGLCD.drawBitmap(290,0,16,16,nowifi,1);
   is_settings();
   myGLCD.setColor(VGA_WHITE);
   myGLCD.setBackColor(back_color);
@@ -257,7 +282,6 @@ boolean summertime(){
   else return false;
 }
 
-
 void siteTime(){
   String url=site; 
   url+="time.php";
@@ -273,6 +297,7 @@ void siteTime(){
     if(summertime()) dayLight=3600;
     setTime(atol(stamp)+(html.zone*3600)+dayLight);
   }
+  httpData="";
 }
 
 void database(void){
@@ -370,6 +395,83 @@ void is_settings(void){
   }
 }
 
+void sensors_init(void){
+    //BME280
+  if((html.temp==3) or (html.hum==2)){
+    mySensor.settings.commInterface=I2C_MODE;
+    mySensor.settings.I2CAddress=0x76;
+    mySensor.settings.runMode=3;
+    mySensor.settings.tStandby=0;
+    mySensor.settings.filter=0;
+    mySensor.settings.tempOverSample=1;
+    mySensor.settings.pressOverSample=1;
+    mySensor.settings.humidOverSample=1;
+    mySensor.begin();
+  }
+    //DS18B20
+  if(html.temp==1){
+    sensors.begin();
+    sensors.getAddress(insideThermometer,0); 
+    sensors.setResolution(insideThermometer,12);
+    sensors.requestTemperatures();
+  }
+    //DHT22
+  if((html.temp==2) or (html.hum==1)){
+    dht.begin();
+    sensor_t sensor;
+    dht.temperature().getSensor(&sensor);
+    dht.humidity().getSensor(&sensor);
+  }
+}
+
+float get_temp(bool units){
+  float temp=0;
+  if(units){
+    if(html.temp==0) temp=404;
+    if(html.temp==1){
+      if(sensors.isConnected(insideThermometer)) temp=sensors.getTempC(insideThermometer); 
+      else temp=404;
+      sensors.requestTemperatures();
+    }
+    if(html.temp==2){
+      sensors_event_t event;
+      dht.temperature().getEvent(&event);
+      if(isnan(event.temperature));
+      else temp=event.temperature;
+    }
+    if(html.temp==3) temp=mySensor.readTempC(),2; 
+  }
+  else{
+    if(html.temp==0) temp=404;
+    if(html.temp==1){
+      if(sensors.isConnected(insideThermometer)) temp=sensors.getTempF(insideThermometer); 
+      else temp=404;
+      sensors.requestTemperatures();
+    }
+    if(html.temp==2){
+      sensors_event_t event;
+      dht.temperature().getEvent(&event);
+      if(isnan(event.temperature));
+      else{temp=event.temperature; temp=temp*1.8+32;}
+    }
+    if(html.temp==3) temp=mySensor.readTempF(),2;
+  }
+  return temp;
+}
+
+int get_humidity(void){
+  int hum=0;
+  if(html.hum==0) hum=404;
+  if(html.hum==1){
+    sensors_event_t event;
+    dht.humidity().getEvent(&event);
+    if(isnan(event.relative_humidity));
+    else hum=event.relative_humidity;
+  }
+  if(html.hum==2) hum=mySensor.readFloatHumidity();
+  return hum;
+}
+
 void read_eeprom(void){
   EEPROM.begin(512);
   EEPROM.get(140,html.id);
@@ -401,6 +503,10 @@ void read_eeprom(void){
       html.sleep     =root["SLEEP"];
       html.typ       =root["TYPE"];
       html.k         =root["K"];
+      html.temp      =root["TEMP"];
+      html.hum       =root["HUM"];
+      html.provider  =root["PROVIDER"];
+      html.battery   =root["BATTERY"];
       String ip      =root["IP"];
       String mask    =root["MASK"];
       String gw      =root["GATEWAY"];

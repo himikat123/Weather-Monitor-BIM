@@ -19,7 +19,11 @@ void showSettingsMode(void){
 void showWiFiLevel(int myRSSI){
   uint8_t ant=ANT100;
   uint8_t level_wifi=abs(myRSSI);
-  if(level_wifi==0) myGLCD.drawBitmap(273,0,16,16,nowifi,1);
+  if(level_wifi==0){
+    if(html.battery==0) myGLCD.drawBitmap(273,0,16,16,nowifi,1);
+    if(html.battery==1) myGLCD.drawBitmap(265,0,16,16,nowifi,1);
+    if(html.battery==2) myGLCD.drawBitmap(290,0,16,16,nowifi,1);
+  }
   else{
     if((level_wifi>0)&&(level_wifi<51)) ant=ANT100;
     if((level_wifi>50)&&(level_wifi<66)) ant=ANT80;
@@ -30,25 +34,30 @@ void showWiFiLevel(int myRSSI){
     myGLCD.setBackColor(back_color);
     myGLCD.setFont(BigFontRu);
     sprintf(text_buf,"%c",ant);
-    myGLCD.print(text_buf,273,0);
+    if(html.battery==0) myGLCD.print(text_buf,273,0);
+    if(html.battery==1) myGLCD.print(text_buf,265,0);
+    if(html.battery==2) myGLCD.print(text_buf,290,0);
   }
 }
 
 void showBatteryLevel(void){
-  myGLCD.setColor(text_color);
-  myGLCD.setBackColor(back_color);
-  myGLCD.setFont(BigFontRu);
-  char bat=BAT0;
-  int adc=analogRead(A0);
-  float Ubat=(float)adc/(float)html.k;
-  if(Ubat<3.3){analogWrite(BACKLIGHT,0);myGLCD.lcdOff();ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);}
-  if(Ubat>=3.3 and Ubat<3.5) myGLCD.setColor(VGA_RED);
-  if(Ubat>=3.5 and Ubat<3.7) bat=BAT25;
-  if(Ubat>=3.7 and Ubat<3.8) bat=BAT50;
-  if(Ubat>=3.8 and Ubat<3.9) bat=BAT75;
-  if(Ubat>=3.9) bat=BAT100;
-  sprintf(text_buf,"%c",bat);
-  myGLCD.print(text_buf,296,0);
+  if(html.battery!=2){
+    myGLCD.setColor(text_color);
+    myGLCD.setBackColor(back_color);
+    if(html.battery==0) myGLCD.setFont(BigFontRu);
+    if(html.battery==1) myGLCD.setFont(SmallFontRu);
+    char bat=BAT0;
+    int adc=analogRead(A0);
+    float Ubat=(float)adc/(float)html.k;
+    if(Ubat<3.3){analogWrite(BACKLIGHT,0);myGLCD.lcdOff();ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);}
+    if(Ubat>=3.3 and Ubat<3.5) myGLCD.setColor(VGA_RED);
+    if(Ubat>=3.5 and Ubat<3.7) bat=BAT25;
+    if(Ubat>=3.7 and Ubat<3.8) bat=BAT50;
+    if(Ubat>=3.8 and Ubat<3.9) bat=BAT75;
+    if(Ubat>=3.9) bat=BAT100;
+    if(html.battery==0) myGLCD.print(String(bat),296,0);
+    if(html.battery==1) myGLCD.print(String(Ubat),286,3);
+  }
 }
 
 void weatherIcon(uint8_t picture,bool isDay,uint8_t x,uint8_t y){
@@ -184,7 +193,7 @@ void showWeatherNow(void){
   
     //temperature
   float temp=0;
-  drawFSJpeg(weather.temp<0?"/pic/temp-.jpg":"/pic/temp+.jpg",x+5,y+64);
+  drawFSJpeg(weather.temp<0.0?"/pic/temp-.jpg":"/pic/temp+.jpg",x+5,y+64);
   if(updated<1800 and outside.temp<120){
     html.units?temp=outside.temp*1.8+32:temp=outside.temp;
     out=true;
@@ -208,7 +217,7 @@ void showWeatherNow(void){
     //wind direction
   float deg=round(weather.deg/45)*45+180;
   float x0=x+21;
-  float y0=y+121+8;
+  float y0=y+129;
   float P=2*PI*deg/360;
   float x1=x0+sin(P)*8;
   float y1=y0-cos(P)*8;
@@ -254,7 +263,8 @@ void showWeatherNow(void){
   
     //dew point
   str=UTF8(WeatherNow[html.lang].dew);
-  str+=String(round(dew(temp,humidity,html.units)));
+  if(weather.dew_point==1000) str+=String(round(dew(temp,humidity,html.units)));
+  else str+=weather.dew_point;
   str+=html.units?"^F":"^C";
   printCent(str,x,x+208,y+138,VGA_AQUA,back_color,SmallFontRu);
   
@@ -279,8 +289,10 @@ void showWeatherNow(void){
 
     //description
   if(html.lang==1 or html.lang==5){
-    String d=description(weather.id); 
-    if(d) d.toCharArray(descript,d.length()+1);
+    if(html.provider==0){
+      String d=description(weather.id); 
+      if(d) d.toCharArray(descript,d.length()+1);
+    }
   }
   char buf[160]; uint8_t c=0,maxLen=0,len[5]={0,0,0,0,0};
   String(UTF8(descript)).toCharArray(buf,String(UTF8(descript)).length()+1);
@@ -314,22 +326,43 @@ void showWeatherNow(void){
 
 void showInsideTemp(void){
   int x=215,y=96;
-  if(temp_draw==0){
+  if(temp_draw==0 or hum_draw==0){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x,y,myGLCD.getDisplayXSize()-1,y+74);
+    if(html.hum==0) drawFSJpeg("/pic/home.jpg",x+3,y+16);
+    if(html.hum>0){
+      drawFSJpeg("/pic/home.jpg",x+3,y);
+      drawFSJpeg("/pic/hum.jpg",x+3,y+31);
+    }
     myGLCD.setColor(VGA_WHITE);
     myGLCD.drawRect(x,y,x+96,y+64);
     myGLCD.drawRect(x+1,y+1,x+95,y+63);
-    drawFSJpeg("/pic/home.jpg",x+3,y+16);
+    tempInside=get_temp(!html.units);
+    humInside=get_humidity();
   }
   if(html.sleep==0 or html.sleep>3){
-    sensors.requestTemperatures();
-    tempInside=sensors.getTempC(insideThermometer);
+    tempInside=get_temp(!html.units);
+    humInside=get_humidity();
   }
   if(temp_draw!=tempInside){
-    String str=dtostrf(html.units?tempInside*1.8+32:tempInside,1,1,text_buf);
-    printData(str,html.units?"^F":"^C",x+22,y+25,text_color,back_color);
+    String str;
+    if(tempInside<-55 or tempInside>99){
+      str="--";
+      if(html.hum==0) printData(str,"",x+32,y+25,text_color,back_color);
+      else printData(str,"",x+32,y+9,text_color,back_color);
+    }
+    else{
+      str=dtostrf(tempInside,1,1,text_buf);
+      if(html.hum==0) printData(str,html.units?"^F":"^C",x+22,y+25,text_color,back_color);
+      else printData(str,html.units?"^F":"^C",x+22,y+9,text_color,back_color);
+    }
     temp_draw=tempInside;
+  }
+  if(hum_draw!=humInside){
+    if(humInside>=0 and humInside<=100){
+      printCent(String(humInside)+"%",x+36,x+94,y+41,text_color,back_color,BigFontRu);
+    }
+    hum_draw=humInside;
   }
 }
 

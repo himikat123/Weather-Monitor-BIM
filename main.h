@@ -14,7 +14,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="2.7";
+String fw="3.0";
 String vers="BIM v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -24,6 +24,7 @@ uint8_t icon3;
 char cityName[32];
 char text_buf[255];
 float tempInside;
+int humInside;
 char ssid[32]="";
 char password[32]="";
 String connected_ssid;
@@ -33,6 +34,7 @@ String httpData;
 char* urlLang="en";
 int back=VGA_BLACK;
 float temp_draw=0;
+int hum_draw=0;
 bool clock_draw=false;
 int clock_upd=61;
 const char* host="settings";
@@ -43,6 +45,10 @@ int text_color=VGA_WHITE;
 int out_color=0xFFF6;//0xEF7F;
 int back_color=0x02F3;
 time_t startTime=0;
+String latitude="";
+String longitude="";
+bool update_flag=true;
+bool sleep_flag=false;
 
 struct{
   uint8_t num;
@@ -82,6 +88,10 @@ struct html_structure{
   String      mask;
   String      gateway;
   String      sensor;
+  int         temp;
+  int         hum;
+  int         provider;
+  int         battery;
 };
 html_structure html;
 
@@ -97,6 +107,7 @@ struct weather_structure{
   byte        humidity;
   float       speed;
   float       deg;
+  float       dew_point=1000;
   const char* country;
   time_t      sunrise;
   time_t      sunset;
