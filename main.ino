@@ -5,6 +5,7 @@
                                // Board ESP-12E 
                                // 1MB (512kB SPIFFS) 
 #include <Time.h>
+#include <DS1307RTC.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -337,6 +338,7 @@ void database(void){
   country.toUpperCase();
   url+=country;
   url+="&CITY=";
+  city.replace(" ","_");
   url+=city;
   url+="&FW=";
   url+=fw;
@@ -396,18 +398,6 @@ void is_settings(void){
 }
 
 void sensors_init(void){
-    //BME280
-  if((html.temp==3) or (html.hum==2)){
-    mySensor.settings.commInterface=I2C_MODE;
-    mySensor.settings.I2CAddress=0x76;
-    mySensor.settings.runMode=3;
-    mySensor.settings.tStandby=0;
-    mySensor.settings.filter=0;
-    mySensor.settings.tempOverSample=1;
-    mySensor.settings.pressOverSample=1;
-    mySensor.settings.humidOverSample=1;
-    mySensor.begin();
-  }
     //DS18B20
   if(html.temp==1){
     sensors.begin();
@@ -421,6 +411,18 @@ void sensors_init(void){
     sensor_t sensor;
     dht.temperature().getSensor(&sensor);
     dht.humidity().getSensor(&sensor);
+  }
+    //BME280
+  if((html.temp==3) or (html.hum==2)){
+    mySensor.settings.commInterface=I2C_MODE;
+    mySensor.settings.I2CAddress=0x76;
+    mySensor.settings.runMode=3;
+    mySensor.settings.tStandby=0;
+    mySensor.settings.filter=0;
+    mySensor.settings.tempOverSample=1;
+    mySensor.settings.pressOverSample=1;
+    mySensor.settings.humidOverSample=1;
+    mySensor.begin();
   }
 }
 

@@ -120,11 +120,11 @@ void printData(String data,String units,int x,uint8_t y,int color,int bcolor){
   myGLCD.print(units,x+48-len+integ.length()*16+16,y+4);
 }
 
-void printInt(String data,String units,int x,uint8_t y,word color){
+void printInt(String data,String units,int x,uint8_t y,word color,word bcolor){
   int len=(data.length()*16/2)+(units.length()*8/2);
   myGLCD.setFont(BigFontRu);
   myGLCD.setColor(color);
-  myGLCD.setBackColor(VGA_TRANSPARENT);
+  myGLCD.setBackColor(bcolor);
   myGLCD.print(data,x+48-len,y);
   myGLCD.setFont(SmallFontRu);
   myGLCD.print(units,x+48-len+data.length()*16,y+4);
@@ -142,7 +142,7 @@ void showWeatherDaily(int x,int y,uint8_t icon,uint8_t wd,float tempDay,float te
   myGLCD.fillRect(x-7,y,x+104,myGLCD.getDisplayYSize()-1);
   if(rssi!=0) weatherIcon(icon,true,x,y);
   myGLCD.fillRect(x+80,y+48,x+81,y+49);
-  myGLCD.setColor(VGA_WHITE);
+  myGLCD.setColor(text_color);
   myGLCD.drawRect(x,y,x+96,myGLCD.getDisplayYSize()-2);
   myGLCD.drawRect(x+1,y+1,x+95,myGLCD.getDisplayYSize()-3);
   if(wd>6) wd-=7;
@@ -202,17 +202,18 @@ void showWeatherNow(void){
     temp=weather.temp;
     out=false;
   }
+  str=String(round(temp));
   if(rssi==0) str="---";
-  printData(String(temp),html.units?"^F":"^C",x+35,y+80,out?out_color:text_color,back_color);
+  printInt(str,html.units?"^F":"^C",x+25,y+80,out?out_color:text_color,back_color);
   
     //wind
   int e=0;
   drawFSJpeg("/pic/wind.jpg",x+5,y+104);
   myGLCD.setColor(back_color);
   myGLCD.fillRect(x+21,y+120,x+22,y+121);
-  str=dtostrf(weather.speed,1,1,text_buf);
+  str=String(round(weather.speed));
   if(rssi==0) str="---";
-  printData(str,html.units?UTF8(WeatherNow[html.lang].miles_hour):UTF8(WeatherNow[html.lang].meter_sec),x+27,y+120,text_color,back_color);
+  printInt(str,html.units?UTF8(WeatherNow[html.lang].miles_hour):UTF8(WeatherNow[html.lang].meter_sec),x+27,y+120,text_color,back_color);
   
     //wind direction
   float deg=round(weather.deg/45)*45+180;
@@ -232,6 +233,8 @@ void showWeatherNow(void){
     //humidity
   uint8_t humidity;
   drawFSJpeg("/pic/hum.jpg",x+108,y+64);
+  myGLCD.setColor(0x433C);
+  myGLCD.fillRect(x+124,y+80,x+125,y+81);
   if(updated<1800 and outside.humidity<120){
     humidity=outside.humidity;
     out=true;
@@ -241,7 +244,7 @@ void showWeatherNow(void){
     out=false;
   }
   if(rssi==0) str="---";
-  printInt(String(humidity),"%",x+122,y+80,out?out_color:text_color);
+  printInt(String(humidity),"%",x+122,y+80,out?out_color:text_color,back_color);
     
     //pressure
   drawFSJpeg("/pic/pres.jpg",x+108,y+104);
@@ -259,12 +262,12 @@ void showWeatherNow(void){
   if(html.pres)
     printCent(UTF8(WeatherNow[html.lang].hpa),x+142,x+210,y+108,out?out_color:text_color,back_color,SmallFontRu);
   if(rssi==0) str="---";
-  printInt(str,html.pres?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color);
+  printInt(str,html.pres?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color,back_color);
   
     //dew point
   str=UTF8(WeatherNow[html.lang].dew);
   if(weather.dew_point==1000) str+=String(round(dew(temp,humidity,html.units)));
-  else str+=weather.dew_point;
+  else str+=String(round(weather.dew_point));
   str+=html.units?"^F":"^C";
   printCent(str,x,x+208,y+138,VGA_AQUA,back_color,SmallFontRu);
   
@@ -332,9 +335,13 @@ void showInsideTemp(void){
     if(html.hum==0) drawFSJpeg("/pic/home.jpg",x+3,y+16);
     if(html.hum>0){
       drawFSJpeg("/pic/home.jpg",x+3,y);
+      myGLCD.setColor(0xDF5D);
+      myGLCD.fillRect(x+19,y+16,x+20,y+17);
       drawFSJpeg("/pic/hum.jpg",x+3,y+31);
+      myGLCD.setColor(0x433C);
+      myGLCD.fillRect(x+19,y+47,x+20,y+48);
     }
-    myGLCD.setColor(VGA_WHITE);
+    myGLCD.setColor(text_color);
     myGLCD.drawRect(x,y,x+96,y+64);
     myGLCD.drawRect(x+1,y+1,x+95,y+63);
     tempInside=get_temp(!html.units);
@@ -352,15 +359,15 @@ void showInsideTemp(void){
       else printData(str,"",x+32,y+9,text_color,back_color);
     }
     else{
-      str=dtostrf(tempInside,1,1,text_buf);
-      if(html.hum==0) printData(str,html.units?"^F":"^C",x+22,y+25,text_color,back_color);
-      else printData(str,html.units?"^F":"^C",x+22,y+9,text_color,back_color);
+      str=String(round(tempInside));
+      if(html.hum==0) printInt(str,html.units?"^F":"^C",x+19,y+25,text_color,back_color);
+      else printInt(str,html.units?"^F":"^C",x+19,y+9,text_color,back_color);
     }
     temp_draw=tempInside;
   }
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
-      printCent(String(humInside)+"%",x+36,x+94,y+41,text_color,back_color,BigFontRu);
+      printInt(String(humInside),"%",x+16,y+41,text_color,back_color);
     }
     hum_draw=humInside;
   }
@@ -372,7 +379,7 @@ void showTime(void){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x,y-4,myGLCD.getDisplayXSize()-1,y+73);
     myGLCD.fillRect(0,0,myGLCD.getDisplayXSize()-1,17);
-    myGLCD.setColor(VGA_WHITE);
+    myGLCD.setColor(text_color);
     myGLCD.drawRect(x,y,x+96,y+64);
     myGLCD.drawRect(x+1,y+1,x+95,y+63);
     clock_draw=true;

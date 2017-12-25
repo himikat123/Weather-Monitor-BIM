@@ -99,10 +99,10 @@ bool parseWeatherNow(){
     weather.deg         = root["current_observation"]["wind_degrees"];
     weather.dew_point   = html.units?root["current_observation"]["dewpoint_f"]:
                                      root["current_observation"]["dewpoint_c"]; 
-    weather.country     = root["current_observation"]["observation_location"]["country_iso3166"];
-    weather.city        = root["current_observation"]["observation_location"]["city"];
-    weather.latitude    = root["current_observation"]["observation_location"]["latitude"];
-    weather.longitude   = root["current_observation"]["observation_location"]["longitude"];
+    weather.country     = root["current_observation"]["display_location"]["country_iso3166"];
+    weather.city        = root["current_observation"]["display_location"]["city"];
+    weather.latitude    = root["current_observation"]["display_location"]["latitude"];
+    weather.longitude   = root["current_observation"]["display_location"]["longitude"];
   }
 
   httpData="";
@@ -114,18 +114,19 @@ void getWeatherDaily(void){
   if(html.units) Units="imperial";
   else Units="metric";
   if(html.provider==0){
-    url="http://api.openweathermap.org/data/2.5/forecast/daily?q=";
-    url+=weather.city;
-    url+="&mode=json&units=";
-    url+=Units;
-    url+="&cnt=4&appid=";
-    url+=html.appid;
+    url=site;
+    url+="hepler2.php?key="+html.appid;
+    url+="&city="+String(weather.city);
+    url+="&units="+Units;
+    url+="&gmt="+String(html.zone);
   }
   if(html.provider==1){
-    url="http://esp8266.atwebpages.com/api/helper.php";
-    url+="?key="+String(html.appid);
+    url=site;
+    url+="helper.php?key="+String(html.appid);
     url+="&city="+String(weather.latitude)+","+String(weather.longitude)+".json";
     url+="&icon="+String(weather.icon);
+    url+="&units="+html.units;
+    url+="&gmt="+String(html.zone);
   }
   
   if(weatherDailyRequest(url) and parseWeatherDaily()){
@@ -149,7 +150,7 @@ bool weatherDailyRequest(String url){
   if(httpCode>0){
     if(httpCode==HTTP_CODE_OK){
       httpData=client.getString();
-      if(html.provider==0) if(httpData.indexOf(F(",\"weather\":[{\"id\":"))>-1) find=true;
+      if(html.provider==0) if(httpData.indexOf(F("\"tomorrow\":"))>-1) find=true;
       if(html.provider==1) if(httpData.indexOf(F("\"icon\":"))>-1) find=true;
     }
   }
@@ -163,23 +164,23 @@ bool parseWeatherDaily(){
   if(!root.success()) return false;
 
   if(html.provider==0){
-    weather.day1   = root["list"][0]["temp"]["day"];
-    weather.night1 = root["list"][0]["temp"]["night"];
-    weather.icon1  = root["list"][0]["weather"][0]["icon"];
+    weather.day1   = root["today"]["max"];
+    weather.night1 = root["today"]["min"];
+    weather.icon1  = root["today"]["icon"];
     icon1          = atoi(weather.icon1);
-    weather.speed1 = root["list"][0]["speed"];
+    weather.speed1 = root["today"]["wind"];
 
-    weather.day2   = root["list"][1]["temp"]["day"];
-    weather.night2 = root["list"][1]["temp"]["night"];
-    weather.icon2  = root["list"][1]["weather"][0]["icon"];
+    weather.day2   = root["tomorrow"]["max"];
+    weather.night2 = root["tomorrow"]["min"];
+    weather.icon2  = root["tomorrow"]["icon"];
     icon2          = atoi(weather.icon2);
-    weather.speed2 = root["list"][1]["speed"];
+    weather.speed2 = root["tomorrow"]["wind"];
 
-    weather.day3   = root["list"][2]["temp"]["day"];
-    weather.night3 = root["list"][2]["temp"]["night"];
-    weather.icon3  = root["list"][2]["weather"][0]["icon"];
+    weather.day3   = root["after_tomorrow"]["max"];
+    weather.night3 = root["after_tomorrow"]["min"];
+    weather.icon3  = root["after_tomorrow"]["icon"];
     icon3          = atoi(weather.icon3);
-    weather.speed3 = root["list"][2]["speed"];
+    weather.speed3 = root["after_tomorrow"]["wind"];
   }
 
   if(html.provider==1){
