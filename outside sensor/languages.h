@@ -3,7 +3,7 @@ struct web_text{
   const char* hPa;
 };
 
-struct web_text web_lng[7]={
+struct web_text web_lng[8]={
   " mmHg",
   " hPa",
   
@@ -23,7 +23,10 @@ struct web_text web_lng[7]={
   " hPa",
   
   " мм рт.ст.",
-  " гПа"
+  " гПа",
+  
+  " mm.c.s",
+  " hPa"
 };
 
 struct saved_text{
@@ -31,7 +34,7 @@ struct saved_text{
   const char* not_saved;
 };
 
-struct saved_text saved[7]={
+struct saved_text saved[8]={
   "Saved",
   "Not saved",
   
@@ -51,5 +54,8 @@ struct saved_text saved[7]={
   "Ei salvestatud",
   
   "Збережено",
-  "Не збережено"
+  "Не збережено",
+  
+  "Yadda saxlanıldı",
+  "Yadda saxlanılmadı"
 };
