@@ -1,8 +1,10 @@
 void getCoordinates(void){
   servak="api.2ip.ua";
   url="http://"+servak+"/geo.json?ip=";
-  coordinatesRequest();
-  parseCoordinates();
+  if(!latitude or !longitude){
+    coordinatesRequest();
+    parseCoordinates();
+  }
 }
 
 bool coordinatesRequest(){
@@ -27,8 +29,10 @@ bool parseCoordinates(){
 
   if(!root.success()) return false;
 
-  latitude =root["latitude"];
-  longitude=root["longitude"];
+  String lat=root["latitude"];
+  String lon=root["longitude"];
+  latitude=lat;
+  longitude=lon;
 
   httpData="";
   return true;

@@ -1,8 +1,9 @@
-/* Outside sensor v1.3
-   © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2017
+/* Outside sensor v2.0
+   © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2017-2018
    http://esp8266.atwebpages.com
 */
 //                                512kB SPIFFS 128kB
+#include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -21,6 +22,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 #include <Sodaq_BMP085.h>
+#include <Ticker.h>
 
 extern "C" {
   #include "main.h"
@@ -44,6 +46,7 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress outsideThermometer;
 DHT_Unified dht(DHTPIN, DHTTYPE);
 Sodaq_BMP085 bmp;
+Ticker updater;
 
 void setup(){
     //PINs
@@ -53,77 +56,117 @@ void setup(){
   pinMode(B,OUTPUT);
   led(1,1,1);
     //Serial port
-  Serial.begin(115200);
-  while (!Serial);
-    //battery
-  Serial.println("read battery level");
-  bat_level=BatteryLevel();
-  Serial.println("-----------------------------------");
+  Serial.begin(74880);
+  while(!Serial);
+    //Flash size
+  Serial.print("Flash size ");Serial.print(ESP.getFlashChipRealSize());Serial.println("b"); 
     //mac address
-  MacAddr=WiFi.macAddress();
-  Serial.print("MAC address ");Serial.println(MacAddr);
+  Serial.println("----------------------------------");
+  Serial.print("MAC address: \"");Serial.print(WiFi.macAddress());Serial.println("\"\r\n");
+  Serial.println("----------------------------------");
     //SPIFS
-  if (!SPIFFS.begin()) while (1) yield();
+  if(!SPIFFS.begin()) while(1) yield();
     //EEPROM
   EEPROM.begin(512);
-  Serial.println("read settings");
+  Serial.println("read settings:");
   read_eeprom();
   Serial.println("----------------------------------");
     //WIFI MODE
   WiFi.mode(WIFI_STA);
     //sensor
   sensors_init();
+  Serial.println("----------------------------------");
     //WiFi
   connectToWiFi();
+  Serial.println("----------------------------------");
+    // Ticker
+  updater.attach(html.every*60,updt);
 }
 
 void loop(){
   is_settings();
+  Serial.println("read battery level");
+  bat_level=BatteryLevel();
   if(WiFi.status()==WL_CONNECTED){
     led(0,0,1);
-    getCoordinates();
+    if(latitude=="0" or longitude=="0") getCoordinates();
     Serial.print("network "); Serial.print(WiFi.SSID()); Serial.println(" is connected");
     Serial.println("---------------------------");
     Serial.print("Latitude "); Serial.println(latitude);
     Serial.print("Longitude "); Serial.println(longitude);
     Serial.print("Altitude "); Serial.println(altitude);
     float temp=get_temp(1);
-    int pres=get_pres();
-    int humid=get_humidity();
-    float Ubat=(float)analogRead(A0)/(float)html.k;
-    sendToHomeSite(temp,pres,humid);
+    float pres=get_pres();
+    float humid=get_humidity();
+    int cor=-html.k;
+    cor=cor+400;
+    float Ubat=(float)analogRead(A0)/(float)cor;
+    sendToHomeSite(temp,pres,humid,Ubat);
     if(html.narod) sendToNarodmon(temp,pres,humid,Ubat);
     if(html.thingspeak) sendToThingSpeak(temp,pres,humid,Ubat);    
     is_settings();
-    Serial.println("going sleep");
-    led(0,0,0);
-    mySensor.settings.runMode=0;
-    ESP.deepSleep(900000000);
+    if(html.direct) wait();
+    else{
+      Serial.println("going sleep");
+      Serial.print("period=");Serial.print(html.every);Serial.println(" min");
+      Serial.print(html.every*60*1000000);Serial.println(" usec");
+      led(0,0,0);
+      mySensor.settings.runMode=0;
+      ESP.deepSleep(html.every*60*1000000);
+    }
   }
   else{
     Serial.print("network "); Serial.println(" was not found");
     is_settings();
-    Serial.println("going sleep");
-    led(0,0,0);
-    mySensor.settings.runMode=0;
-    ESP.deepSleep(90000000);
+    if(html.direct) wait();
+    else{
+      Serial.println("going sleep");
+      led(0,0,0);
+      mySensor.settings.runMode=0;
+      ESP.deepSleep(5*60*1000000);
+    }
   }
 }
 
-void sendToHomeSite(float temp,int pres,int hum){
+void updt(){
+  update_flag=true;
+}
+
+void wait(){
+  Serial.println("*********************************");
+  Serial.println("waiting for data request...");
+  IPAddress ip;
+  IPAddress subnet;
+  IPAddress gateway;
+  if(ip.fromString(html.ap_ip) and gateway.fromString(html.ap_ip) and subnet.fromString(html.ap_mask)){
+    WiFi.softAPConfig(ip,gateway,subnet);
+  }
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.softAP(html.ap_ssid,html.ap_pass);
+  led(0,1,1);
+  web_settings();
+  while(!update_flag){
+    webServer.handleClient();
+    yield();
+  }
+  update_flag=false; 
+}
+
+void sendToHomeSite(float temp,float pres,float hum,float Ubat){
   Serial.println();
   Serial.println("sending data to Home site");
   String str=site;
-  str+="sensor.php?MAC=";str+=MacAddr;
+  str+="sensor.php?MAC=";str+=WiFi.macAddress();
   str+="&LAT=";str+=latitude;
   str+="&LON=";str+=longitude;
   str+="&ALT=";str+=altitude;
-  str+="&TEMP=";str+=temp;
-  str+="&PRES=";str+=pres;
-  str+="&HUM=";str+=hum;
+  str+="&TEMP=";str+=String(temp);
+  str+="&PRES=";str+=String(pres);
+  str+="&HUM=";str+=String(hum);
   str+="&BAT=";str+=String(BatteryLevel());
+  str+="&UBAT=";str+=String(Ubat);
   str+="&FW=";str+=fw;
-  str+="&KEY=";str+=sha1(MacAddr);
+  str+="&KEY=";str+=sha1(WiFi.macAddress());
   str+=temp;
   HTTPClient client;
   client.begin(str);
@@ -137,23 +180,23 @@ void sendToHomeSite(float temp,int pres,int hum){
   httpData="";
 }
 
-void sendToNarodmon(float temp,int pres,int hum,float uBat){
+void sendToNarodmon(float temp,float pres,float hum,float uBat){
   Serial.println("sending data to narodmon");
   WiFiClient client;
   String mac=WiFi.macAddress();
   mac.replace(":","");
   String buf="#BIM"+mac+"#BIM";
-  buf+="#"+String(latitude);
-  buf+="#"+String(longitude);
-  if(html.temp>0){
+  buf+="#"+latitude;
+  buf+="#"+longitude;
+  if(html.temp>0 and temp>-55 and temp<120){
     buf+="\n#T"+mac+"#";
     buf+=String(temp); 
   }
-  if(html.hum>0){
+  if(html.hum>0 and hum>-1 and hum<101){
     buf+="\n#H"+mac+"#";
     buf+=String(hum);
   }
-  if(html.pres>0){
+  if(html.pres>0 and pres>500 and pres<1500){
     buf+="\n#P"+mac+"#";
     buf+=String(pres);
   }
@@ -167,13 +210,19 @@ void sendToNarodmon(float temp,int pres,int hum,float uBat){
   Serial.println();
 }
 
-void sendToThingSpeak(float temp,int pres,int hum,float uBat){
+void sendToThingSpeak(float temp,float pres,float hum,float uBat){
   Serial.println("sending data to thingspeak");
   String str="http://api.thingspeak.com/update";
   str+="?api_key=";str+=html.wr_key;
-  str+="&field1=";str+=String(temp);
-  str+="&field2=";str+=String(hum);
-  str+="&field3=";str+=String(pres);
+  if(html.temp>0 and temp>-55 and temp<120){
+    str+="&field1=";str+=String(temp);
+  }
+  if(html.hum>0 and hum>-1 and hum<101){
+    str+="&field2=";str+=String(hum);
+  }
+  if(html.pres>0 and pres>500 and pres<1500){
+    str+="&field3=";str+=String(pres);
+  }
   str+="&field4=";str+=String(uBat);
   HTTPClient client;
   client.begin(str);
@@ -194,10 +243,13 @@ void connectToWiFi(void){
     Serial.print("\" with password \""); Serial.print(html.ap_pass); Serial.println("\"");
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP(html.ap_ssid,html.ap_pass);
+    String IP=WiFi.localIP().toString();
+    if(IP=="0.0.0.0") WiFi.disconnect();
     led(1,0,1);
     web_settings();
     while(1){
       webServer.handleClient();
+      yield();
     }
   }
   else{
@@ -257,14 +309,22 @@ void connectToWiFi(void){
       IPAddress ip;
       IPAddress subnet;
       IPAddress gateway;
-      if(ip.fromString(html.ip) and gateway.fromString(html.gateway) and subnet.fromString(html.mask)){
-        WiFi.config(ip,gateway,subnet);
+      IPAddress dns1;
+      IPAddress dns2;
+      if(ip.fromString(html.ip) and 
+         gateway.fromString(html.gateway) and 
+         subnet.fromString(html.mask) and
+         dns1.fromString(html.dns1) and
+         dns2.fromString(html.dns2)){
+        WiFi.config(ip,gateway,subnet,dns1,dns2);
+        //WiFi.gatewayIP().toString();
+        
       }
     }
     rssi=viewRSSI(String(WiFi.SSID())); 
   }
   WiFi.SSID().toCharArray(ssid,(WiFi.SSID().length())+1);
-  Serial.print("Connected to "); Serial.println(ssid);
+  Serial.print("\r\nConnected to \""); Serial.print(ssid); Serial.println("\"");
 }
 
 void sensors_init(void){
@@ -330,22 +390,22 @@ float get_temp(bool units){
       else{temp=event.temperature; temp=temp*1.8+32;}
     }
   }
-  Serial.print("Temperature: ");Serial.println(temp);Serial.println(units?" degrees C":" degrees F");
+  Serial.print("Temperature: ");printFloat(temp);Serial.println(units?" degrees C":" degrees F");
   return temp;
 }
 
-int get_pres(void){
+float get_pres(void){
   float pres=0;
   if(html.pres==0) pres=4040;
   if(html.pres==1) pres=mySensor.readFloatPressure()/100.0;
   if(html.pres==2) pres=bmp.readPressure()/100.0;
-  Serial.print("Pressure: ");Serial.print(pres);Serial.println(" Pa");
-  Serial.print("Pressure: ");Serial.print(pres*0.75);Serial.println(" mmHg");
+  Serial.print("Pressure: ");printFloat(pres);Serial.println(" Pa");
+  Serial.print("Pressure: ");printFloat(pres*0.75);Serial.println(" mmHg");
   return pres;
 }
 
-int get_humidity(void){
-  int hum=0;
+float get_humidity(void){
+  float hum=0;
   if(html.hum==0) hum=404;
   if(html.hum==1) hum=mySensor.readFloatHumidity();
   if(html.hum==2){
@@ -354,7 +414,7 @@ int get_humidity(void){
     if(isnan(event.relative_humidity));
     else hum=event.relative_humidity;
   }
-  Serial.print("Humidity: "); Serial.print(hum); Serial.println("%");
+  Serial.print("Humidity: "); printFloat(hum); Serial.println("%");
   return hum;
 }
 
@@ -368,29 +428,37 @@ void is_settings(void){
   if(!digitalRead(BUTTON)){
     Serial.println("*********************************");
     Serial.println("entering settings mode");
+    IPAddress ip;
+    IPAddress subnet;
+    IPAddress gateway;
+    if(ip.fromString(html.ap_ip) and gateway.fromString(html.ap_ip) and subnet.fromString(html.ap_mask)){
+      WiFi.softAPConfig(ip,gateway,subnet);
+    }
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP(html.ap_ssid,html.ap_pass);
     Serial.printf("connect to %s, password is %s\r\n", html.ap_ssid,html.ap_pass);
-    Serial.println("type 192.168.4.1 in address bar of your browser");
+    Serial.println("type "+html.ap_ip+" in address bar of your browser");
     String IP=WiFi.localIP().toString();
     Serial.print("alt IP is "); Serial.println(IP);
+    if(IP=="0.0.0.0") WiFi.disconnect(); 
     led(1,0,1);
     web_settings();
     while(1){
       webServer.handleClient();
+      yield();
     }
   }
 }
 
 int viewRSSI(String ssid){
   uint8_t n=WiFi.scanNetworks();
-  Serial.printf("found %d networks\r\n",n);
+  Serial.printf("found %d network(s)\r\n",n);
   int rssi=0;
   if(n!=0){
     for(uint8_t i=0;i<n;i++){
       if(WiFi.SSID(i)==ssid) rssi=WiFi.RSSI(i);
-      Serial.print(WiFi.SSID(i)); Serial.print(" ");
-      Serial.println(WiFi.RSSI(i));
+      Serial.print("\"");Serial.print(WiFi.SSID(i));Serial.print("\" ");
+      Serial.print(WiFi.RSSI(i));Serial.println("dB");
     }  
   }
   return rssi;
@@ -405,8 +473,10 @@ void read_eeprom(void){
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root=jsonBuffer.parseObject(fileData);
     if(root.success()){
-      String ap_ssid =root["AP_SSID"];  
-      String ap_pass =root["AP_PASS"];
+      String ap_ssid =root["APSSID"];  
+      String ap_pass =root["APPASS"];
+      String ap_ip   =root["APIP"];
+      String ap_mask =root["APMASK"];
       html.temp      =root["TEMP"];
       html.pres      =root["PRES"];
       html.hum       =root["HUM"];
@@ -419,12 +489,25 @@ void read_eeprom(void){
       String ip      =root["IP"];
       String mask    =root["MASK"];
       String gw      =root["GATEWAY"];
+      String dns1    =root["DNS1"];
+      String dns2    =root["DNS2"];
+      html.direct    =root["DIRECT"];
+      String lat     =root["LAT"];
+      String lon     =root["LON"];
+      altitude       =root["ALT"];
+      html.every     =root["PERIOD"];  
       html.ip=ip;
       html.mask=mask;
       html.gateway=gw;
+      html.dns1=dns1;
+      html.dns2=dns2;
       html.wr_key=wr_key;
-      ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
-      ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
+      latitude=lat;
+      longitude=lon;
+      if(ap_ssid!="") ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
+      if(ap_pass!="") ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
+      if(ap_ip!="") html.ap_ip=ap_ip;
+      if(ap_mask!="") html.ap_mask=ap_mask;
     }
   }
   if(html.lang>6 or html.lang<0) html.lang=0;
@@ -440,32 +523,37 @@ void read_eeprom(void){
     JsonObject& json=jsonBuf.parseObject(fData);
     if(json.success()){
       ssids.num=json["num"];
-      Serial.printf("Saved %d networks\r\n",ssids.num);
+      Serial.printf("Saved %d network(s):\r\n",ssids.num);
       for(uint8_t i=0;i<ssids.num;i++){
         ssids.ssid[i]=json["nets"][i*2].as<String>();
-        Serial.print("ssid "); Serial.print(ssids.ssid[i]);
+        Serial.print((i+1)+") ssid: \""+ssids.ssid[i]+"\"   ");
         ssids.pass[i]=json["nets"][i*2+1].as<String>();
-        Serial.print(" pass "); Serial.println(ssids.pass[i]);
+        Serial.print("password: \""+ssids.pass[i]+"\"");
       }
     }
   } 
-  Serial.print("AP SSID="); Serial.println(html.ap_ssid);
-  Serial.print("AP PASS="); Serial.println(html.ap_pass);
-  Serial.print("LANG="); Serial.println(html.lang);
-  Serial.print("CONN TYPE="); Serial.println(html.typ);
-  Serial.print("IP="); Serial.println(html.ip);
-  Serial.print("MASK="); Serial.println(html.mask);
-  Serial.print("GATEWAY="); Serial.println(html.gateway);
-  Serial.print("TEMP="); Serial.println(html.temp);
-  Serial.print("PRES="); Serial.println(html.pres);
-  Serial.print("HUM="); Serial.println(html.hum);
-  Serial.print("Send to narodmon="); Serial.println(html.narod?"Yes":"No");
-  Serial.print("Send to thingspeak="); Serial.println(html.thingspeak?"Yes":"No");
-  Serial.print("Thingspeak write key="); Serial.println(html.wr_key);
-  Serial.print("saved K bat="); Serial.println(html.k);
+  Serial.println();
+  Serial.print("AP SSID: \""); Serial.print(html.ap_ssid); Serial.println("\"");
+  Serial.print("AP PASS: \""); Serial.print(html.ap_pass); Serial.println("\"");
+  Serial.print("AP IP: \""); Serial.print(html.ap_ip); Serial.println("\"");
+  Serial.print("AP MASK: \""); Serial.print(html.ap_mask); Serial.println("\"");
+  Serial.print("LANG: \""); Serial.print(html.lang); Serial.println("\"");
+  Serial.print("CONN TYPE: \""); Serial.print(html.typ); Serial.println("\"");
+  Serial.print("IP: \""); Serial.print(html.ip); Serial.println("\"");
+  Serial.print("MASK: \""); Serial.print(html.mask); Serial.println("\"");
+  Serial.print("GATEWAY: \""); Serial.print(html.gateway); Serial.println("\"");
+  Serial.print("DNS1: \""); Serial.print(html.dns1); Serial.println("\"");
+  Serial.print("DNS2: \""); Serial.print(html.dns2); Serial.println("\"");
+  Serial.print("TEMP: \""); Serial.print(html.temp); Serial.println("\"");
+  Serial.print("PRES: \""); Serial.print(html.pres); Serial.println("\"");
+  Serial.print("HUM: \""); Serial.print(html.hum); Serial.println("\"");
+  Serial.print("Send to narodmon: "); Serial.println(html.narod?"Yes":"No");
+  Serial.print("Send to thingspeak: "); Serial.println(html.thingspeak?"Yes":"No");
+  Serial.print("Thingspeak write key: \""); Serial.print(html.wr_key); Serial.println("\"");
+  Serial.print("saved K bat: \""); Serial.print(html.k); Serial.println("\"");
   int k=EEPROM.read(0)*256;
   k+=EEPROM.read(1);
-  Serial.print("eeprom K bat="); Serial.println(k);
+  Serial.print("eeprom K bat: \""); Serial.print(k); Serial.println("\"");
   if(html.k==200 and k>300){EEPROM.write(0,0);EEPROM.write(1,html.k);k=html.k;EEPROM.end();}
   if(html.k==200 and k>199 and k<301){
     html.k=k;
@@ -492,20 +580,22 @@ void read_eeprom(void){
     }
   }
   if(html.k!=k){EEPROM.write(0,html.k/256);EEPROM.write(1,html.k);EEPROM.end();}
-  Serial.print("K bat="); Serial.println(html.k);
+  Serial.print("K bat: \""); Serial.print(html.k); Serial.println("\"");
 }
 
 uint8_t BatteryLevel(void){
-  int adc=analogRead(A0);
-  float Ubat=(float)adc/(float)html.k;
+  float adc=analogRead(A0);
+  float cor=-html.k;
+  cor=cor+400;
+  float Ubat=adc/cor;
   uint8_t level=1;
   if(Ubat<3.3) {led(0,0,0); ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);}
-  if(Ubat>3.29 and Ubat<3.5) level=1;
-  if(Ubat>3.49 and Ubat<3.7) level=2;
-  if(Ubat>3.69 and Ubat<3.9) level=3;
-  if(Ubat>3.89 and Ubat<4.1) level=4;
-  if(Ubat>4.09) level=5;
-  Serial.printf("ADC=%d\r\n",adc);
+  if(Ubat>=3.3 and Ubat<3.5) level=1;
+  if(Ubat>=3.5 and Ubat<3.7) level=2;
+  if(Ubat>=3.7 and Ubat<3.8) level=3;
+  if(Ubat>=3.8 and Ubat<3.9) level=4;
+  if(Ubat>=3.9) level=5;
+  Serial.print("ADC=");Serial.println(adc);
   Serial.print("U bat=");printFloat(Ubat);Serial.println("V");
   Serial.printf("bat level=%d\r\n",level);
   return level;

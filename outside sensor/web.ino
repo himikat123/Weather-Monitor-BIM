@@ -95,27 +95,32 @@ void handleFileList(){
   webServer.send(200,"text/json",output);
 }
 
-void web_settings(void)
-{
+void web_settings(void){
   SPIFFS.begin();
-  webServer.on("/esp/settings.php",HTTP_POST,[](){
-    File file=SPIFFS.open("/save/save.json","w");
-    if(file){
-      file.print(webServer.arg("JS"));
-      file.close();
-      webServer.send(200,"text/plain",saved[html.lang].saved);
+  webServer.on("/esp/save.php",HTTP_POST,[](){
+    if(webServer.arg("JS"!="")){
+      File file=SPIFFS.open("/save/save.json","w");
+      if(file){
+        file.print(webServer.arg("JS"));
+        file.close();
+        webServer.send(200,"text/plain",saved[html.lang].saved);
+      }
+      else webServer.send(200,"text/plain",saved[html.lang].not_saved);
     }
-    else webServer.send(200,"text/plain",saved[html.lang].not_saved);
-    file=SPIFFS.open("/save/jssids.json","w");
-    if(file){
-      file.print(webServer.arg("JSSIDS"));
-      file.close();
+    if(webServer.arg("JSSIDS")!=""){  
+      File file=SPIFFS.open("/save/jssids.json","w");
+      if(file){
+        file.print(webServer.arg("JSSIDS"));
+        file.close();
+      }
     }
-    file=SPIFFS.open("/save/ssids.json","w");
-    if(file){
-      file.print(webServer.arg("SSIDS"));
-      file.close();
-    }
+    if(webServer.arg("SSIDS")!=""){  
+      File file=SPIFFS.open("/save/ssids.json","w");
+      if(file){
+        file.print(webServer.arg("SSIDS"));
+        file.close();
+      }
+    }  
   });
   
   webServer.on("/esp/ssid.php",HTTP_POST,[](){
@@ -126,39 +131,16 @@ void web_settings(void)
       json+=WiFi.SSID(i);
       json+="\":\"";
       json+=abs(WiFi.RSSI(i));
-      json+="\",";
+      if(i==n-1) json+="\"}";
+      else json+="\",";
     }
-    json+="\"ver\":\"";
-    json+=vers;
-    json+="\",\"MAC\":\"";
-    json+=MacAddr;
-    json+="\",\"C\":\"";
-    json+=get_temp(1);
-    json+="&degC\",\"F\":\"";
-    json+=get_temp(0);
-    json+="&degF\",\"MM\":\"";
-    json+=round(get_pres()*0.75);
-    json+=web_lng[html.lang].mmHg;
-    json+="\",\"HPA\":\"";
-    json+=get_pres();
-    json+=web_lng[html.lang].hPa;
-    json+="\",\"HUM\":\"";
-    json+=get_humidity();
-    json+="%\",\"adc\":\"";
-    json+=analogRead(A0);
-    json+="\"}";
     webServer.send(200,"text/json",json);
-    if(html.temp==3) sensors.requestTemperatures();
   });
 
   webServer.on("/esp/local.php",HTTP_GET,[](){
-    String json="{\"C\":";
-    json+=get_temp(1);
-    json+=",\"HPA\":";
-    json+=get_pres();
-    json+=",\"HUM\":";
-    json+=get_humidity();
-    json+="}";
+    String json="{\"C\":"; json+=get_temp(1);
+    json+=",\"HPA\":"; json+=get_pres();
+    json+=",\"HUM\":"; json+=get_humidity(); json+="}";
     webServer.send(200,"text/json",json);
   });
 
@@ -170,36 +152,102 @@ void web_settings(void)
   webServer.on("/esp/temp.php",HTTP_POST,[](){
     html.temp=round(webServer.arg("SENSOR").toFloat());
     sensors_init();
-    String json="{\"C\":\"";
-    json+=get_temp(1);
-    json+="&degC\",\"F\":\"";
-    json+=get_temp(0);
-    json+="&degF\"}";
+    float t=get_temp(1);
+    String json="{\"C\":\""; json+=(t==404)?"--":String(t); json+="&deg;C\"}";
     webServer.send(200,"text/plain",json);
   });
 
   webServer.on("/esp/pres.php",HTTP_POST,[](){
     html.pres=round(webServer.arg("SENSOR").toFloat());
     sensors_init();
-    String json="{\"HPA\":\"";
-    json+=get_pres();
-    json+=" ";
-    json+=web_lng[html.lang].hPa;
-    json+="\",\"MM\":\"";
-    json+=get_pres()*0.75;
-    json+=" ";
-    json+=web_lng[html.lang].mmHg;
-    json+="\"}";
+    int p=get_pres();
+    String json="{\"P\":\""; json+=(p==4040)?"--":String(p); json+=web_lng[html.lang].hPa; json+="\"}";
     webServer.send(200,"text/plain",json);
   });
 
   webServer.on("/esp/hum.php",HTTP_POST,[](){
     html.hum=round(webServer.arg("SENSOR").toFloat());
     sensors_init();
-    String json="{\"HUM\":\"";
-    json+=get_humidity();
-    json+="%\"}";
+    int h=get_humidity();
+    String json="{\"H\":\""; json+=(h==404)?"--":String(h); json+="%\"}";
     webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/adc.php",HTTP_POST,[](){
+    String json="{\"u\":\""; json+=analogRead(A0); json+="\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/data.php",HTTP_POST,[](){
+    float t=get_temp(1);
+    int p=get_pres();
+    int h=get_humidity();
+    String json="{\"t\":\""; json+=(t==404)?"--":String(t); json+="&deg;C\",";
+    json+="\"h\":\""; json+=(h==404)?"--":String(h); json+="%\",";
+    json+="\"p\":\""; json+=(p==4040)?"--":String(p); json+=web_lng[html.lang].hPa; json+="\"}";
+    webServer.send(200,"text/plain",json);
+    if(html.temp==3) sensors.requestTemperatures();
+  });
+
+  webServer.on("/esp/mac_ip.php",HTTP_POST,[](){
+    String json="{\"mac\":\""; json+=WiFi.macAddress();           json+="\",";
+    json+="\"ip\":\"";         json+=WiFi.softAPIP().toString();  json+="\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/ip_gw.php",HTTP_POST,[](){
+    String json="{\"ip\":\""; json+=WiFi.localIP().toString();    json+="\",";
+    json+="\"gw\":\"";        json+=WiFi.gatewayIP().toString();  json+="\",";
+    json+="\"mask\":\"";      json+=WiFi.subnetMask().toString(); json+="\"}";
+    webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/status.php",HTTP_POST,[](){
+    float t=get_temp(1);
+    int p=get_pres();
+    int h=get_humidity();
+    float cor=-html.k;
+    cor=cor+400;
+    String json="{\"fw\":\""; json+="v"+fw;                    json+="\",";
+    json+="\"ssid\":\"";      json+=WiFi.SSID();               json+="\",";
+    json+="\"ch\":\"";        json+=WiFi.channel();            json+="\",";
+    json+="\"sig\":\"";       json+=WiFi.RSSI();               json+="dB\",";
+    json+="\"mac\":\"";       json+=WiFi.macAddress();         json+="\",";
+    json+="\"ip\":\"";        json+=WiFi.localIP().toString(); json+="\",";
+    json+="\"temp\":\"";      json+=(t==404)?"--":String(t);   json+="&deg;C\",";
+    json+="\"t\":\"";
+    switch(html.temp){
+      case 0: json+="\","; break;
+      case 1: json+="BME280\","; break;
+      case 2: json+="BMP180\","; break;
+      case 3: json+="DS18B20\","; break;
+      case 4: json+="DHT22\","; break;
+      default: json+="\","; break;
+    }
+    json+="\"pres\":\""; json+=(p==4040)?"--":String(p); json+=web_lng[html.lang].hPa; json+="\",";
+    json+="\"p\":\"";
+    switch(html.pres){
+      case 0: json+="\","; break;
+      case 1: json+="BME280\","; break;
+      case 2: json+="BMP180\","; break;
+      default: json+="\","; break;
+    }
+    json+="\"hum\":\""; json+=(h==404)?"--":String(h); json+="%\","; 
+    json+="\"h\":\"";
+    switch(html.hum){
+      case 0: json+="\","; break;
+      case 1: json+="BME280\","; break;
+      case 2: json+="DHT22\","; break;
+      default: json+="\","; break;
+    }
+    json+="\"bat\":\""; json+=analogRead(A0)/cor; json+="V\"}";
+    webServer.send(200,"text/plain",json);
+    if(html.temp==3) sensors.requestTemperatures();
+  });
+
+  webServer.on("/esp/reboot.php",HTTP_POST,[](){
+    webServer.send(200,"text/plain","OK");
+    ESP.restart();
   });
 
   webServer.on("/list",HTTP_GET,handleFileList);
@@ -211,6 +259,36 @@ void web_settings(void)
   webServer.on("/edit",HTTP_POST,[](){
     webServer.send(200,"text/plain","");
   },handleFileUpload);
+  webServer.on("/esp/update.php",HTTP_POST,[](){
+    if(Update.hasError()) handleFileRead("/fail.htm");
+    else handleFileRead("/ok.htm");
+    ESP.restart();
+  },[](){
+    HTTPUpload& upload=webServer.upload();
+    if(upload.status==UPLOAD_FILE_START){
+      Serial.setDebugOutput(true);
+      Serial.printf("Update: %s\n",upload.filename.c_str());
+      uint32_t maxSketchSpace=(ESP.getFreeSketchSpace()-0x1000)&0xFFFFF000;
+      if(!Update.begin(maxSketchSpace)){
+        Update.printError(Serial);
+      }
+    }
+    else if(upload.status==UPLOAD_FILE_WRITE){
+      if(Update.write(upload.buf,upload.currentSize)!=upload.currentSize){
+        Update.printError(Serial);
+      }
+    } 
+    else if(upload.status==UPLOAD_FILE_END){
+      if(Update.end(true)){
+        Serial.printf("Update Success: %u\nRebooting...\n",upload.totalSize);
+      } 
+      else{
+        Update.printError(Serial);
+      }
+      Serial.setDebugOutput(false);
+    }
+    yield();
+  });
   webServer.onNotFound([](){
     if(!handleFileRead(webServer.uri())) webServer.send(404,"text/plain","FileNotFound");
   });

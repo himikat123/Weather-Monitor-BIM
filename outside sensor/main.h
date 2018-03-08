@@ -1,7 +1,5 @@
-String MacAddr="";
 String lang;
-String fw="1.3";
-String vers="v"+fw;
+String fw="2.0";
 float tempOutside;
 char ssid[32]="";
 char password[32]="";
@@ -12,11 +10,12 @@ char text_buf[255];
 String httpData;
 const char* host="settings";
 const char* copy="© himikat123@gmail.com";
-float latitude=0;
-float longitude=0;
-float altitude=0;
+String latitude="0";
+String longitude="0";
+int altitude=0;
 float battery=0;
 int bat_level;
+bool update_flag=false;
 
 struct{
   float temp;
@@ -26,13 +25,17 @@ struct{
 } outside;
 
 struct html_structure{
-  char        ap_ssid[32];
-  char        ap_pass[32];
+  char        ap_ssid[32]="OutsideSensor";
+  char        ap_pass[32]="1234567899";
+  String      ap_ip="192.168.4.1";
+  String      ap_mask="255.255.255.0";
   uint8_t     lang=0;
   int         typ;
   String      ip;
   String      mask;
   String      gateway;
+  String      dns1;
+  String      dns2;
   int         temp;
   int         pres;
   int         hum;
@@ -40,6 +43,8 @@ struct html_structure{
   int         k;
   bool        thingspeak;
   String      wr_key;
+  bool        direct;
+  int         every;
 };
 html_structure html;
 
