@@ -1,20 +1,20 @@
-#define ANT20 0xB6
-#define ANT40 0xB7
-#define ANT60 0xB8
-#define ANT80 0xB9
-#define ANT100 0xBA
-#define BAT0 0xBB
-#define BAT25 0xBC
-#define BAT50 0xBD
-#define BAT75 0xBE
-#define BAT100 0xBF
+#define ANT20 0x00
+#define ANT40 0x01
+#define ANT60 0x02
+#define ANT80 0x03
+#define ANT100 0x04
+#define BAT0 0x05
+#define BAT25 0x06
+#define BAT50 0x07
+#define BAT75 0x08
+#define BAT100 0x09
 
 extern unsigned int nowifi[0x0100];
 
 String city;
 String country;
 String lang;
-String fw="3.1";
+String fw="3.2";
 String vers="BIM v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -92,6 +92,10 @@ struct html_structure{
   int         hum;
   int         provider;
   int         battery;
+  int         os=0;
+  String      sssid;
+  String      spass;
+  String      sip;
 };
 html_structure html;
 

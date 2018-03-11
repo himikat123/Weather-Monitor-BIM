@@ -1,11 +1,10 @@
-/* Weather Monitor BIM v3.0
- * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2017 
+/* Weather Monitor BIM v3.2
+ * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
                                // Board ESP-12E 
                                // 1MB (512kB SPIFFS) 
 #include <Time.h>
-#include <DS1307RTC.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -61,6 +60,8 @@ Ticker sleeper;
 extern uint8_t SmallFontRu[];
 extern uint8_t BigFontRu[];
 extern uint8_t DotMatrix_M_Num[];
+extern uint8_t Arial_round[];
+extern uint8_t Symbols[];
 
 void setup(){
     //Serial port
@@ -95,8 +96,6 @@ void setup(){
   sensors_init();
     //battery
   showBatteryLevel();
-    // WiFi
-  connectToWiFi();
     // Ticker
   updater.attach(1200,updateWeather);
   if(html.sleep==0) sleeper.attach(1201,goSleep);
@@ -107,30 +106,24 @@ void loop(){
   if(update_flag){
     if(WiFi.status()==WL_CONNECTED){ 
       showBatteryLevel();
-      showWiFiLevel(rssi);
       update_weather();
+      showWiFiLevel(rssi);
       if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
       else analogWrite(BACKLIGHT,html.bright_n*10);
     }
     else{
       myGLCD.setColor(VGA_WHITE);
-      myGLCD.setBackColor(0xCE79);
+      myGLCD.setBackColor(back_color);
       myGLCD.setFont(SmallFontRu);
-      sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].unable_to_connect_to),ssid);
-      sprintf(text_buf,"%-35.35s",text_buf);
-      text_buf[30]='\0';
+      sprintf(text_buf,"%s",UTF8(status_lng[html.lang].unable_to_connect_to));
+      text_buf[35]='\0';
       myGLCD.print(text_buf,2,2);
-      delay(10000);
-      analogWrite(BACKLIGHT,0);
-      if(html.sleep==0) ESP.reset();
-      else{
-        myGLCD.lcdOff();
-        ESP.deepSleep(0);
-      }
+      connectToWiFi();
     }
     update_flag=false;
   }
   else{
+    out_bat();
     showTime();
     is_settings();
     showInsideTemp();
@@ -160,18 +153,21 @@ void goSleep(){
 }
 
 void update_weather(void){
+  if(html.os==0) sensor();
+  connectToWiFi();
   if(html.provider==0) getCoordinates();
   siteTime();
   getWeatherNow();
-  getWeatherDaily();  
+  getWeatherDaily();
+  database();
+  if(html.os==1) out();  
   showTime();
   showInsideTemp();
-  out();
   showWeatherNow();
   showWeatherToday();
   showWeatherTomorrow();
   showWeatherAfterTomorrow();
-  database();
+  connectToWiFi();
   yield();
 }
 
@@ -193,6 +189,7 @@ void connectToWiFi(void){
     }
   }
   else{
+    if(WiFi.SSID()==html.sssid) WiFi.disconnect();
     myGLCD.setFont(SmallFontRu);
     if(WiFi.status()!=WL_CONNECTED){
       uint8_t n=WiFi.scanNetworks();
@@ -209,7 +206,10 @@ void connectToWiFi(void){
               sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
               sprintf(text_buf,"%-30s",text_buf);
               text_buf[30]='\0';
-              myGLCD.print(text_buf,2,2);
+              myGLCD.setColor(back_color);
+              myGLCD.fillRect(0,0,319,3);
+              myGLCD.setColor(VGA_WHITE);
+              myGLCD.print(text_buf,2,4);
               break;
             }
           }
@@ -227,12 +227,18 @@ void connectToWiFi(void){
             sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
             sprintf(text_buf,"%-30s",text_buf);
             text_buf[30]='\0';
-            myGLCD.print(text_buf,2,2);
+            myGLCD.setColor(back_color);
+            myGLCD.fillRect(0,0,319,3);
+            myGLCD.setColor(VGA_WHITE);
+            myGLCD.print(text_buf,2,4);
             if(WiFi.status()==WL_CONNECTED) goto connectedd;
           }    
           sprintf(text_buf,"%-30s",UTF8(status_lng[html.lang].unable_to_connect_to));
           text_buf[30]='\0';
-          myGLCD.print(text_buf,2,2);
+          myGLCD.setColor(back_color);
+          myGLCD.fillRect(0,0,319,3);
+          myGLCD.setColor(VGA_WHITE);
+          myGLCD.print(text_buf,2,4);
           delay(5000);
           if(html.sleep==0) ESP.reset();
           else{
@@ -262,7 +268,10 @@ void connectToWiFi(void){
   sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connected_to),ssid);
   sprintf(text_buf,"%-30s",text_buf);
   text_buf[30]='\0';
-  myGLCD.print(text_buf,2,2);
+  myGLCD.setColor(back_color);
+  myGLCD.fillRect(0,0,319,3);
+  myGLCD.setColor(VGA_WHITE);
+  myGLCD.print(text_buf,2,4);
 }
 
 int viewRSSI(String ssid){
@@ -357,7 +366,59 @@ void database(void){
   client.end();
 }
 
+void sensor(void){
+  myGLCD.setFont(SmallFontRu);
+  if(WiFi.SSID()!=html.sssid){
+    uint8_t n=WiFi.scanNetworks();
+    bool o=false;
+    for(uint8_t i=0;i<n;i++){
+      if(WiFi.SSID(i)==html.sssid) o=true;
+    }
+    if(o){
+      WiFi.disconnect();
+      html.sssid.toCharArray(ssid,(html.sssid.length())+1);
+      html.spass.toCharArray(password,(html.spass.length())+1);
+      WiFi.begin(ssid,password);
+      myGLCD.print(UTF8(status_lng[html.lang].connecting_sensor),2,2);
+      uint8_t e=0;
+      while(WiFi.status()!=WL_CONNECTED){
+        if((e++)>20){
+          myGLCD.print(UTF8(status_lng[html.lang].unable_connect_sensor),2,2);
+          delay(5000);
+          break;
+        }
+        delay(500);
+      }
+    }
+  }  
+  if(WiFi.status()==WL_CONNECTED){
+    String url="http://";
+    url+=html.sip;
+    url+="/esp/local.php";
+    HTTPClient client;
+    client.begin(url);
+    int httpCode=client.GET();
+    if(httpCode>0){
+      if(httpCode==HTTP_CODE_OK){
+        httpData=client.getString();
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root=jsonBuffer.parseObject(httpData);
+        if(root.success()){
+          outside.temp    =root["C"];
+          outside.pres    =root["HPA"];
+          outside.humidity=root["HUM"];
+          int dayLight=summertime()?3600:0;
+          outside.updated=now()-(html.zone*3600)-dayLight;
+        }
+        client.end();
+      }
+    }
+    httpData="";
+  }
+}
+
 void out(void){
+  myGLCD.setFont(SmallFontRu);
   String url=site;
   url+="outside.php?MAC=";
   url+=html.sensor;
@@ -509,10 +570,14 @@ void read_eeprom(void){
       html.hum       =root["HUM"];
       html.provider  =root["PROVIDER"];
       html.battery   =root["BATTERY"];
+      html.os        =root["OS"];
       String ip      =root["IP"];
       String mask    =root["MASK"];
       String gw      =root["GATEWAY"];
       String mac     =root["MAC"];
+      String sssid   =root["SSSID"];
+      String spass   =root["SPASS"];
+      String sip     =root["SIP"];
       html.sensor=mac;
       html.ip=ip;
       html.mask=mask;
@@ -521,10 +586,13 @@ void read_eeprom(void){
       ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
       html.city=city;
       html.appid=appid;
+      html.sssid=sssid;
+      html.spass=spass;
+      html.sip=sip;
     }
   }
   if(html.sleep>100) html.sleep=1;
-  if(html.lang>6) html.lang=0;
+  if(html.lang>7) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
   if(html.units>1) html.units=0;
@@ -539,6 +607,7 @@ void read_eeprom(void){
     case 4:urlLang="lt";break;
     case 5:urlLang="et";break;
     case 6:urlLang="ua";break;
+    case 7:urlLang="az";break;
     default:urlLang="en";break;
   }
   File f=SPIFFS.open("/save/ssids.json","r");

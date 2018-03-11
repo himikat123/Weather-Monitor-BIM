@@ -40,6 +40,8 @@ void getWeatherNow(void){
     latitude=weather.latitude;
     longitude=weather.longitude;
     if(html.provider==0) icon=atoi(weather.icon);
+    Serial.print("weather.icon ");Serial.println(weather.icon);
+    Serial.print("icon ");Serial.println(icon);
     dtostrf(weather.temp,1,1,text_buf);
     dtostrf(weather.speed,1,1,text_buf);
   }
@@ -85,6 +87,7 @@ bool parseWeatherNow(){
     if(time_now>weather.sunrise and time_now<weather.sunset) weather.isDay=true;
     else weather.isDay=false;
     if(time_now<weather.sunrise) weather.isDay=true;
+    Serial.print("weather.icon ");Serial.println(weather.icon);
   }
   
   if(html.provider==1){
