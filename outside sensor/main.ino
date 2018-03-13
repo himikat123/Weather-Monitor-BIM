@@ -2,7 +2,7 @@
    © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2017-2018
    http://esp8266.atwebpages.com
 */
-//                                512kB SPIFFS 128kB
+//                                1MB SPIFFS 144kB
 #include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
