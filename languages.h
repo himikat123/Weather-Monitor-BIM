@@ -3,7 +3,7 @@ struct saved_text{
   char* not_saved;
 };
 
-struct saved_text saved[8]={
+struct saved_text saved[9]={
   "Saved",
   "Did not save",
     
@@ -26,7 +26,10 @@ struct saved_text saved[8]={
   "Не збережено",
 
   "Yadda saxlanıldı",
-  "Yadda saxlanılmadı"
+  "Yadda saxlanılmadı",
+
+  "Захавана",
+  "Не захавана"
 };
 
 struct status_text{
@@ -39,7 +42,7 @@ struct status_text{
   char* connecting_sensor;
 };
 
-struct status_text status_lng[8]={
+struct status_text status_lng[9]={
   "Connecting to",
   "Unable to connect to the network",
   "Connected to",
@@ -102,7 +105,15 @@ struct status_text status_lng[8]={
   "",
   "Şəbəkə tapılmadı",
   "Sensora qoşulmaq mümkün deyil",
-  "Sensora qoşulur"
+  "Sensora qoşulur",
+
+  "Злучэнне з",
+  "Немагчыма падлучыцца да сетки",
+  "Падлучанае да",
+  "Сетка ",
+  " не знойдзена",
+  "Не ўдаецца падключыцца да датчыкаў",
+  "Падключэнне да датчыкаў"
 };
 
 struct settings_text{
@@ -115,7 +126,7 @@ struct settings_text{
   char* str7;
 };
 
-struct settings_text settings_lng[8]={
+struct settings_text settings_lng[9]={
   "To enter setup",
   "connect your laptop",
   "tablet or smartphone to",
@@ -178,42 +189,50 @@ struct settings_text settings_lng[8]={
   "",
   "şəbəkəsinə qoşun, şifrə",
   "Brauzeri açın və http://192.168.4.1",
-  "ünvanını daxil edin"
+  "ünvanını daxil edin",
+
+  "Каб увайсці ў налады",
+  "падключыце ваш ноўтбук,",
+  "планшэт ці смартфон",
+  "да сеткі",
+  "пароль",
+  "Адкрыйце браўзэр і ўвядзіце",
+  "адрас http://192.168.4.1"
 };
 
-char* Month[12][8]={
-  {" January ",  " Января ",  " Ianuarie ",  " Januar ",   " Sausis ",   " Jaanuar ",  " Січня ",    " Yanvar "},
-  {" February ", " Февраля ", " Februarie ", " Februar ",  " Vasaris ",  " Veebruar ", " Лютого ",   " Fevral "},
-  {" March ",    " Марта ",   " Martie ",    " März ",     " Kovas ",    " Märts ",    " Березня ",  " Mart "},
-  {" April ",    " Апреля ",  " Aprilie ",   " April ",    " Balandis ", " Aprill ",   " Квітня ",   " Aprel "},
-  {" May ",      " Мая ",     " Mai ",       " Mai" ,      " Gegužės ",  " Mai ",      " Травня ",   " May "},
-  {" June ",     " Июня ",    " Iunie ",     " Juni ",     " Birželis ", " Juuni ",    " Червня ",   " İyun "},
-  {" July ",     " Июля ",    " Iulie ",     " Juli ",     " Liepa ",    " Juuli ",    " Липня ",    " İyul "},
-  {" August ",   " Августа ", " August ",    " August ",   " Rugpjūtis "," August ",   " Серпня ",   " Avqust "},
-  {" September "," Сентября "," Septembrie "," September "," Rugsėjis ", " September "," Вересня ",  " Sentyabr "},
-  {" October ",  " Октября ", " Octombrie ", " Oktober ",  " Spalis ",   " Oktoober ", " Жовтня ",   " Oktyabr "},
-  {" November ", " Ноября ",  " Noiembrie ", " November ", " Lapkritis "," November ", " Листопада "," Noyabr "},
-  {" December ", " Декабря ", " Decembrie ", " Dezember ", " Gruedis ",  " Detsember "," Грудня ",   " Dekabr "}
+char* Month[12][9]={
+  {" January ",  " Января ",  " Ianuarie ",  " Januar ",   " Sausis ",   " Jaanuar ",  " Січня ",    " Yanvar ",   " Студзеня "},
+  {" February ", " Февраля ", " Februarie ", " Februar ",  " Vasaris ",  " Veebruar ", " Лютого ",   " Fevral ",   " Лютага "},
+  {" March ",    " Марта ",   " Martie ",    " März ",     " Kovas ",    " Märts ",    " Березня ",  " Mart ",     " Сакавіка "},
+  {" April ",    " Апреля ",  " Aprilie ",   " April ",    " Balandis ", " Aprill ",   " Квітня ",   " Aprel ",    " Красавіка "},
+  {" May ",      " Мая ",     " Mai ",       " Mai" ,      " Gegužės ",  " Mai ",      " Травня ",   " May ",      " Мая "},
+  {" June ",     " Июня ",    " Iunie ",     " Juni ",     " Birželis ", " Juuni ",    " Червня ",   " İyun ",     " Чэрвеня "},
+  {" July ",     " Июля ",    " Iulie ",     " Juli ",     " Liepa ",    " Juuli ",    " Липня ",    " İyul ",     " Ліпеня "},
+  {" August ",   " Августа ", " August ",    " August ",   " Rugpjūtis "," August ",   " Серпня ",   " Avqust ",   " Жніўня "},
+  {" September "," Сентября "," Septembrie "," September "," Rugsėjis ", " September "," Вересня ",  " Sentyabr ", " Верасня "},
+  {" October ",  " Октября ", " Octombrie ", " Oktober ",  " Spalis ",   " Oktoober ", " Жовтня ",   " Oktyabr ",  " Кастрычніка "},
+  {" November ", " Ноября ",  " Noiembrie ", " November ", " Lapkritis "," November ", " Листопада "," Noyabr ",   " Лістапада "},
+  {" December ", " Декабря ", " Decembrie ", " Dezember ", " Gruedis ",  " Detsember "," Грудня ",   " Dekabr ",   " Снежня "}
 };
 
-char* Weekday[7][8]={
-  {"Sunday",   "Воскресенье","Duminică","Sonntag",   "Sekmadienis","Pühapäev", "Неділя",   "Bazar"},
-  {"Monday",   "Понедельник","Luni",    "Montag",    "Pirmadienis","Esmaspäev","Понеділок","Bazar e-si"},
-  {"Tuesday",  "Вторник",    "Marți",   "Dienstag",  "Antradienis","Teisipäev","Вівторок", "Çərşənbə ax"},
-  {"Wednesday","Среда",      "Miercuri","Mittwoch",  "Trečiadieni","Kolmapäev","Середа",   "Çərşənbə"},
-  {"Thursday", "Четверг",    "Joi",     "Donnerstag","Ketvirtadie","Neljapäev","Четвер",   "Cümə axşamı"},
-  {"Friday",   "Пятница",    "Vineri",  "Freitag",   "Penktadieni","Reede",    "Пятниця",  "Cümə"},
-  {"Saturday", "Суббота",    "Sâmbătă", "Sonnabend", "Šeštadienis","Laupäev",  "Субота",   "Şənbə"}
+char* Weekday[7][9]={
+  {"Sunday",   "Воскресенье","Duminică","Sonntag",   "Sekmadienis","Pühapäev", "Неділя",   "Bazar",      "Нядзеля"},
+  {"Monday",   "Понедельник","Luni",    "Montag",    "Pirmadienis","Esmaspäev","Понеділок","Bazar e-si", "Панядзелак"},
+  {"Tuesday",  "Вторник",    "Marți",   "Dienstag",  "Antradienis","Teisipäev","Вівторок", "Çərşənbə ax","Аўторак"},
+  {"Wednesday","Среда",      "Miercuri","Mittwoch",  "Trečiadieni","Kolmapäev","Середа",   "Çərşənbə",   "Серада"},
+  {"Thursday", "Четверг",    "Joi",     "Donnerstag","Ketvirtadie","Neljapäev","Четвер",   "Cümə axşamı","Чацвер"},
+  {"Friday",   "Пятница",    "Vineri",  "Freitag",   "Penktadieni","Reede",    "Пятниця",  "Cümə",       "Пятніца"},
+  {"Saturday", "Суббота",    "Sâmbătă", "Sonnabend", "Šeštadienis","Laupäev",  "Субота",   "Şənbə",      "Субота"}
 };
 
-char* WD[7][8]={
-  {"Su","Вс","D", "So","S", "P","Нд","B"},
-  {"Mo","Пн","L", "Mo","Pr","E","Пн","Be"},
-  {"Tu","Вт","Ma","Di","A", "T","Вт","Ça"},
-  {"We","Ср","Mi","Mi","T", "K","Ср","Ç"},
-  {"Th","Чт","J", "Do","K", "N","Чт","Ca"},
-  {"Fr","Пт","V", "Fr","Pn","R","Пт","C"},
-  {"Sa","Сб","S", "Sa","Š", "L","Сб","Ş"}
+char* WD[7][9]={
+  {"Su","Вс","D", "So","S", "P","Нд","B", "Нд"},
+  {"Mo","Пн","L", "Mo","Pr","E","Пн","Be","Пн"},
+  {"Tu","Вт","Ma","Di","A", "T","Вт","Ça","Аў"},
+  {"We","Ср","Mi","Mi","T", "K","Ср","Ç", "Ср"},
+  {"Th","Чт","J", "Do","K", "N","Чт","Ca","Чц"},
+  {"Fr","Пт","V", "Fr","Pn","R","Пт","C", "Пт"},
+  {"Sa","Сб","S", "Sa","Š", "L","Сб","Ş", "Сб"}
 };
 
 struct Weather_now{
@@ -229,7 +248,7 @@ struct Weather_now{
   char* dew;
 };
 
-struct Weather_now WeatherNow[8]={
+struct Weather_now WeatherNow[9]={
   "Wind ",
   "m/s",
   "mph",
@@ -317,4 +336,15 @@ struct Weather_now WeatherNow[8]={
   "GƏ",
   "GS",
   "Şeh nöqtəsi ",
+
+  "Вецер ",
+  "м/с",
+  "мл/г",
+  "Вільготнасць",
+  "Ціск",
+  "мм",
+  "гПа",
+  "ДП",
+  "ПП",
+  "Кропка расы "
 };

@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.2
+/* Weather Monitor BIM v3.3
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -124,11 +124,11 @@ void loop(){
   }
   else{
     out_bat();
-    showTime();
     is_settings();
     showInsideTemp();
     rssi=viewRSSI(String(WiFi.SSID()));
     showBatteryLevel();
+    showTime();
     showWiFiLevel(rssi);
     if(weather.isDay) analogWrite(BACKLIGHT,html.bright*10);
     else analogWrite(BACKLIGHT,html.bright_n*10);
@@ -592,7 +592,7 @@ void read_eeprom(void){
     }
   }
   if(html.sleep>100) html.sleep=1;
-  if(html.lang>7) html.lang=0;
+  if(html.lang>8) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
   if(html.units>1) html.units=0;
@@ -608,6 +608,7 @@ void read_eeprom(void){
     case 5:urlLang="et";break;
     case 6:urlLang="ua";break;
     case 7:urlLang="az";break;
+    case 8:urlLang="by";break;
     default:urlLang="en";break;
   }
   File f=SPIFFS.open("/save/ssids.json","r");

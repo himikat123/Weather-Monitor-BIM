@@ -282,7 +282,7 @@ void showWeatherNow(void){
   out_bat();
 
     //description
-  if(html.lang==1 or html.lang==5 or html.lang==7){
+  if(html.lang==1 or html.lang==5 or html.lang==7 or html.lang==8){
     if(html.provider==0){
       String d=description(weather.id); 
       if(d) d.toCharArray(descript,d.length()+1);
@@ -452,24 +452,6 @@ float dew(float temp,float hum,bool metric){
 
 uint8_t utf8_symb(uint8_t a,uint8_t b){
   uint8_t s=0x3F;
-  if(a==0xD0){
-    if(b>0x8F) if(b<0xC0) s=b+48;  //А-Я,а-п
-    if(b==0x84) s=0xA7;// Є
-    if(b==0x86) s=0x49;// I
-    if(b==0x87) s=0xA9;// Ї
-    if(b==0x81) s=0xAB;// Ё 
-  }
-  if(a==0xD1){
-    if(b>0x7F) if(b<0x90) s=b+112;//р-я
-    if(b==0x94) s=0xA8;// є
-    if(b==0x96) s=0x69;// i
-    if(b==0x97) s=0xAA;// ї
-    if(b==0x91) s=0xAC;// ё 
-  }
-  if(a==0xD2){
-    if(b==0x90) s=0xA5;// Ґ
-    if(b==0x91) s=0xA6;// ґ
-  }
   if(a==0xC3){
     if(b==0x82) s=0x82;// Â
     if(b==0x84) s=0x8A;// Ä
@@ -510,10 +492,9 @@ uint8_t utf8_symb(uint8_t a,uint8_t b){
     if(b==0x9F) s=0xB4;// ş
     if(b==0xA0) s=0x9B;// Š
     if(b==0xA1) s=0x9C;// š
-    if(b==0xB2) s=0x9D;// Ų
     if(b==0xAA) s=0x9E;// Ū
+    if(b==0xB2) s=0x9D;// Ų    
     if(b==0xB3) s=0x9F;// ų
-    if(b==0xAB) s=0xA0;// ū
     if(b==0xBD) s=0xA1;// Ž
     if(b==0xBE) s=0xA2;// ž
   }
@@ -528,6 +509,26 @@ uint8_t utf8_symb(uint8_t a,uint8_t b){
   }
   if(a==0xC9){
     if(b==0x99) s=0xB0;// ə
+  }
+  if(a==0xD0){
+    if(b==0x81) s=0xAB;// Ё
+    if(b==0x84) s=0xA7;// Є
+    if(b==0x86) s=0x49;// I
+    if(b==0x87) s=0xA9;// Ї
+    if(b==0x8E) s=0xB7;// Ў
+    if(b>0x8F) if(b<0xC0) s=b+48;  //А-Я,а-п 
+  }
+  if(a==0xD1){
+    if(b>0x7F) if(b<0x90) s=b+112;//р-я
+    if(b==0x91) s=0xAC;// ё
+    if(b==0x94) s=0xA8;// є
+    if(b==0x96) s=0x69;// i
+    if(b==0x97) s=0xAA;// ї 
+    if(b==0x9E) s=0xB8;// ў
+  }
+  if(a==0xD2){
+    if(b==0x90) s=0xA5;// Ґ
+    if(b==0x91) s=0xA6;// ґ
   }
   return s;
 }
@@ -553,36 +554,43 @@ String description(int code){
     if(html.lang==1) file=SPIFFS.open("/lang/ru200.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et200.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az200.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by200.json","r");
   }
   if(code>=300 and code<400){
     if(html.lang==1) file=SPIFFS.open("/lang/ru300.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et300.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az300.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by300.json","r");
   }
   if(code>=500 and code<600){
     if(html.lang==1) file=SPIFFS.open("/lang/ru500.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et500.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az500.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by500.json","r");
   }
   if(code>=600 and code<700){
     if(html.lang==1) file=SPIFFS.open("/lang/ru600.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et600.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az600.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by600.json","r");
   }
   if(code>=700 and code<800){
     if(html.lang==1) file=SPIFFS.open("/lang/ru700.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et700.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az700.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by700.json","r");
   }
   if(code>=800 and code<900){
     if(html.lang==1) file=SPIFFS.open("/lang/ru800.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et800.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az800.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by800.json","r");
   }
   if(code>=900 and code<1000){
     if(html.lang==1) file=SPIFFS.open("/lang/ru900.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et900.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az900.json","r");
+    if(html.lang==8) file=SPIFFS.open("/lang/by900.json","r");
   }
   if(file){
     String fileData=file.readString();
