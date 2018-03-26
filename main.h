@@ -14,7 +14,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="3.3";
+String fw="3.4";
 String vers="BIM v"+fw;
 char descript[30];
 uint8_t icon=1;

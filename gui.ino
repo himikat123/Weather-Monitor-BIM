@@ -182,10 +182,16 @@ void showWeatherAfterTomorrow(void){
 
 void showWeatherNow(void){
   int x=3,y=18; String str; int dayLight=0; bool out=false;
-  if(summertime()) dayLight=3600;
+  if(html.adj) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   myGLCD.setColor(back_color);
-  myGLCD.fillRect(x-3,y-1,x+211,y+152); 
+  myGLCD.fillRect(x-3,y-1,x+211,y+152);
+  Serial.print("now: ");Serial.println(now());
+  Serial.print("zone: ");Serial.println(html.zone);
+  Serial.print("adj: ");Serial.println(html.adj);
+  Serial.print("dayLight: ");Serial.println(dayLight);
+  Serial.print("outside.updated: ");Serial.println(outside.updated);
+  Serial.print("updated: ");Serial.println(updated); 
   
     //icon
   weatherIcon(icon,weather.isDay,x,y);
@@ -320,7 +326,7 @@ void showWeatherNow(void){
 
 void out_bat(void){
   int dayLight=0;
-  if(summertime()) dayLight=3600;
+  if(html.adj) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   char bat=BAT0;
   if(updated<1800 and outside.bat<6){

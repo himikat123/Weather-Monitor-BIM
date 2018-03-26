@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.3
+/* Weather Monitor BIM v3.4
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -304,7 +304,7 @@ void siteTime(){
     httpData.toCharArray(stamp,12);
     int dayLight=0;
     setTime(atol(stamp)+(html.zone*3600));
-    if(summertime()) dayLight=3600;
+    if(html.adj) dayLight=3600;
     setTime(atol(stamp)+(html.zone*3600)+dayLight);
   }
   httpData="";
