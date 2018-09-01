@@ -14,7 +14,7 @@ extern unsigned int nowifi[0x0100];
 String city;
 String country;
 String lang;
-String fw="3.4";
+String fw="3.5";
 String vers="BIM v"+fw;
 char descript[30];
 uint8_t icon=1;
@@ -96,6 +96,8 @@ struct html_structure{
   String      sssid;
   String      spass;
   String      sip;
+  float       t_cor;
+  float       h_cor;
 };
 html_structure html;
 

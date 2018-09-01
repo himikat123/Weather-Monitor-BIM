@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.4
+/* Weather Monitor BIM v3.5
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -15,6 +15,7 @@
 #include <DallasTemperature.h>
 #include <DHT.h>
 #include <DHT_U.h>
+#include "SHT21.h"
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include <NtpClientLib.h>
@@ -52,6 +53,7 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer;
 BME280 mySensor;
 DHT_Unified dht(DHTPIN, DHTTYPE);
+SHT21 SHT21;
 ESP8266WebServer webServer(80);
 File fsUploadFile;
 Ticker updater;
@@ -167,7 +169,7 @@ void update_weather(void){
   showWeatherToday();
   showWeatherTomorrow();
   showWeatherAfterTomorrow();
-  connectToWiFi();
+  if(html.os==0) connectToWiFi();
   yield();
 }
 
@@ -303,8 +305,8 @@ void siteTime(){
     char stamp[12];
     httpData.toCharArray(stamp,12);
     int dayLight=0;
-    setTime(atol(stamp)+(html.zone*3600));
-    if(html.adj) dayLight=3600;
+    //setTime(atol(stamp)+(html.zone*3600));
+    if(summertime() and html.adj) dayLight=3600;
     setTime(atol(stamp)+(html.zone*3600)+dayLight);
   }
   httpData="";
@@ -415,6 +417,7 @@ void sensor(void){
     }
     httpData="";
   }
+  WiFi.disconnect();
 }
 
 void out(void){
@@ -485,6 +488,10 @@ void sensors_init(void){
     mySensor.settings.humidOverSample=1;
     mySensor.begin();
   }
+    //SHT21
+  if((html.temp==4) or (html.hum==3)){
+    SHT21.begin();
+  }
 }
 
 float get_temp(bool units){
@@ -502,7 +509,8 @@ float get_temp(bool units){
       if(isnan(event.temperature));
       else temp=event.temperature;
     }
-    if(html.temp==3) temp=mySensor.readTempC(),2; 
+    if(html.temp==3) temp=mySensor.readTempC(),2;
+    if(html.temp==4) temp=SHT21.getTemperature(); 
   }
   else{
     if(html.temp==0) temp=404;
@@ -518,8 +526,9 @@ float get_temp(bool units){
       else{temp=event.temperature; temp=temp*1.8+32;}
     }
     if(html.temp==3) temp=mySensor.readTempF(),2;
+    if(html.temp==4){temp=SHT21.getTemperature(); temp=temp*1.8+32;}
   }
-  return temp;
+  return temp+html.t_cor;
 }
 
 int get_humidity(void){
@@ -532,7 +541,8 @@ int get_humidity(void){
     else hum=event.relative_humidity;
   }
   if(html.hum==2) hum=mySensor.readFloatHumidity();
-  return hum;
+  if(html.hum==3) hum=SHT21.getHumidity();
+  return hum+html.h_cor;
 }
 
 void read_eeprom(void){
@@ -568,6 +578,8 @@ void read_eeprom(void){
       html.k         =root["K"];
       html.temp      =root["TEMP"];
       html.hum       =root["HUM"];
+      html.t_cor     =root["T_COR"];
+      html.h_cor     =root["H_COR"];
       html.provider  =root["PROVIDER"];
       html.battery   =root["BATTERY"];
       html.os        =root["OS"];

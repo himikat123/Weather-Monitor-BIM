@@ -23,7 +23,7 @@ bool handleFileRead(String path){
     if(SPIFFS.exists(pathWithGz)) path+=".gz";
     File file=SPIFFS.open(path,"r");
     size_t sent=webServer.streamFile(file,contentType);
-    file.close();
+    file.close(); 
     return true;
   }
   return false;
@@ -135,6 +135,16 @@ void web_settings(void){
     json+=get_humidity();
     json+="%\"}";
     webServer.send(200,"text/plain",json);
+  });
+
+  webServer.on("/esp/tcor.php",HTTP_POST,[](){
+    html.t_cor=webServer.arg("COR").toFloat();
+    webServer.send(200,"text/plain","OK");
+  });
+
+  webServer.on("/esp/hcor.php",HTTP_POST,[](){
+    html.h_cor=webServer.arg("COR").toFloat();
+    webServer.send(200,"text/plain","OK");
   });
   
   webServer.on("/esp/br.php",HTTP_POST,[](){

@@ -1,22 +1,22 @@
 
 #if defined(__AVR__)
-	#include <avr/pgmspace.h>
-	#define fontdatatype const uint8_t
+  #include <avr/pgmspace.h>
+  #define fontdatatype const uint8_t
 #elif defined(__PIC32MX__)
-	#define PROGMEM
-	#define fontdatatype const unsigned char
+  #define PROGMEM
+  #define fontdatatype const unsigned char
 #elif defined(__arm__)
-	#define PROGMEM
-	#define fontdatatype const unsigned char
+  #define PROGMEM
+  #define fontdatatype const unsigned char
 #elif defined(ESP8266)
         #include <pgmspace.h>
-	#define fontdatatype const uint8_t
+  #define fontdatatype const uint8_t
 #endif
 
 // SmallFont.c 
-// Font Size	: 8x12
-// Memory usage	: 2692 bytes
-// # characters	: (95) 223
+// Font Size  : 8x12
+// Memory usage : 2692 bytes
+// # characters : (95) 223
 
 fontdatatype SmallFontRu[2692] PROGMEM={         
 0x08,0x0C,0x20,0xDF,
@@ -249,9 +249,9 @@ fontdatatype SmallFontRu[2692] PROGMEM={
 };  
 
 // BigFont.c (C)2010 by Henning Karlsen
-// Font Size	: 16x16
-// Memory usage	: 7172 bytes
-// # characters	: 223
+// Font Size  : 16x16
+// Memory usage : 7172 bytes
+// # characters : 223
 
 fontdatatype BigFontRu[7172] PROGMEM={
 0x10,0x10,0x20,0xDF,
