@@ -1,13 +1,11 @@
 void getWeatherNow(void){
-  String Units,url;
-  if(html.units) Units="imperial";
-  else Units="metric";
+  String url;
   if(html.city.indexOf("auto")!=-1){
     if(html.provider==0){
       url="http://api.openweathermap.org/data/2.5/weather";
       url+="?lat="+String(weather.latitude);
       url+="&lon="+String(weather.longitude);
-      url+="&units="+String(Units);
+      url+="&units=metric";
       url+="&appid="+String(html.appid);
       url+="&lang="+String(urlLang);
     }
@@ -21,7 +19,7 @@ void getWeatherNow(void){
     if(html.provider==0){
       url="http://api.openweathermap.org/data/2.5/weather";
       url+="?q="+String(html.city);
-      url+="&units="+String(Units);
+      url+="&units=metric";
       url+="&appid="+String(html.appid);
       url+="&lang="+String(urlLang);
     }
@@ -35,13 +33,10 @@ void getWeatherNow(void){
     country=weather.country;
     city=weather.city;
     lang=html.lang;
-    //sprintf(cityName,"%s",weather.city);
     sprintf(descript,"%s",weather.descript);
     latitude=weather.latitude;
     longitude=weather.longitude;
     if(html.provider==0) icon=atoi(weather.icon);
-    Serial.print("weather.icon ");Serial.println(weather.icon);
-    Serial.print("icon ");Serial.println(icon);
     dtostrf(weather.temp,1,1,text_buf);
     dtostrf(weather.speed,1,1,text_buf);
   }
@@ -87,21 +82,18 @@ bool parseWeatherNow(){
     if(time_now>weather.sunrise and time_now<weather.sunset) weather.isDay=true;
     else weather.isDay=false;
     if(time_now<weather.sunrise) weather.isDay=true;
-    Serial.print("weather.icon ");Serial.println(weather.icon);
   }
   
   if(html.provider==1){
     weather.descript    = root["current_observation"]["weather"];
     weather.icon        = root["current_observation"]["icon"];
-    weather.temp        = html.units?root["current_observation"]["temp_f"]:
-                                     root["current_observation"]["temp_c"];
+    weather.temp        = root["current_observation"]["temp_c"];
     weather.humidity    = root["current_observation"]["relative_humidity"];
     weather.pressure    = root["current_observation"]["pressure_mb"];
     weather.speed       = root["current_observation"]["wind_kph"];
     weather.speed       = round(weather.speed*1000/360)/10;
     weather.deg         = root["current_observation"]["wind_degrees"];
-    weather.dew_point   = html.units?root["current_observation"]["dewpoint_f"]:
-                                     root["current_observation"]["dewpoint_c"]; 
+    weather.dew_point   = root["current_observation"]["dewpoint_c"]; 
     weather.country     = root["current_observation"]["display_location"]["country_iso3166"];
     weather.city        = root["current_observation"]["display_location"]["city"];
     weather.latitude    = root["current_observation"]["display_location"]["latitude"];
@@ -113,14 +105,12 @@ bool parseWeatherNow(){
 }
 
 void getWeatherDaily(void){
-  String Units,url;
-  if(html.units) Units="imperial";
-  else Units="metric";
+  String url;
   if(html.provider==0){
     url=site;
     url+="hepler2.php?key="+html.appid;
     url+="&city="+String(weather.city);
-    url+="&units="+Units;
+    url+="&units=metric";
     url+="&gmt="+String(html.zone);
   }
   if(html.provider==1){
@@ -128,7 +118,7 @@ void getWeatherDaily(void){
     url+="helper.php?key="+String(html.appid);
     url+="&city="+String(weather.latitude)+","+String(weather.longitude)+".json";
     url+="&icon="+String(weather.icon);
-    url+="&units="+html.units;
+    url+="&units=0";
     url+="&gmt="+String(html.zone);
   }
   

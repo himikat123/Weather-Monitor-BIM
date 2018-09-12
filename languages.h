@@ -1,35 +1,45 @@
 struct saved_text{
   char* saved;
   char* not_saved;
+  const char* old_pass;
 };
 
 struct saved_text saved[9]={
   "Saved",
   "Did not save",
+  "Invalid old password",
     
   "Сохранено",
   "Не сохранено",
+  "Неверный старый пароль",
     
   "Salvat",
   "Nu este salvat",
+  "Parola veche nevalidă",
     
   "Gerettet",
   "Nicht gespeichert",
+  "Ungültiges altes Passwort",
 
   "Išsaugota",
   "Nepasaugotas",
+  "Netinkamas senas slaptažodis",
   
   "Salvestatud",
   "Ei salvestatud",
+  "Kehtetu vana parool",
 
   "Збережено",
   "Не збережено",
+  "Невірний старий пароль",
 
   "Yadda saxlanıldı",
   "Yadda saxlanılmadı",
+  "Yanlış köhnə parol",
 
   "Захавана",
-  "Не захавана"
+  "Не захавана",
+  "Няправільны стары пароль"
 };
 
 struct status_text{
@@ -238,7 +248,9 @@ char* WD[7][9]={
 struct Weather_now{
   char* Wind;
   char* meter_sec;
+  char* km_hour;
   char* miles_hour;
+  char* knots;
   char* Humidity;
   char* Pressure;
   char* mm;
@@ -250,8 +262,10 @@ struct Weather_now{
 
 struct Weather_now WeatherNow[9]={
   "Wind ",
-  "m/s",
+  "mps",
+  "kmph",
   "mph",
+  "kn",
   "Humidity",
   "Pressure",
   "mm",
@@ -262,7 +276,9 @@ struct Weather_now WeatherNow[9]={
 
   "Ветер ",
   "м/с",
+  "км/ч",
   "м/ч",
+  "уз",
   "Влажность",
   "Давление",
   "мм",
@@ -273,7 +289,9 @@ struct Weather_now WeatherNow[9]={
 
   "Vîntul ",
   "m/s",
+  "km/h",
   "mph",
+  "nod",
   "Umiditatea",
   "Presiunea",
   "mm",
@@ -284,7 +302,9 @@ struct Weather_now WeatherNow[9]={
 
   "Wind ",
   "m/s",
+  "km/h",
   "mph",
+  "kn",
   "Luftfeuchte",
   "Luftdruck",
   "mm",
@@ -295,7 +315,9 @@ struct Weather_now WeatherNow[9]={
 
   "Vėjas ",
   "m/s",
+  "km/h",
   "mph",
+  "kn",
   "Drėgnumas",
   "Slėgis",
   "mm",
@@ -306,7 +328,9 @@ struct Weather_now WeatherNow[9]={
 
   "Tuul ",
   "m/s",
+  "km/h",
   "ml/h",
+  "sõl",
   "Niiskus",
   "Õhurõhu",
   "mm",
@@ -317,7 +341,9 @@ struct Weather_now WeatherNow[9]={
 
   "Вітер ",
   "м/с",
+  "км/г",
   "мл/г",
+  "вуз",
   "Вологість",
   "Тиск",
   "мм",
@@ -328,7 +354,9 @@ struct Weather_now WeatherNow[9]={
 
   "Külək ",
   "m/s",
+  "km/s",
   "ml/s",
+  "düy",
   "Nisbi rütubət",
   "Təzyiq",
   "mm",
@@ -339,7 +367,9 @@ struct Weather_now WeatherNow[9]={
 
   "Вецер ",
   "м/с",
+  "км/г",
   "мл/г",
+  "вуз",
   "Вільготнасць",
   "Ціск",
   "мм",
