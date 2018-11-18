@@ -121,7 +121,7 @@ void printData(String data,String units,int x,uint8_t y,int color,int bcolor){
   myGLCD.print(integ,x+48-len,y);
   myGLCD.setFont(SmallFontRu);
   myGLCD.print(".",x+48-len+integ.length()*16,y+4);
-  sprintf(text_buf,"%c",fract[0]);
+  sprintf(text_buf,"%d",round(fract.toInt()/10));
   myGLCD.print(text_buf,x+48-len+integ.length()*16+8,y+4);
   myGLCD.print(units,x+48-len+integ.length()*16+16,y+4);
 }
@@ -144,33 +144,34 @@ void printWD(String str,int x,int y){
 }
 
 void showWeatherDaily(int x,int y,uint8_t icon,uint8_t wd,float tempDay,float tempNight,float wind){
+    //icon
   myGLCD.setColor(back_color);
   myGLCD.fillRect(x-7,y,x+104,myGLCD.getDisplayYSize()-1);
-  if(rssi!=0) weatherIcon(icon,true,x,y);
+  weatherIcon(icon,true,x,y);
+    //day
   myGLCD.fillRect(x+80,y+48,x+81,y+49);
   myGLCD.setColor(text_color);
   myGLCD.drawRect(x,y,x+96,myGLCD.getDisplayYSize()-2);
   myGLCD.drawRect(x+1,y+1,x+95,myGLCD.getDisplayYSize()-3);
   if(wd>6) wd-=7;
   printWD(UTF8(WD[wd][html.lang]),x,y);
-  if(rssi==0){
-    printData("---",html.to_units?"^F":"^C",x+16,y+18,text_color,VGA_TRANSPARENT);
-    printData("---",html.to_units?"^F":"^C",x+16,y+36,text_color,VGA_TRANSPARENT);
-    printCent("---",x,x+96,y+52,text_color,VGA_TRANSPARENT,SmallFontRu);
-  }else{
-    myGLCD.setColor(text_color);
-    myGLCD.setBackColor(VGA_TRANSPARENT);
-    myGLCD.setFont(BigFontRu);
-    myGLCD.print(String(round(html.to_units?tempDay*1.8+32:tempDay)),(x+75)-String(round(html.to_units?tempDay*1.8+32:tempDay)).length()*16,y+18);
-    myGLCD.print(String(round(html.to_units?tempNight*1.8+32:tempNight)),(x+75)-String(round(html.to_units?tempNight*1.8+32:tempNight)).length()*16,y+36);
-    myGLCD.setFont(SmallFontRu);
-    myGLCD.print(html.to_units?"^F":"^C",x+75,y+22);
-    myGLCD.print(html.to_units?"^F":"^C",x+75,y+40);
+    //temperature and wind
+  myGLCD.setColor(text_color);
+  myGLCD.setBackColor(VGA_TRANSPARENT);
+  myGLCD.setFont(BigFontRu);
+  String s=tempDay>200?"---":String(round(html.to_units?tempDay*1.8+32:tempDay));
+  myGLCD.print(s,(x+75)-s.length()*16,y+18);
+  s=tempNight>200?"---":String(round(html.to_units?tempNight*1.8+32:tempNight));
+  myGLCD.print(s,(x+75)-s.length()*16,y+36);
+  myGLCD.setFont(SmallFontRu);
+  myGLCD.print(html.to_units?"^F":"^C",x+75,y+22);
+  myGLCD.print(html.to_units?"^F":"^C",x+75,y+40);
+  if(html.provider!=2){
     String str=UTF8(WeatherNow[html.lang].Wind); 
-    if(html.w_units==0) str+=String(round(wind));
-    if(html.w_units==1) str+=String(round(wind*3.6));
-    if(html.w_units==2) str+=String(round(wind*2.237));
-    if(html.w_units==3) str+=String(round(wind*1.94));
+    if(html.w_units==0) str+=wind>200?"---":String(round(wind));
+    if(html.w_units==1) str+=wind>200?"---":String(round(wind*3.6));
+    if(html.w_units==2) str+=wind>200?"---":String(round(wind*2.237));
+    if(html.w_units==3) str+=wind>200?"---":String(round(wind*1.94));
     if(html.w_units==0) str+=UTF8(WeatherNow[html.lang].meter_sec);
     if(html.w_units==1) str+=UTF8(WeatherNow[html.lang].km_hour);
     if(html.w_units==2) str+=UTF8(WeatherNow[html.lang].miles_hour);
@@ -180,15 +181,15 @@ void showWeatherDaily(int x,int y,uint8_t icon,uint8_t wd,float tempDay,float te
 }
 
 void showWeatherToday(void){
-  showWeatherDaily(7,171,icon1,weekday()-1,weather.day1,weather.night1,weather.speed1);
+  showWeatherDaily(7,171,weather.icon1,weekday()-1,weather.day1,weather.night1,weather.speed1);
 }
 
 void showWeatherTomorrow(void){
-  showWeatherDaily(111,171,icon2,weekday(),weather.day2,weather.night2,weather.speed2);
+  showWeatherDaily(111,171,weather.icon2,weekday(),weather.day2,weather.night2,weather.speed2);
 }
 
 void showWeatherAfterTomorrow(void){
-  showWeatherDaily(215,171,icon3,weekday()+1,weather.day3,weather.night3,weather.speed3);
+  showWeatherDaily(215,171,weather.icon3,weekday()+1,weather.day3,weather.night3,weather.speed3);
 }
 
 void showWeatherNow(void){
@@ -197,14 +198,11 @@ void showWeatherNow(void){
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   myGLCD.setColor(back_color);
   myGLCD.fillRect(x-3,y-1,x+211,y+152); 
-  
     //icon
-  weatherIcon(icon,weather.isDay,x,y);
+  weatherIcon(weather.icon,weather.isDay,x,y);
   myGLCD.fillRect(x+80,y+48,x+81,y+49);
-  
     //temperature
-  float temp=0;
-  drawFSJpeg((weather.temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x,y+64);
+  float temp=0.0;
   if(updated<1800 and outside.temp<120 and html.t_out){
     html.to_units?temp=outside.temp*1.8+32:temp=outside.temp;
     out=true;
@@ -213,6 +211,8 @@ void showWeatherNow(void){
     html.to_units?temp=weather.temp*1.8+32:temp=weather.temp;
     out=false;
   }
+  temp+=html.to_cor;
+  drawFSJpeg((temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x,y+64);
   int cen=round(((x+112)-(x+32))/2)+x+32;
   if(html.to_round){
     char buf[16];
@@ -225,24 +225,24 @@ void showWeatherNow(void){
     int leng=(integ.length()*myGLCD.getFontXsize()+42);
     myGLCD.setColor(out?out_color:text_color);
     myGLCD.setBackColor(back_color);
-    myGLCD.print((rssi==0)?"--":integ,cen-(leng/2),y+75);
+    if(temp<120.0) myGLCD.print(integ,cen-(leng/2),y+75);
+    else myGLCD.print("---",x+30,y+75);
     myGLCD.setFont(SmallFontRu);
-    myGLCD.print((rssi==0)?"-":fract,cen-(leng/2)+1+(leng-42),y+83);
+    if(temp<120.0) myGLCD.print(fract,cen-(leng/2)+1+(leng-42),y+83);
     myGLCD.setFont(BigFontRu);
     myGLCD.print(html.to_units?"^F":"^C",cen-(leng/2)+(leng-42)+14,y+80);
   }
   else{
     str=String(round(temp));
-    if(rssi==0) str="---";
     myGLCD.setFont(Arial_round);
     int leng=(str.length()*myGLCD.getFontXsize()+32)/2;
     myGLCD.setColor(out?out_color:text_color);
     myGLCD.setBackColor(back_color);
-    myGLCD.print(str,cen-leng,y+75);
+    if(temp<120.0) myGLCD.print(str,cen-leng,y+75);
+    else myGLCD.print("---",x+30,y+75);
     myGLCD.setFont(BigFontRu);
     myGLCD.print(html.to_units?"^F":"^C",cen-leng+1+str.length()*myGLCD.getFontXsize(),y+80); 
   }
-    
     //wind
   int e=0; String units; float w;
   drawFSJpeg("/pic/wind.jpg",x+5,y+104);
@@ -256,9 +256,11 @@ void showWeatherNow(void){
   if(html.w_units==1) units=UTF8(WeatherNow[html.lang].km_hour);
   if(html.w_units==2) units=UTF8(WeatherNow[html.lang].miles_hour);
   if(html.w_units==3) units=UTF8(WeatherNow[html.lang].knots);
-  if(html.w_round) printData((rssi==0)?"---":String(w),units,x+27,y+120,text_color,back_color);
-  else printInt((rssi==0)?"---":String(round(w)),units,x+27,y+120,text_color,back_color);
-  
+  if(w>400) printInt("---",units,x+27,y+120,text_color,back_color);
+  else{
+    if(html.w_round) printData(String(w),units,x+27,y+120,text_color,back_color);
+    else printInt(String(round(w)),units,x+27,y+120,text_color,back_color);
+  }
     //wind direction
   float deg=round(weather.deg/45)*45+180;
   float x0=x+21;
@@ -273,10 +275,9 @@ void showWeatherNow(void){
   float x3=2*x0-x2;
   float y3=2*y0-y2;
   geo.fillTriangle(round(x1),round(y1),round(x2),round(y2),round(x3),round(y3));
-    
     //humidity
   float humidity;
-  drawFSJpeg("/pic/hum.jpg",x+108,y+64);
+  drawFSJpeg("/pic/hum.jpg",x+109,y+64);
   myGLCD.setColor(0x433C);
   myGLCD.fillRect(x+124,y+80,x+125,y+81);
   if(updated<1800 and outside.humidity<120 and html.h_out){
@@ -287,14 +288,14 @@ void showWeatherNow(void){
     humidity=weather.humidity;
     out=false;
   }
+  humidity+=html.ho_cor;
   str=String(round(humidity));
-  if(rssi==0) str="---";
-  printInt(str,"%",x+122,y+80,out?out_color:text_color,back_color);
-    
+  if(humidity<120.0) printInt(str,"%",x+122,y+80,out?out_color:text_color,back_color);
+  else printInt("---","",x+122,y+80,text_color,back_color);  
     //pressure
   drawFSJpeg("/pic/pres.jpg",x+108,y+104);
   int pres;
-  if(updated<1800 and outside.pres<1200 and html.p_out){
+  if(updated<1800 and outside.pres<1300 and html.p_out){
     pres=outside.pres;
     out=true;
   }
@@ -302,30 +303,40 @@ void showWeatherNow(void){
     pres=weather.pressure;
     out=false;
   }
+  pres+=html.po_cor;
   html.po_units?str=String(round(pres),DEC):str=String(round(0.75*pres),DEC);
-  if(rssi==0) str="---";
+  if(pres>2000) str="---";
   if(html.po_units)
     printCent(UTF8(WeatherNow[html.lang].hpa),x+142,x+210,y+108,out?out_color:text_color,back_color,SmallFontRu);
-  if(rssi==0) str="---";
-  printInt(str,html.po_units?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color,back_color);
-  
-    //dew point
-  str=UTF8(WeatherNow[html.lang].dew);
-  if(weather.dew_point==1000) str+=String(round(dew(temp,humidity,html.to_units)));
-  else str+=String(round(weather.dew_point));
-  str+=html.to_units?"^F":"^C";
+  printInt(str,html.po_units?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color,back_color);  
+    //updated
+  str="~ ";
+  if(!html.timef){
+    str+=isAM()?UTF8(WeatherNow[html.lang].AM):UTF8(WeatherNow[html.lang].PM);
+    str+=" ";
+  }
+  str+=html.timef?hour(weather.updated):hourFormat12(weather.updated);
+  str+=":";
+  if(minute(weather.updated)<10) str+="0";
+  str+=minute(weather.updated); str+=":";
+  if(second(weather.updated)<10) str+="0";
+  str+=second(weather.updated); str+=" ";
+  str+=day(weather.updated);str+="-";
+  str+=month(weather.updated);str+="-";
+  str+=year(weather.updated);
   printCent(str,x,x+208,y+138,VGA_AQUA,back_color,SmallFontRu);
-  
     //outside battery
   out_bat();
-
     //description
+  char descript[80];
   if(html.lang==1 or html.lang==5 or html.lang==7 or html.lang==8){
     if(html.provider==0){
       String d=description(weather.id); 
       if(d) d.toCharArray(descript,d.length()+1);
     }
+    else sprintf(descript,"%s",weather.descript);
   }
+  else sprintf(descript,"%s",weather.descript);
   char buf[160]; uint8_t c=0,maxLen=0,len[5]={0,0,0,0,0};
   String(UTF8(descript)).toCharArray(buf,String(UTF8(descript)).length()+1);
   String w1=strtok(buf," ");
@@ -383,7 +394,9 @@ void out_bat(void){
 }
 
 void showInsideTemp(void){
-  int x=215,y=96;
+  int x=215,y=96, dayLight=0;
+  if(summertime()) dayLight=3600;
+  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   if(temp_draw==0 or hum_draw==0){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x,y,myGLCD.getDisplayXSize()-1,y+74);
@@ -411,13 +424,13 @@ void showInsideTemp(void){
     if(tempInside>=0 and tempInside<100){
       if(html.ti_round){
         str=String(tempInside);
-        if(html.hum==0) printData(str,html.ti_units?"^F":"^C",x+23,y+25,text_color,back_color);
-        else printData(str,html.ti_units?"^F":"^C",x+23,y+9,text_color,back_color);
+        if(html.hum==0) printData(str,html.ti_units?"^F":"^C",x+23,y+25,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        else printData(str,html.ti_units?"^F":"^C",x+23,y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
         str=String(round(tempInside));
-        if(html.hum==0) printInt(str,html.ti_units?"^F":"^C",x+19,y+25,text_color,back_color);
-        else printInt(str,html.ti_units?"^F":"^C",x+19,y+9,text_color,back_color);
+        if(html.hum==0) printInt(str,html.ti_units?"^F":"^C",x+19,y+25,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        else printInt(str,html.ti_units?"^F":"^C",x+19,y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     temp_draw=tempInside;
@@ -425,13 +438,20 @@ void showInsideTemp(void){
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
       if(html.ti_round){
-        printData(String(humInside),"%",x+25,y+41,text_color,back_color);
+        printData(String(humInside),"%",x+25,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
-        printInt(String(round(humInside)),"%",x+16,y+41,text_color,back_color);
+        printInt(String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     hum_draw=humInside;
+  }
+  float u=(now()-weather.updated)/10;
+  if(u>=0 and u<121){
+    myGLCD.setColor(0x06FB);
+    myGLCD.drawRect(3,48+int(u),4,168);
+    myGLCD.setColor(back_color);
+    myGLCD.drawRect(3,48,4,48+int(u));
   }
 }
 
@@ -448,9 +468,9 @@ void showTime(void){
   }
   if(clock_upd!=minute()){
     clock_upd=minute();
-     //weekday
+      //weekday
     printCent(UTF8(Weekday[weekday()-1][html.lang]),x+2,x+94,y+45,text_color,back_color,SmallFontRu);
-     //time
+      //time
     sprintf(text_buf,"%d:%02d",html.timef?hour():hourFormat12(),minute());
     printCent(text_buf,x+7,x+89,y+18,text_color,back_color,DotMatrix_M_Num);
     if(!html.timef) 
@@ -472,28 +492,6 @@ void showTime(void){
   myGLCD.fillRect(160-(ld+lm)/2+ld+lm+64,0,272,17);
   myGLCD.fillRect(160-(ld+lm+64)/2+ld,0,160-(ld+lm+64)/2+ld+lm,3);
 }
-
-float dew(float temp,float hum,bool metric){
-  float dewPoint=NAN;
-  if(metric&&!isnan(temp>=0)&&!isnan(hum)){
-    dewPoint=243.12*(log(hum/100.0)+((17.62*temp)/(243.12+temp)))/(17.62-log(hum/100.0)-((17.62*temp)/(243.12+temp)));
-  }
-  else if(metric&&!isnan(temp<0)&&!isnan(hum)){
-    dewPoint=276.62*(log(hum/100.0)+((22.46*temp)/(276.62+temp)))/(22.46-log(hum/100.0)-((22.46*temp)/(276.62+temp)));
-  }
-  else if(!isnan(temp>=0)&&!isnan(hum)){
-    float ctemp=(temp-32.0)* 5.0/9.0;
-    dewPoint=243.12*(log(hum/100.0)+((17.62*ctemp)/(243.12+ctemp)))/(17.62-log(hum/100.0)-((17.62*ctemp)/(243.12+ctemp)));
-    dewPoint=dewPoint*9.0/5.0+32.0;
-  }
-  else if(!isnan(temp<0)&&!isnan(hum)){
-    float ctemp=(temp-32.0)*5.0/9.0;
-    dewPoint=276.62*(log(hum/100.0)+((22.46*ctemp)/(276.62+ctemp)))/(22.46-log(hum/100.0)-((22.46*ctemp)/(276.62+ctemp)));
-    dewPoint=dewPoint*9.0/5.0+32.0;
-  }
-  return dewPoint;
-}
-
 
 uint8_t utf8_symb(uint8_t a,uint8_t b){
   uint8_t s=0x3F;
@@ -598,42 +596,49 @@ String description(int code){
   if(code>=200 and code<300){
     if(html.lang==1) file=SPIFFS.open("/lang/ru200.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et200.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua200.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az200.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by200.json","r");
   }
   if(code>=300 and code<400){
     if(html.lang==1) file=SPIFFS.open("/lang/ru300.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et300.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua300.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az300.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by300.json","r");
   }
   if(code>=500 and code<600){
     if(html.lang==1) file=SPIFFS.open("/lang/ru500.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et500.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua500.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az500.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by500.json","r");
   }
   if(code>=600 and code<700){
     if(html.lang==1) file=SPIFFS.open("/lang/ru600.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et600.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua600.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az600.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by600.json","r");
   }
   if(code>=700 and code<800){
     if(html.lang==1) file=SPIFFS.open("/lang/ru700.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et700.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua700.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az700.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by700.json","r");
   }
   if(code>=800 and code<900){
     if(html.lang==1) file=SPIFFS.open("/lang/ru800.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et800.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua800.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az800.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by800.json","r");
   }
   if(code>=900 and code<1000){
     if(html.lang==1) file=SPIFFS.open("/lang/ru900.json","r");
     if(html.lang==5) file=SPIFFS.open("/lang/et900.json","r");
+    if(html.lang==6) file=SPIFFS.open("/lang/ua900.json","r");
     if(html.lang==7) file=SPIFFS.open("/lang/az900.json","r");
     if(html.lang==8) file=SPIFFS.open("/lang/by900.json","r");
   }

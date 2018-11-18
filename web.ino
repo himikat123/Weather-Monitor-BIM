@@ -38,6 +38,7 @@ bool handleFileRead(String path){
 }
 
 bool FileRead(String path){
+  ap_flag=true;
   if(path.endsWith("/")) path+="index.htm";
   String contentType=getContentType(path);
   String pathWithGz=path+".gz";
@@ -133,7 +134,7 @@ void web_settings(void){
     sensors_init();
     webServer.send(200,"text/plain","");
   });
-/////////////////////////////////////////////////////////////
+
   webServer.on("/esp/tcor.php",HTTP_POST,[](){
     html.t_cor=webServer.arg("COR").toFloat();
     webServer.send(200,"text/plain","OK");
@@ -146,16 +147,16 @@ void web_settings(void){
   
   webServer.on("/esp/br.php",HTTP_POST,[](){
     int bright=webServer.arg("BR").toInt();
-    analogWrite(BACKLIGHT,bright*10);
+    analogWrite(BACKLIGHT,bright);
     webServer.send(200,"text/plain",String(bright));
   });
 
   webServer.on("/esp/br_n.php",HTTP_POST,[](){
     int bright=webServer.arg("BR_N").toInt();
-    analogWrite(BACKLIGHT,bright*10);
+    analogWrite(BACKLIGHT,bright);
     webServer.send(200,"text/plain",String(bright));
   });
-//////////////////////////////////////////////////////
+
   
 webServer.on("/esp/adc.php",HTTP_POST,[](){
     String json="{\"u\":\""; json+=analogRead(A0); json+="\"}";
@@ -190,6 +191,7 @@ webServer.on("/esp/adc.php",HTTP_POST,[](){
     float cor=-html.k;
     cor=cor+400;
     String json="{\"fw\":\""; json+="v"+fw;                    json+="\",";
+    json+="\"id\":\"";        json+=html.id;                   json+="\",";
     json+="\"ssid\":\"";      json+=WiFi.SSID();               json+="\",";
     json+="\"ch\":\"";        json+=WiFi.channel();            json+="\",";
     json+="\"sig\":\"";       json+=WiFi.RSSI();               json+="dB\",";
@@ -221,6 +223,7 @@ webServer.on("/esp/adc.php",HTTP_POST,[](){
 
   webServer.on("/esp/reboot.php",HTTP_POST,[](){
     webServer.send(200,"text/plain","OK");
+    ESP.deepSleep(10);
     ESP.reset();
   });
 

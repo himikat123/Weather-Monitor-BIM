@@ -1,45 +1,17 @@
 struct saved_text{
-  char* saved;
-  char* not_saved;
-  const char* old_pass;
+  char* saved; char* not_saved; const char* old_pass;
 };
 
 struct saved_text saved[9]={
-  "Saved",
-  "Did not save",
-  "Invalid old password",
-    
-  "Сохранено",
-  "Не сохранено",
-  "Неверный старый пароль",
-    
-  "Salvat",
-  "Nu este salvat",
-  "Parola veche nevalidă",
-    
-  "Gerettet",
-  "Nicht gespeichert",
-  "Ungültiges altes Passwort",
-
-  "Išsaugota",
-  "Nepasaugotas",
-  "Netinkamas senas slaptažodis",
-  
-  "Salvestatud",
-  "Ei salvestatud",
-  "Kehtetu vana parool",
-
-  "Збережено",
-  "Не збережено",
-  "Невірний старий пароль",
-
-  "Yadda saxlanıldı",
-  "Yadda saxlanılmadı",
-  "Yanlış köhnə parol",
-
-  "Захавана",
-  "Не захавана",
-  "Няправільны стары пароль"
+  "Saved","Did not save","Invalid old password",
+  "Сохранено","Не сохранено","Неверный старый пароль",
+  "Salvat","Nu este salvat","Parola veche nevalidă",
+  "Gerettet","Nicht gespeichert","Ungültiges altes Passwort",
+  "Išsaugota","Nepasaugotas","Netinkamas senas slaptažodis",
+  "Salvestatud","Ei salvestatud","Kehtetu vana parool",
+  "Збережено","Не збережено","Невірний старий пароль",
+  "Yadda saxlanıldı","Yadda saxlanılmadı","Yanlış köhnə parol",
+  "Захавана","Не захавана","Няправільны стары пароль"
 };
 
 struct status_text{
@@ -246,135 +218,19 @@ char* WD[7][9]={
 };
 
 struct Weather_now{
-  char* Wind;
-  char* meter_sec;
-  char* km_hour;
-  char* miles_hour;
-  char* knots;
-  char* Humidity;
-  char* Pressure;
-  char* mm;
-  char* hpa;
-  char* AM;
-  char* PM;
-  char* dew;
+  char* Wind; char* meter_sec; char* km_hour; char* miles_hour;
+  char* knots; char* Humidity; char* Pressure; char* mm;
+  char* hpa; char* AM; char* PM; char* dew;
 };
 
 struct Weather_now WeatherNow[9]={
-  "Wind ",
-  "mps",
-  "kmph",
-  "mph",
-  "kn",
-  "Humidity",
-  "Pressure",
-  "mm",
-  "hPa",
-  "AM",
-  "PM",
-  "Dew point ",
-
-  "Ветер ",
-  "м/с",
-  "км/ч",
-  "м/ч",
-  "уз",
-  "Влажность",
-  "Давление",
-  "мм",
-  "гПа",
-  "ДП",
-  "ПП",
-  "Точка росы ",
-
-  "Vîntul ",
-  "m/s",
-  "km/h",
-  "mph",
-  "nod",
-  "Umiditatea",
-  "Presiunea",
-  "mm",
-  "hPa",
-  "AM",
-  "PM",
-  "Punct de condensare ",
-
-  "Wind ",
-  "m/s",
-  "km/h",
-  "mph",
-  "kn",
-  "Luftfeuchte",
-  "Luftdruck",
-  "mm",
-  "hPa",
-  "AM",
-  "PM",
-  "Taupunkt ",
-
-  "Vėjas ",
-  "m/s",
-  "km/h",
-  "mph",
-  "kn",
-  "Drėgnumas",
-  "Slėgis",
-  "mm",
-  "hPa",
-  "AM",
-  "PM",
-  "Rasos taškas ",
-
-  "Tuul ",
-  "m/s",
-  "km/h",
-  "ml/h",
-  "sõl",
-  "Niiskus",
-  "Õhurõhu",
-  "mm",
-  "hPa",
-  "AM",
-  "PM",
-  "Kastepunkt ",
-
-  "Вітер ",
-  "м/с",
-  "км/г",
-  "мл/г",
-  "вуз",
-  "Вологість",
-  "Тиск",
-  "мм",
-  "гПа",
-  "ДП",
-  "ПП",
-  "Точка роси ",
-
-  "Külək ",
-  "m/s",
-  "km/s",
-  "ml/s",
-  "düy",
-  "Nisbi rütubət",
-  "Təzyiq",
-  "mm",
-  "hPa",
-  "GƏ",
-  "GS",
-  "Şeh nöqtəsi ",
-
-  "Вецер ",
-  "м/с",
-  "км/г",
-  "мл/г",
-  "вуз",
-  "Вільготнасць",
-  "Ціск",
-  "мм",
-  "гПа",
-  "ДП",
-  "ПП",
-  "Кропка расы "
+  "Wind ","mps","kmph","mph","kn","Humidity","Pressure","mm","hPa","AM","PM","Dew point ",
+  "Ветер ","м/с","км/ч","м/ч","уз","Влажность","Давление","мм","гПа","ДП","ПП","Точка росы ",
+  "Vîntul ","m/s","km/h","mph","nod","Umiditatea","Presiunea","mm","hPa","AM","PM","Punct de condensare ",
+  "Wind ","m/s","km/h","mph","kn","Luftfeuchte","Luftdruck","mm","hPa","AM","PM","Taupunkt ",
+  "Vėjas ","m/s","km/h","mph","kn","Drėgnumas","Slėgis","mm","hPa","AM","PM","Rasos taškas ",
+  "Tuul ","m/s","km/h","ml/h","sõl","Niiskus","Õhurõhu","mm","hPa","AM","PM","Kastepunkt ",
+  "Вітер ","м/с","км/г","мл/г","вуз","Вологість","Тиск","мм","гПа","ДП","ПП","Точка роси ",
+  "Külək ","m/s","km/s","ml/s","düy","Nisbi rütubət","Təzyiq","mm","hPa","GƏ","GS","Şeh nöqtəsi ",
+  "Вецер ","м/с","км/г","мл/г","вуз","Вільготнасць","Ціск","мм","гПа","ДП","ПП","Кропка расы "
 };
