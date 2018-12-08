@@ -51,7 +51,7 @@ bool parseWeatherNow(){
     weather.id           = root["weather"][0]["id"];
     const char* descript = root["weather"][0]["description"];
     sprintf(weather.descript,"%s",descript);
-    weather.icon         = root["weather"][0]["icon"];
+    weather.icon         = atoi(root["weather"][0]["icon"]);
     weather.temp         = root["main"]["temp"];
     weather.humidity     = root["main"]["humidity"];
     weather.pressure     = root["main"]["pressure"];

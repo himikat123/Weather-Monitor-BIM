@@ -67,33 +67,17 @@ void showBatteryLevel(void){
 }
 
 void weatherIcon(uint8_t picture,bool isDay,uint8_t x,uint8_t y){
-  if(isDay){
-    switch(picture){
-      case 1:drawFSJpeg("/pic/01d.jpg",x,y);break;
-      case 2:drawFSJpeg("/pic/02d.jpg",x,y);break;
-      case 3:drawFSJpeg("/pic/03d.jpg",x,y);break;
-      case 4:drawFSJpeg("/pic/04d.jpg",x,y);break;
-      case 9:drawFSJpeg("/pic/09d.jpg",x,y);break;
-      case 10:drawFSJpeg("/pic/10d.jpg",x,y);break;
-      case 11:drawFSJpeg("/pic/11d.jpg",x,y);break;
-      case 13:drawFSJpeg("/pic/13d.jpg",x,y);break;
-      case 50:drawFSJpeg("/pic/50d.jpg",x,y);break;
-      default:;;
-    }
-  }
-  else{
-    switch(picture){
-      case 1:drawFSJpeg("/pic/01n.jpg",x,y);break;
-      case 2:drawFSJpeg("/pic/02n.jpg",x,y);break;
-      case 3:drawFSJpeg("/pic/03n.jpg",x,y);break;
-      case 4:drawFSJpeg("/pic/04d.jpg",x,y);break;
-      case 9:drawFSJpeg("/pic/09d.jpg",x,y);break;
-      case 10:drawFSJpeg("/pic/10d.jpg",x,y);break;
-      case 11:drawFSJpeg("/pic/11n.jpg",x,y);break;
-      case 13:drawFSJpeg("/pic/13d.jpg",x,y);break;
-      case 50:drawFSJpeg("/pic/50d.jpg",x,y);break;
-      default:;;
-    }  
+  switch(picture){
+    case 1:drawFSJpeg(isDay?"/pic/01d.jpg":"/pic/01n.jpg",x,y);break;
+    case 2:drawFSJpeg(isDay?"/pic/02d.jpg":"/pic/02n.jpg",x,y);break;
+    case 3:drawFSJpeg(isDay?"/pic/03d.jpg":"/pic/03n.jpg",x,y);break;
+    case 4:drawFSJpeg("/pic/04d.jpg",x,y);break;
+    case 9:drawFSJpeg("/pic/09d.jpg",x,y);break;
+    case 10:drawFSJpeg("/pic/10d.jpg",x,y);break;
+    case 11:drawFSJpeg(isDay?"/pic/11d.jpg":"/pic/11n.jpg",x,y);break;
+    case 13:drawFSJpeg("/pic/13d.jpg",x,y);break;
+    case 50:drawFSJpeg("/pic/50d.jpg",x,y);break;
+    default:;;
   }
 }
 
@@ -420,32 +404,28 @@ void showInsideTemp(void){
     humInside=get_humidity();
   }
   if(temp_draw!=tempInside){
-    String str;
     if(tempInside>=0 and tempInside<100){
       if(html.ti_round){
-        str=String(tempInside);
-        if(html.hum==0) printData(str,html.ti_units?"^F":"^C",x+23,y+25,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
-        else printData(str,html.ti_units?"^F":"^C",x+23,y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printData(tempInside<10.0?" "+String(tempInside):String(tempInside),html.ti_units?"^F":"^C",x+23,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
-        str=String(round(tempInside));
-        if(html.hum==0) printInt(str,html.ti_units?"^F":"^C",x+19,y+25,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
-        else printInt(str,html.ti_units?"^F":"^C",x+19,y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printInt(tempInside<10.0?" "+String(round(tempInside)):String(round(tempInside)),html.ti_units?"^F":"^C",x+19,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     temp_draw=tempInside;
   }
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
-      if(html.ti_round){
-        printData(String(humInside),"%",x+25,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+      if(html.hi_round){
+        printData(humInside<10.0?" "+String(humInside):String(humInside),"%",x+25,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
-        printInt(String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printInt(humInside<10.0?" "+String(round(humInside)):String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     hum_draw=humInside;
   }
+    //update line
   float u=(now()-weather.updated)/10;
   if(u>=0 and u<121){
     myGLCD.setColor(0x06FB);

@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.7
+/* Weather Monitor BIM v3.8
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -72,7 +72,7 @@ extern uint8_t Symbols[];
 void setup(){
     //Serial port
   Serial.begin(74880);
-  while (!Serial);
+  while(!Serial);
     //SPIFS
   if(!SPIFFS.begin()) while(1) yield();
     //PINs
@@ -80,7 +80,7 @@ void setup(){
   pinMode(BACKLIGHT,OUTPUT);
     //LCD
   myGLCD.InitLCD();
-  analogWrite(BACKLIGHT,300);
+  analogWrite(BACKLIGHT,10);
   is_settings();
     //EEPROM 
   read_eeprom();
@@ -104,14 +104,30 @@ void setup(){
       ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);
     }
   }
-    //Logo
-  analogWrite(BACKLIGHT,10);
-  drawFSJpeg("/pic/logo.jpg",0,0);
-  myGLCD.setColor(back_color);
-  myGLCD.fillRect(0,0,319,18);
-  is_settings();
-    //Backlight
-  analogWrite(BACKLIGHT,html.bright);
+    //old data
+  if(ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,8)){
+    uint32_t crcOfData=calculateCRC32((uint8_t*)&weather.temp,sizeof(weather.temp));
+    if(crcOfData!=weather.crc32){
+      weather.temp=404.0;
+        //Logo
+      analogWrite(BACKLIGHT,10);
+      drawFSJpeg("/pic/logo.jpg",0,0);
+      myGLCD.setColor(back_color);
+      myGLCD.fillRect(0,0,319,18);
+      analogWrite(BACKLIGHT,html.bright);
+      delay(1000);
+      is_settings();
+    }
+    else ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,sizeof(weather));
+    analogWrite(BACKLIGHT,html.bright);
+    showBatteryLevel();
+    showTime();
+    showInsideTemp();
+    showWeatherNow();
+    showWeatherToday();
+    showWeatherTomorrow();
+    showWeatherAfterTomorrow();
+  }
     //WIFI MODE
   WiFi.mode(WIFI_STA);
     //NTP
@@ -124,28 +140,13 @@ void setup(){
   Wire.pins(ONE_WIRE_BUS,DHTPIN);
     //Sensors
   sensors_init();
-    //battery
-  showBatteryLevel();
     // Ticker
   updater.attach(1200,updateWeather);
   handler.attach(5,hndlr);
   if(html.sleep==0) sleeper.attach(1201,goSleep);
   else sleeper.attach(html.sleep*60,goSleep);
   ap.attach(60,apTime);
-    //old data
-  if(ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,8)){
-    uint32_t crcOfData=calculateCRC32((uint8_t*)&weather.temp,sizeof(weather.temp));
-    if(crcOfData!=weather.crc32){
-      weather.temp=404.0;
-    }
-    else ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,sizeof(weather));
-    showTime();
-    showInsideTemp();
-    showWeatherNow();
-    showWeatherToday();
-    showWeatherTomorrow();
-    showWeatherAfterTomorrow();
-  }
+    //if settings button is pressed
   is_settings();
 }
 
@@ -154,6 +155,7 @@ void loop(){
     if(WiFi.status()==WL_CONNECTED){
       showBatteryLevel();
       update_weather();
+      update_flag=false;
       if(weather.isDay) analogWrite(BACKLIGHT,html.bright);
       else analogWrite(BACKLIGHT,html.bright_n);
       showWiFiLevel(rssi);
@@ -167,7 +169,6 @@ void loop(){
       myGLCD.print(text_buf,2,2);
       connectToWiFi();
     }
-    update_flag=false;
   }
   else{
     out_bat();
@@ -249,7 +250,7 @@ void connectToWiFi(void){
       WiFi.softAPConfig(ip,gateway,subnet);
     }
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(html.ap_ssid,html.ap_pass);
+    WiFi.softAP(html.ap_ssid,html.ap_pass,html.chnl,html.hide);
     String IP=WiFi.localIP().toString();
     if(IP=="0.0.0.0") WiFi.disconnect(); 
     web_settings();
@@ -309,7 +310,6 @@ void connectToWiFi(void){
           myGLCD.fillRect(0,0,319,3);
           myGLCD.setColor(VGA_WHITE);
           myGLCD.print(text_buf,2,4);
-          //delay(5000);
 
           showSettingsMode();
           WiFi.mode(WIFI_AP_STA);
@@ -580,9 +580,10 @@ void is_settings(void){
       WiFi.softAPConfig(ip,gateway,subnet);
     }
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(html.ap_ssid,html.ap_pass);
+    WiFi.softAP(html.ap_ssid,html.ap_pass,html.chnl,html.hide);
     String IP=WiFi.localIP().toString();
     if(IP=="0.0.0.0") WiFi.disconnect();
+    analogWrite(BACKLIGHT,512);
     showSettingsMode(); 
     web_settings();
     while(1){
@@ -705,6 +706,8 @@ void read_eeprom(void){
       String ap_pass=root["APPASS"];
       String ap_ip  =root["APIP"];
       String ap_mask=root["APMASK"];
+      html.chnl     =root["CHNL"];
+      html.hide     =root["HIDE"];
       String city   =root["CITY"];
       String appid  =root["APPID"];
       html.zone     =root["ZONE"];
@@ -769,7 +772,7 @@ void read_eeprom(void){
     }
   }
   if(html.sleep>100) html.sleep=1;
-  if(html.lang>8) html.lang=0;
+  if(html.lang>9) html.lang=0;
   if(html.adj>1) html.adj=0;
   if((html.zone>13) and (html.zone<-13)) html.zone=0;
   if(html.timef>1) html.timef=0;
@@ -784,6 +787,7 @@ void read_eeprom(void){
     case 6:urlLang="ua";break;
     case 7:urlLang="az";break;
     case 8:urlLang="by";break;
+    case 9:urlLang="bg";break;
     default:urlLang="en";break;
   }
   File f=SPIFFS.open("/save/ssids.json","r");

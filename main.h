@@ -12,7 +12,7 @@
 extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.7";
+String fw="3.8";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -72,6 +72,8 @@ struct html_structure{
   char        ap_pass[32]="1234567899";
   String      ap_ip="192.168.4.1";
   String      ap_mask="255.255.255.0";
+  int         chnl=1;
+  int         hide=0;
   String      city="";
   int8_t      zone=0;
   String      appid="";
