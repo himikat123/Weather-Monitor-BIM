@@ -12,7 +12,7 @@
 extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.8";
+String fw="3.9";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -34,6 +34,7 @@ char DEFAULT_AP_PASS[11]="1234567890";
 int text_color=VGA_WHITE;
 int out_color=0xFFF6;
 int back_color=0x02F3;
+int rama_color=VGA_WHITE;
 time_t startTime=0;
 String latitude="";
 String longitude="";
@@ -45,6 +46,13 @@ bool bme1Detected=false;
 bool bme2Detected=false;
 bool shtDetected=false;
 uint8_t dsDetected=0;
+bool need_upd_icon=false;
+String updtd="";
+uint8_t r_str=0;
+uint8_t e_str=0;
+uint8_t sm=12;
+uint8_t sd=32;
+char events[32]="";
 
 struct{
   uint8_t num=0;
@@ -119,6 +127,19 @@ struct html_structure{
   float       to_cor=0;
   float       ho_cor=0;
   float       po_cor=0;
+  uint8_t     bgr=128;
+  uint8_t     bgg=128;
+  uint8_t     bgb=128;
+  uint8_t     txr=0;
+  uint8_t     txg=128;
+  uint8_t     txb=128;
+  uint8_t     rmr=0;
+  uint8_t     rmg=128;
+  uint8_t     rmb=128;
+  uint8_t     snr=128;
+  uint8_t     sng=128;
+  uint8_t     snb=0;
+  String      upd_icn="";
 };
 html_structure html;
 

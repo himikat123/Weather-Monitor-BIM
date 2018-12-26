@@ -98,6 +98,19 @@ void web_settings(void){
     }  
   });
 
+  webServer.on("/esp/clndr.php",HTTP_POST,[](){
+    if(webServer.arg("M")!=""){
+      String fileName="/save/"+webServer.arg("M")+".json";
+      File file=SPIFFS.open(fileName,"w");
+      if(file){
+        file.print(webServer.arg("D"));
+        file.close();
+        webServer.send(200,"text/plain",saved[html.lang].saved);
+      }
+      else webServer.send(200,"text/plain",saved[html.lang].not_saved);
+    }  
+  });
+
   webServer.on("/esp/ssid.php",HTTP_POST,[](){
     String json="{";
     uint8_t n=WiFi.scanNetworks();
@@ -157,8 +170,7 @@ void web_settings(void){
     webServer.send(200,"text/plain",String(bright));
   });
 
-  
-webServer.on("/esp/adc.php",HTTP_POST,[](){
+  webServer.on("/esp/adc.php",HTTP_POST,[](){
     String json="{\"u\":\""; json+=analogRead(A0); json+="\"}";
     webServer.send(200,"text/plain",json);
   });

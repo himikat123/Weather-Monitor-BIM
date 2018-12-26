@@ -236,19 +236,18 @@ char* WD[7][10]={
 
 struct Weather_now{
   char* Wind; char* meter_sec; char* km_hour; char* miles_hour;
-  char* knots; char* Humidity; char* Pressure; char* mm;
-  char* hpa; char* AM; char* PM; char* dew;
+  char* knots; char* mm; char* hpa; char* AM; char* PM; char* srise; char* sset;
 };
 
 struct Weather_now WeatherNow[10]={
-  "Wind ","mps","kmph","mph","kn","Humidity","Pressure","mm","hPa","AM","PM","Dew point ",
-  "Ветер ","м/с","км/ч","м/ч","уз","Влажность","Давление","мм","гПа","ДП","ПП","Точка росы ",
-  "Vîntul ","m/s","km/h","mph","nod","Umiditatea","Presiunea","mm","hPa","AM","PM","Punct de condensare ",
-  "Wind ","m/s","km/h","mph","kn","Luftfeuchte","Luftdruck","mm","hPa","AM","PM","Taupunkt ",
-  "Vėjas ","m/s","km/h","mph","kn","Drėgnumas","Slėgis","mm","hPa","AM","PM","Rasos taškas ",
-  "Tuul ","m/s","km/h","ml/h","sõl","Niiskus","Õhurõhu","mm","hPa","AM","PM","Kastepunkt ",
-  "Вітер ","м/с","км/г","мл/г","вуз","Вологість","Тиск","мм","гПа","ДП","ПП","Точка роси ",
-  "Külək ","m/s","km/s","ml/s","düy","Nisbi rütubət","Təzyiq","mm","hPa","GƏ","GS","Şeh nöqtəsi ",
-  "Вецер ","м/с","км/г","мл/г","вуз","Вільготнасць","Ціск","мм","гПа","ДП","ПП","Кропка расы ",
-  "Вятър","м/с","км/ч","мл/ч","въз","Влажност","Налягане","мм","hPa","АМ","РМ","Точка на оросяване "
+  "Wind ","mps","kmph","mph","kn","mm","hPa","AM","PM","sunrise","sunset",
+  "Ветер ","м/с","км/ч","м/ч","уз","мм","гПа","ДП","ПП","восход","закат",
+  "Vîntul ","m/s","km/h","mph","nod","mm","hPa","AM","PM","răsărit","apus de soare",
+  "Wind ","m/s","km/h","mph","kn","mm","hPa","AM","PM","Sonnenaufgang","Sonnenuntergang",
+  "Vėjas ","m/s","km/h","mph","kn","mm","hPa","AM","PM","sunrise","sunset",
+  "Tuul ","m/s","km/h","ml/h","sõl","mm","hPa","AM","PM","päikesetõusu","päikeseloojangut",
+  "Вітер ","м/с","км/г","мл/г","вуз","мм","гПа","ДП","ПП","схід сонця","захід сонця",
+  "Külək ","m/s","km/s","ml/s","düy","mm","hPa","GƏ","GS","günəş doğuşu","gün batışı",
+  "Вецер ","м/с","км/г","мл/г","вуз","мм","гПа","ДП","ПП","узыход сонца","закат сонца",
+  "Вятър","м/с","км/ч","мл/ч","въз","мм","hPa","АМ","РМ","изгрев","залез"
 };
