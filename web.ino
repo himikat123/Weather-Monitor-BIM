@@ -1,18 +1,18 @@
 String getContentType(String filename){
-  if(webServer.hasArg("download")) return "application/octet-stream";
-  else if(filename.endsWith(".htm")) return "text/html";
+  if(webServer.hasArg("download"))    return "application/octet-stream";
+  else if(filename.endsWith(".htm"))  return "text/html";
   else if(filename.endsWith(".html")) return "text/html";
-  else if(filename.endsWith(".css")) return "text/css";
-  else if(filename.endsWith(".js")) return "application/javascript";
+  else if(filename.endsWith(".css"))  return "text/css";
+  else if(filename.endsWith(".js"))   return "application/javascript";
   else if(filename.endsWith(".json")) return "text/json";
-  else if(filename.endsWith(".png")) return "image/png";
-  else if(filename.endsWith(".gif")) return "image/gif";
-  else if(filename.endsWith(".jpg")) return "image/jpeg";
-  else if(filename.endsWith(".ico")) return "image/x-icon";
-  else if(filename.endsWith(".xml")) return "text/xml";
-  else if(filename.endsWith(".pdf")) return "application/x-pdf";
-  else if(filename.endsWith(".zip")) return "application/x-zip";
-  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  else if(filename.endsWith(".png"))  return "image/png";
+  else if(filename.endsWith(".gif"))  return "image/gif";
+  else if(filename.endsWith(".jpg"))  return "image/jpeg";
+  else if(filename.endsWith(".ico"))  return "image/x-icon";
+  else if(filename.endsWith(".xml"))  return "text/xml";
+  else if(filename.endsWith(".pdf"))  return "application/x-pdf";
+  else if(filename.endsWith(".zip"))  return "application/x-zip";
+  else if(filename.endsWith(".gz"))   return "application/x-gzip";
   return "text/plain";
 }
 
@@ -70,8 +70,6 @@ void handleFileUpload(){
 }
 
 void web_settings(void){
-  SPIFFS.begin();
-  
   webServer.on("/esp/save.php",HTTP_POST,[](){
     if(webServer.arg("JS")!=""){
       File file=SPIFFS.open("/save/save.json","w");
@@ -384,7 +382,6 @@ void web_settings(void){
   webServer.onNotFound([](){
     if(!handleFileRead(webServer.uri())) webServer.send(404,"text/plain","FileNotFound");
   });
-  
   const char * headerkeys[]={"User-Agent","Cookie"};
   size_t headerkeyssize=sizeof(headerkeys)/sizeof(char*);
   webServer.collectHeaders(headerkeys,headerkeyssize);

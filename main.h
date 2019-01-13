@@ -9,10 +9,10 @@
 #define BAT75 0x08
 #define BAT100 0x09
 
-extern unsigned int nowifi[0x0100];
+//extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.9";
+String fw="3.9.1";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -52,7 +52,7 @@ uint8_t r_str=0;
 uint8_t e_str=0;
 uint8_t sm=12;
 uint8_t sd=32;
-char events[32]="";
+char events[65]="";
 
 struct{
   uint8_t num=0;

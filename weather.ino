@@ -1,6 +1,7 @@
 void getWeatherNow(void){
   String url;
   if(html.provider==0){
+    
     url="http://api.openweathermap.org/data/2.5/weather";
     url+="?q="+String(html.city);
     url+="&units=metric";

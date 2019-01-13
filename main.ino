@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.9
+/* Weather Monitor BIM v3.9.1
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -164,6 +164,7 @@ void setup(){
   rn.attach(1,rn_str_plus);
     //if settings button is pressed
   is_settings();
+  web_settings();
 }
 
 void loop(){
@@ -221,10 +222,11 @@ void loop(){
     }
     while(handle_flag){
       webServer.handleClient();
+      delay(100);
     }
     handle_flag=true;
-    webServer.handleClient();
   }
+  yield();
 }
 
 void updateWeather(){

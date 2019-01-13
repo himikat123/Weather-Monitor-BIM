@@ -414,6 +414,7 @@ void showInsideTemp(void){
   if(html.sleep==0 or html.sleep>3){
     tempInside=get_temp(!html.ti_units);
     humInside=get_humidity();
+    Serial.println("{\"t\":\""+String(tempInside)+"\",\"h\":\""+String(humInside)+"\"}");
   }
   if(temp_draw!=tempInside){
     if(tempInside>=0 and tempInside<100){
@@ -505,8 +506,8 @@ void showTime(void){
     myGLCD.fillRect(160-ls/2+ls,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,17);
     myGLCD.fillRect(160-ls/2+ld,0,160-ls/2+ld+lm,3);
   }
-  if(e_str==1 && events!=""){
-    if(String(UTF8(events)).length()) printCent(UTF8(events),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,0,text_color,back_color,BigFontRu);
+  if(e_str==1 && String(UTF8(events)).length()>1){
+    if(String(UTF8(events)).length()<16) printCent(UTF8(events),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,0,text_color,back_color,BigFontRu);
     else{
       printCent(UTF8(events),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,4,text_color,back_color,SmallFontRu);
       myGLCD.fillRect(23,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,3);
