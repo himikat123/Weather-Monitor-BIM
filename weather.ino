@@ -1,9 +1,10 @@
 void getWeatherNow(void){
   String url;
-  if(html.provider==0){
-    
+  if(html.provider==0){    
     url="http://api.openweathermap.org/data/2.5/weather";
-    url+="?q="+String(html.city);
+    if(html.city_id==0) url+="?q="+String(html.city);
+    if(html.city_id==1) url+="?lat="+String(html.lat)+"&lon="+String(html.lon);
+    if(html.city_id==2) url+="?id="+String(html.cid);
     url+="&units=metric";
     url+="&appid="+String(html.appid);
     url+="&lang="+String(urlLang);
@@ -68,8 +69,10 @@ bool parseWeatherNow(){
     if(summertime()) dayLight=3600;
     weather.sunrise+=html.zone*3600+dayLight;
     weather.sunset+=html.zone*3600+dayLight;
-    if(now()>weather.sunrise and now()<weather.sunset) weather.isDay=true;
-    else weather.isDay=false;
+    if(html.dl==0){
+      if(now()>weather.sunrise and now()<weather.sunset) weather.isDay=true;
+      else weather.isDay=false;
+    } 
   }
   
   if(html.provider==1){
@@ -129,6 +132,10 @@ void getWeatherDaily(void){
     url=site;
     url+="hepler2.php?key="+html.appid;
     url+="&city="+String(weather.city);
+    url+="&lat="+String(html.lat);
+    url+="&lon="+String(html.lon);
+    url+="&c_id="+String(html.city_id);
+    url+="&cid="+String(html.cid);
     url+="&units=metric";
     url+="&gmt="+String(html.zone);
   }

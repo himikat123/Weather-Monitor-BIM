@@ -12,7 +12,7 @@
 //extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.9.1";
+String fw="3.9.2";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -83,6 +83,10 @@ struct html_structure{
   int         chnl=1;
   int         hide=0;
   String      city="";
+  int         city_id=0;
+  String      cid="";
+  String      lat="";
+  String      lon="";
   int8_t      zone=0;
   String      appid="";
   uint8_t     adj=0;
@@ -140,6 +144,11 @@ struct html_structure{
   uint8_t     sng=128;
   uint8_t     snb=0;
   String      upd_icn="";
+  bool        dl=false;
+  int         fh=0;
+  int         fm=0;
+  int         th=0;
+  int         tm=0;
 };
 html_structure html;
 

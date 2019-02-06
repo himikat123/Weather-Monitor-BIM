@@ -170,10 +170,10 @@ void showWeatherDaily(int x,int y,uint8_t icon,uint8_t wd,float tempDay,float te
   myGLCD.print(html.to_units?"^F":"^C",x+75,y+40);
   if(html.provider!=2){
     String str=UTF8(WeatherNow[html.lang].Wind); 
-    if(html.w_units==0) str+=wind>200?"---":String(round(wind));
-    if(html.w_units==1) str+=wind>200?"---":String(round(wind*3.6));
-    if(html.w_units==2) str+=wind>200?"---":String(round(wind*2.237));
-    if(html.w_units==3) str+=wind>200?"---":String(round(wind*1.94));
+    if(html.w_units==0) str+=wind>200?"--":String(round(wind));
+    if(html.w_units==1) str+=wind>200?"--":String(round(wind*3.6));
+    if(html.w_units==2) str+=wind>200?"--":String(round(wind*2.237));
+    if(html.w_units==3) str+=wind>200?"--":String(round(wind*1.94));
     if(html.w_units==0) str+=UTF8(WeatherNow[html.lang].meter_sec);
     if(html.w_units==1) str+=UTF8(WeatherNow[html.lang].km_hour);
     if(html.w_units==2) str+=UTF8(WeatherNow[html.lang].miles_hour);
@@ -291,7 +291,7 @@ void showWeatherNow(void){
   humidity+=html.ho_cor;
   str=String(round(humidity));
   if(humidity<120.0) printInt(str,"%",x+122,y+80,out?out_color:text_color,back_color);
-  else printInt("---","",x+122,y+80,text_color,back_color);  
+  else printInt("---","",x+122,y+80,text_color,back_color);    
     //pressure
   if(!need_upd_icon) drawFSJpeg("/pic/pres.jpg",x+108,y+104);
   int pres;
@@ -414,14 +414,15 @@ void showInsideTemp(void){
   if(html.sleep==0 or html.sleep>3){
     tempInside=get_temp(!html.ti_units);
     humInside=get_humidity();
-    Serial.println("{\"t\":\""+String(tempInside)+"\",\"h\":\""+String(humInside)+"\"}");
   }
   if(temp_draw!=tempInside){
     if(tempInside>=0 and tempInside<100){
       if(html.ti_round){
+        myGLCD.setFont(BigFontRu);
         printData(tempInside<10.0?" "+String(tempInside):String(tempInside),html.ti_units?"^F":"^C",x+23,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
+        myGLCD.setFont(Arial_round);
         printInt(tempInside<10.0?" "+String(round(tempInside)):String(round(tempInside)),html.ti_units?"^F":"^C",x+19,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
@@ -430,13 +431,16 @@ void showInsideTemp(void){
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
       if(html.hi_round){
+        myGLCD.setFont(BigFontRu);
         printData(humInside<10.0?" "+String(humInside):String(humInside),"%",x+25,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
+        myGLCD.setFont(Arial_round);
         printInt(humInside<10.0?" "+String(round(humInside)):String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     if(!need_upd_icon) hum_draw=humInside;
+    myGLCD.setFont(BigFontRu);
   }
     //update line
   float u=(now()-weather.updated)/10;

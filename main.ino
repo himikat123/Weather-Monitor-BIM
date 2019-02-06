@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.9.1
+/* Weather Monitor BIM v3.9.2
  * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
  * http://esp8266.atwebpages.com
  */
@@ -187,6 +187,16 @@ void loop(){
     }
   }
   else{
+    if(html.dl!=0){
+      tmElements_t from={0,html.fm,html.fh,weekday(),day(),month(),year()-1970};
+      uint32_t fromT=makeTime(from);
+      tmElements_t to={0,html.tm,html.th,weekday(),day(),month(),year()-1970};
+      uint32_t toT=makeTime(to);
+      if(fromT<=now() and now()<=toT) weather.isDay=true;
+      else weather.isDay=false;
+    }
+    if(weather.isDay) analogWrite(BACKLIGHT,html.bright);
+    else analogWrite(BACKLIGHT,html.bright_n);
     out_bat();
     is_settings();
     showInsideTemp();
@@ -209,8 +219,6 @@ void loop(){
       str+=minute(weather.sunset);
       printCent(str,6,211,156,text_color,back_color,SmallFontRu);
     }
-    if(weather.isDay) analogWrite(BACKLIGHT,html.bright);
-    else analogWrite(BACKLIGHT,html.bright_n);
     if(html.sleep and sleep_flag){
       sleep_flag=false;
       if(weather.isDay) analogWrite(BACKLIGHT,html.bright/3);
@@ -225,6 +233,7 @@ void loop(){
       delay(100);
     }
     handle_flag=true;
+    pc();
   }
   yield();
 }
@@ -265,33 +274,31 @@ void update_weather(void){
     myGLCD.fillRect(0,0,280,16);
     while(dir.next()){
       String fname=dir.fileName();
-      String file_name=fname;
-      String msg="updating file ";
-      msg+=file_name;
-      printCent(msg,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
-      fname.replace("+","p");
-      url=site;
-      url+="icon.php?icon=";
-      url+=fname;
-      url+="&r=";
-      url+=html.bgr;
-      url+="&g=";
-      url+=html.bgg;
-      url+="&b=";
-      url+=html.bgb;
-      HTTPClient http;
-      File f=SPIFFS.open(file_name,"w");
-      if(f){
-        http.begin(url);
-        int httpCode=http.GET();
-        if(httpCode>0){
-          if(httpCode==HTTP_CODE_OK){
-            http.writeToStream(&f);
-          }
-        } 
-        f.close();
+      if(fname!="logo.jpg"){
+        String file_name=fname;
+        String msg="updating file ";
+        msg+=file_name;
+        printCent(msg,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+        fname.replace("+","p");
+        url=site;
+        url+="icon.php?icon="; url+=fname;
+        url+="&r="; url+=html.bgr;
+        url+="&g="; url+=html.bgg;
+        url+="&b="; url+=html.bgb;
+        HTTPClient http;
+        File f=SPIFFS.open(file_name,"w");
+        if(f){
+          http.begin(url);
+          int httpCode=http.GET();
+          if(httpCode>0){
+            if(httpCode==HTTP_CODE_OK){
+              http.writeToStream(&f);
+            }
+          } 
+          f.close();
+        }
+        http.end();
       }
-      http.end();
     }
     File flupd=SPIFFS.open("/save/upd_icon.json","w");
     if(flupd){
@@ -356,6 +363,7 @@ void connectToWiFi(void){
     web_settings();
     while(1){
       webServer.handleClient();
+      pc();
     }
   }
   else{
@@ -404,7 +412,7 @@ void connectToWiFi(void){
           while(ap_flag){
             webServer.handleClient();
           }
-          
+          pc();
           if(html.sleep==0) ESP.reset();
           else{
             analogWrite(BACKLIGHT,0);
@@ -444,6 +452,7 @@ void connectToWiFi(void){
   MDNS.begin(text_buf);
   MDNS.addService("http","tcp",80);
   web_settings();
+  pc();
 }
 
 int viewRSSI(String ssid){
@@ -670,6 +679,7 @@ void is_settings(void){
     web_settings();
     while(1){
       webServer.handleClient();
+      pc();
     }
   }
 }
@@ -790,6 +800,10 @@ void read_eeprom(void){
       html.chnl     =root["CHNL"];
       html.hide     =root["HIDE"];
       String city   =root["CITY"];
+      html.city_id  =root["CITY_ID"];
+      String cid    =root["CID"];
+      String lat    =root["LAT"];
+      String lon    =root["LON"];
       String appid  =root["APPID"];
       html.zone     =root["ZONE"];
       html.bright   =root["BRIGHT"];
@@ -846,6 +860,11 @@ void read_eeprom(void){
       html.sng      =root["SNSG"];
       html.snb      =root["SNSB"];
       String upd_icn=root["UPD_ICN"];
+      html.dl       =root["DL"];
+      html.fh       =root["FH"];
+      html.fm       =root["FM"];
+      html.th       =root["TH"];
+      html.tm       =root["TM"];
       html.upd_icn  =upd_icn;
       html.sensor=mac;
       html.ip=ip;
@@ -853,6 +872,8 @@ void read_eeprom(void){
       html.gateway=gw;
       html.dns1=dns1;
       html.dns2=dns2;
+      html.lat=lat;
+      html.lon=lon;
       if(ap_ssid!="") ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
       if(ap_pass!="") ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
       if(ap_ip!="") html.ap_ip=ap_ip;
@@ -864,6 +885,7 @@ void read_eeprom(void){
       html.sip=sip;
       if(mdns!="") html.mdns=mdns;
       html.chid=chid;
+      html.cid=cid;
     }
   }
   if(html.sleep>100) html.sleep=1;
