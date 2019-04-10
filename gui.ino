@@ -196,7 +196,7 @@ void showWeatherAfterTomorrow(void){
 
 void showWeatherNow(void){
   int x=3,y=18; String str; int dayLight=0; bool out=false;
-  if(summertime()) dayLight=3600;
+  if(html.adj) if(summertime()) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   myGLCD.setColor(back_color);
   myGLCD.fillRect(x-3,y-1,x+211,y+152); 
@@ -204,16 +204,13 @@ void showWeatherNow(void){
   weatherIcon(weather.icon,weather.isDay,x,y);
   myGLCD.fillRect(x+80,y+48,x+81,y+49);
     //temperature
-  float temp=0.0;
-  if(updated<1800 and outside.temp<120 and html.t_out){
-    html.to_units?temp=outside.temp*1.8+32:temp=outside.temp;
-    out=true;
-  }
+  float temp=get_temp_out();
+  if(updated<1800 and temp<120 and (html.t_out==1 or html.t_out==2 or html.t_out==3)) out=true;
+  else if(html.t_out>=4 and html.t_out<=9) out=true;
   else{
-    html.to_units?temp=weather.temp*1.8+32:temp=weather.temp;
+    temp=weather.temp;
     out=false;
   }
-  temp+=html.to_cor;
   if(!need_upd_icon) drawFSJpeg((temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x,y+64);
   int cen=round(((x+112)-(x+32))/2)+x+32;
   if(html.to_round){
@@ -228,7 +225,7 @@ void showWeatherNow(void){
     myGLCD.setColor(out?out_color:text_color);
     myGLCD.setBackColor(back_color);
     if(temp<120.0) myGLCD.print(integ,cen-(leng/2),y+75);
-    else myGLCD.print("---",x+30,y+75);
+    else myGLCD.print("--",x+30,y+75);
     myGLCD.setFont(SmallFontRu);
     if(temp<120.0) myGLCD.print(fract,cen-(leng/2)+1+(leng-42),y+83);
     myGLCD.setFont(BigFontRu);
@@ -241,7 +238,7 @@ void showWeatherNow(void){
     myGLCD.setColor(out?out_color:text_color);
     myGLCD.setBackColor(back_color);
     if(temp<120.0) myGLCD.print(str,cen-leng,y+75);
-    else myGLCD.print("---",x+30,y+75);
+    else myGLCD.print("--",x+30,y+75);
     myGLCD.setFont(BigFontRu);
     myGLCD.print(html.to_units?"^F":"^C",cen-leng+1+str.length()*myGLCD.getFontXsize(),y+80); 
   }
@@ -258,7 +255,7 @@ void showWeatherNow(void){
   if(html.w_units==1) units=UTF8(WeatherNow[html.lang].km_hour);
   if(html.w_units==2) units=UTF8(WeatherNow[html.lang].miles_hour);
   if(html.w_units==3) units=UTF8(WeatherNow[html.lang].knots);
-  if(w>400) printInt("---",units,x+27,y+120,text_color,back_color);
+  if(w>400) printInt("--",units,x+27,y+120,text_color,back_color);
   else{
     if(html.w_round) printData(String(w),units,x+27,y+120,text_color,back_color);
     else printInt(String(round(w)),units,x+27,y+120,text_color,back_color);
@@ -278,34 +275,29 @@ void showWeatherNow(void){
   float y3=2*y0-y2;
   geo.fillTriangle(round(x1),round(y1),round(x2),round(y2),round(x3),round(y3));
     //humidity
-  float humidity;
+  float humidity=get_humidity_out();
   if(!need_upd_icon) drawFSJpeg("/pic/hum.jpg",x+109,y+64);
-  if(updated<1800 and outside.humidity<120 and html.h_out){
-    humidity=outside.humidity;
-    out=true;
-  }
+  if(updated<1800 and humidity<120 and (html.h_out==1 or html.h_out==2)) out=true;
+  else if(html.h_out>=3 and html.h_out<=6) out=true;
   else{
     humidity=weather.humidity;
     out=false;
   }
-  humidity+=html.ho_cor;
   str=String(round(humidity));
   if(humidity<120.0) printInt(str,"%",x+122,y+80,out?out_color:text_color,back_color);
-  else printInt("---","",x+122,y+80,text_color,back_color);    
+  else printInt("--","",x+122,y+80,text_color,back_color);    
     //pressure
   if(!need_upd_icon) drawFSJpeg("/pic/pres.jpg",x+108,y+104);
-  int pres;
-  if(updated<1800 and outside.pres<1300 and html.p_out){
-    pres=outside.pres;
-    out=true;
-  }
+  int pres=get_pres_out();
+  if(updated<1800 and pres<1300 and (html.p_out==1 or html.p_out==2)) out=true;
+  else if(html.p_out==3 or html.p_out==4) out=true;
   else{
     pres=weather.pressure;
     out=false;
   }
   pres+=html.po_cor;
   html.po_units?str=String(round(pres),DEC):str=String(round(0.75*pres),DEC);
-  if(pres>2000) str="---";
+  if(pres>2000) str="--";
   if(html.po_units)
     printCent(UTF8(WeatherNow[html.lang].hpa),x+142,x+210,y+108,out?out_color:text_color,back_color,SmallFontRu);
   printInt(str,html.po_units?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color,back_color);  
@@ -369,7 +361,7 @@ void showWeatherNow(void){
 
 void out_bat(void){
   int dayLight=0;
-  if(summertime()) dayLight=3600;
+  if(html.adj) if(summertime()) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   char bat=BAT0;
   if(updated<1800 and outside.bat<6){
@@ -395,7 +387,7 @@ void out_bat(void){
 
 void showInsideTemp(void){
   int x=215,y=96, dayLight=0;
-  if(summertime()) dayLight=3600;
+  if(html.adj) if(summertime()) dayLight=3600;
   uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
   if(temp_draw==0 or hum_draw==0){
     myGLCD.setColor(back_color);

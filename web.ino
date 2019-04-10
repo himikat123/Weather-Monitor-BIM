@@ -28,7 +28,9 @@ bool handleFileRead(String path){
     for(uint8_t i=0;i<10;i++) if(code_auth[i]==cook[i]) coincid++;
     if(au!=-1 and coincid==10 or 
        path.endsWith("json") or 
-       path=="/log-err.htm") return FileRead(path); 
+       path=="/log-err.htm" or
+       path=="/ok.htm" or
+       path=="/fail.htm") return FileRead(path); 
     else return FileRead("/login.htm"); 
   }
   else{
@@ -135,15 +137,13 @@ void web_settings(void){
   });
 
   webServer.on("/esp/temp.php",HTTP_POST,[](){
-    html.temp=round(webServer.arg("SENSOR").toFloat());
-    sensors_init();
-    webServer.send(200,"text/plain","");
+    html.temp=webServer.arg("SENSOR").toInt();
+    webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/hum.php",HTTP_POST,[](){
-    html.hum=round(webServer.arg("SENSOR").toFloat());
-    sensors_init();
-    webServer.send(200,"text/plain","");
+    html.hum=webServer.arg("SENSOR").toInt();
+    webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/tcor.php",HTTP_POST,[](){
@@ -176,8 +176,8 @@ void web_settings(void){
   webServer.on("/esp/data.php",HTTP_POST,[](){
     float t=get_temp(1);
     float h=get_humidity();
-    String json="{\"t\":"; json+=(t==404)?"--":String(t); json+=",";
-    json+="\"h\":"; json+=(h==404)?"--":String(h); json+="}";
+    String json="{\"t\":\""; json+=(t==404)?"--":String(t); json+="\",";
+    json+="\"h\":\""; json+=(h==404)?"--":String(h); json+="\"}";
     webServer.send(200,"text/plain",json);
     if(html.temp==3) sensors.requestTemperatures();
   });
@@ -211,19 +211,22 @@ void web_settings(void){
     json+="\"t\":\"";
     switch(html.temp){
       case 0: json+="\","; break;
-      case 1: json+="BME280\","; break;
-      case 2: json+="DS18B20\","; break;
-      case 3: json+="DHT22\","; break;
-      case 4: json+="SHT21\","; break;
+      case 1: json+="BME280 (76)\","; break;
+      case 2: json+="BME280 (77)\","; break;
+      case 3: json+="DS18B20 #1\","; break;
+      case 4: json+="DS18B20 #2\","; break;
+      case 5: json+="DHT22\","; break;
+      case 6: json+="SHT21\","; break;
       default: json+="\","; break;
     }
     json+="\"hum\":\""; json+=(h==404)?"--":String(h); json+="\","; 
     json+="\"h\":\"";
     switch(html.hum){
       case 0: json+="\","; break;
-      case 1: json+="BME280\","; break;
-      case 2: json+="DHT22\","; break;
-      case 3: json+="SHT21\","; break;
+      case 1: json+="BME280 (76)\","; break;
+      case 2: json+="BME280 (77)\","; break;
+      case 3: json+="DHT22\","; break;
+      case 4: json+="SHT21\","; break;
       default: json+="\","; break;
     }
     json+="\"bat\":\""; json+=analogRead(A0)/cor; json+="V\"}";
@@ -378,6 +381,77 @@ void web_settings(void){
   webServer.on("/edit",HTTP_POST,[](){
     webServer.send(200,"text/plain","");
   },handleFileUpload);
+
+  webServer.on("/esp/update.php",HTTP_POST,[](){
+    if(Update.hasError()) handleFileRead("/fail.htm");
+    else handleFileRead("/ok.htm");
+    delay(1000);
+    ESP.deepSleep(10);
+    ESP.reset();
+  },[](){
+    HTTPUpload& upload=webServer.upload();
+    if(upload.status==UPLOAD_FILE_START){
+      Serial.setDebugOutput(true);
+      Serial.printf("Update: %s\n",upload.filename.c_str());
+      myGLCD.fillScr(back_color);
+      printCent("Updating firware..",0,319,100,text_color,back_color,BigFontRu);
+      uint32_t maxSketchSpace=(ESP.getFreeSketchSpace()-0x1000)&0xFFFFF000;
+      if(!Update.begin(maxSketchSpace)){
+        Update.printError(Serial);
+      }
+    }
+    else if(upload.status==UPLOAD_FILE_WRITE){
+      if(Update.write(upload.buf,upload.currentSize)!=upload.currentSize){
+        Update.printError(Serial);
+      }
+    } 
+    else if(upload.status==UPLOAD_FILE_END){
+      if(Update.end(true)){
+        Serial.printf("Update Success: %u\nRebooting...\n",upload.totalSize);
+      } 
+      else{
+        Update.printError(Serial);
+      }
+      Serial.setDebugOutput(false);
+    }
+    yield();
+  });
+  
+  webServer.on("/esp/update_f.php",HTTP_POST,[](){
+    if(Update.hasError()) handleFileRead("/fail.htm");
+    else handleFileRead("/ok.htm");
+    delay(1000);
+    ESP.deepSleep(10);
+    ESP.reset();
+  },[](){
+    HTTPUpload& upload=webServer.upload();
+    if(upload.status==UPLOAD_FILE_START){
+      Serial.setDebugOutput(true);
+      Serial.printf("Update: %s\n",upload.filename.c_str());
+      myGLCD.fillScr(back_color);
+      printCent("Updating",0,319,100,text_color,back_color,BigFontRu);
+      printCent("file system..",0,319,120,text_color,back_color,BigFontRu);
+      uint32_t maxSketchSpace=(ESP.getFreeSketchSpace()-0x1000)&0xFFFFF000;
+      if(!Update.begin(maxSketchSpace,U_SPIFFS)){
+        Update.printError(Serial);
+      }
+    }
+    else if(upload.status==UPLOAD_FILE_WRITE){
+      if(Update.write(upload.buf,upload.currentSize)!=upload.currentSize){
+        Update.printError(Serial);
+      }
+    } 
+    else if(upload.status==UPLOAD_FILE_END){
+      if(Update.end(true)){
+        Serial.printf("Update Success: %u\nRebooting...\n",upload.totalSize);
+      } 
+      else{
+        Update.printError(Serial);
+      }
+      Serial.setDebugOutput(false);
+    }
+    yield();
+  });
   
   webServer.onNotFound([](){
     if(!handleFileRead(webServer.uri())) webServer.send(404,"text/plain","FileNotFound");

@@ -12,7 +12,7 @@
 //extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.9.2";
+String fw="3.9.3";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -117,11 +117,11 @@ struct html_structure{
   bool        ti_units=false;
   float       ti_round=0;
   float       hi_round=0;
-  bool        t_out=false;
+  int         t_out=0;
   int         to_units=0;
   bool        to_round=false;
-  bool        h_out=false;
-  bool        p_out=false;
+  int         h_out=0;
+  int         p_out=0;
   int         po_units=0;
   int         w_units=0;
   bool        w_round=false;

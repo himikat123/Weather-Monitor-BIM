@@ -1,9 +1,10 @@
-/* Weather Monitor BIM v3.9.2
- * © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2016-2018 
+/* Weather Monitor BIM v3.9.3
+ * © Alexandru Piteli himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
  * http://esp8266.atwebpages.com
  */
-                               // Board ESP-12E 
-                               // 1MB (512kB SPIFFS) 
+                               // Board Generic ESP8266 Module 
+                               // 4MB (1MB SPIFFS) (or 1MB (512kB SPIFFS) w/o OTA)
+
 #include <Time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -51,7 +52,8 @@ UTFT myGLCD(ILI9341_S5P,CS,RES,DC);
 UTFT_Geometry geo(&myGLCD);
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
-DeviceAddress insideThermometer;
+DeviceAddress thermometer1;
+DeviceAddress thermometer2;
 BlueDot_BME280 bme1;
 BlueDot_BME280 bme2;
 DHT_Unified dht(DHTPIN, DHTTYPE);
@@ -162,6 +164,10 @@ void setup(){
   else sleeper.attach(html.sleep*60,goSleep);
   ap.attach(60,apTime);
   rn.attach(1,rn_str_plus);
+    //mDNS
+  html.mdns.toCharArray(text_buf,(html.mdns.length())+1);
+  MDNS.begin(text_buf);
+  MDNS.addService("http","tcp",80);
     //if settings button is pressed
   is_settings();
   web_settings();
@@ -233,7 +239,6 @@ void loop(){
       delay(100);
     }
     handle_flag=true;
-    pc();
   }
   yield();
 }
@@ -363,7 +368,6 @@ void connectToWiFi(void){
     web_settings();
     while(1){
       webServer.handleClient();
-      pc();
     }
   }
   else{
@@ -412,7 +416,6 @@ void connectToWiFi(void){
           while(ap_flag){
             webServer.handleClient();
           }
-          pc();
           if(html.sleep==0) ESP.reset();
           else{
             analogWrite(BACKLIGHT,0);
@@ -452,7 +455,6 @@ void connectToWiFi(void){
   MDNS.begin(text_buf);
   MDNS.addService("http","tcp",80);
   web_settings();
-  pc();
 }
 
 int viewRSSI(String ssid){
@@ -675,11 +677,10 @@ void is_settings(void){
     String IP=WiFi.localIP().toString();
     if(IP=="0.0.0.0") WiFi.disconnect();
     analogWrite(BACKLIGHT,512);
-    showSettingsMode(); 
+    showSettingsMode();
     web_settings();
     while(1){
       webServer.handleClient();
-      pc();
     }
   }
 }
@@ -719,8 +720,10 @@ void sensors_init(void){
   sensors.begin();
   dsDetected=sensors.getDeviceCount();
   if(dsDetected){
-    sensors.getAddress(insideThermometer,0);
-    sensors.setResolution(insideThermometer,10);
+    sensors.getAddress(thermometer1,0);
+    sensors.getAddress(thermometer2,1);
+    sensors.setResolution(thermometer1,10);
+    sensors.setResolution(thermometer2,10);
     sensors.requestTemperatures();
   }
     //SHT21;
@@ -738,43 +741,85 @@ void sensors_init(void){
 
 float get_temp(bool units){
   float temp=404;
-  if(html.temp==1){
-    if(bme1Detected) temp=units?bme1.readTempC():bme1.readTempF();
-    if(bme2Detected) temp=units?bme2.readTempC():bme2.readTempF();  
-  }
-  if(html.temp==2){
-    if(dsDetected) temp=units?sensors.getTempC(insideThermometer):sensors.getTempF(insideThermometer);
-    sensors.requestTemperatures();
-  }
-  if(html.temp==3){
+  if(html.temp==1) if(bme1Detected) temp=units?bme1.readTempC():bme1.readTempF();
+  if(html.temp==2) if(bme2Detected) temp=units?bme2.readTempC():bme2.readTempF();  
+  if(html.temp==3) if(dsDetected) temp=units?sensors.getTempC(thermometer1):sensors.getTempF(thermometer1);
+  if(html.temp==4) if(dsDetected) temp=units?sensors.getTempC(thermometer2):sensors.getTempF(thermometer2);
+  if(html.temp==5){
     sensors_event_t event;
     dht.temperature().getEvent(&event);
     if(isnan(event.temperature));
     else temp=units?event.temperature:event.temperature*1.8+32;
   }
-  if(html.temp==4) if(shtDetected) temp=units?SHT21.getTemperature():SHT21.getTemperature()*1.8+32;
+  if(html.temp==6) if(shtDetected) temp=units?SHT21.getTemperature():SHT21.getTemperature()*1.8+32;
   if(html.temp==100) temp=units?outside.tempi:outside.tempi*1.8+32;
   if(html.temp==101) temp=units?outside.temp:outside.temp*1.8+32;
   if(html.temp==102) temp=units?outside.tempe:outside.tempe*1.8+32;
+  if(html.temp==3 or html.temp==4 or html.t_out==3 or html.t_out==4) sensors.requestTemperatures();
   return temp+html.t_cor;
 }
 
 float get_humidity(void){
   float hum=404;
-  if(html.hum==1){
-    if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
-    if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
-  }
-  if(html.hum==2){
+  if(html.hum==1) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
+  if(html.hum==2) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
+  if(html.hum==3){
     sensors_event_t event;
     dht.humidity().getEvent(&event);
     if(isnan(event.relative_humidity));
     else hum=event.relative_humidity;
   }
-  if(html.hum==3) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
+  if(html.hum==4) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
   if(html.hum==100) hum=outside.humidityi;
   if(html.hum==101) hum=outside.humidity;
   return hum+html.h_cor;
+}
+
+float get_temp_out(void){
+  float temp=404;
+  if(html.t_out==0) temp=html.to_units?weather.temp*1.8+32:weather.temp;
+  if(html.t_out==1) temp=html.to_units?outside.tempi*1.8+32:outside.tempi;
+  if(html.t_out==2) temp=html.to_units?outside.temp*1.8+32:outside.temp;
+  if(html.t_out==3) temp=html.to_units?outside.tempe*1.8+32:outside.tempe;
+  if(html.t_out==4) if(bme1Detected) temp=html.to_units?bme1.readTempF():bme1.readTempC();
+  if(html.t_out==5) if(bme2Detected) temp=html.to_units?bme2.readTempF():bme2.readTempC();  
+  if(html.t_out==6) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer1):sensors.getTempC(thermometer1);
+  if(html.t_out==7) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer2):sensors.getTempC(thermometer2);
+  if(html.t_out==8){
+    sensors_event_t event;
+    dht.temperature().getEvent(&event);
+    if(isnan(event.temperature));
+    else temp=html.to_units?event.temperature*1.8+32:event.temperature;
+  }
+  if(html.t_out==9) if(shtDetected) temp=html.to_units?SHT21.getTemperature()*1.8+32:SHT21.getTemperature();
+  return temp+html.to_cor;
+}
+
+float get_humidity_out(void){
+  float hum=404;
+  if(html.h_out==0) hum=weather.humidity;
+  if(html.h_out==1) hum=outside.humidityi;
+  if(html.h_out==2) hum=outside.humidity;
+  if(html.h_out==3) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
+  if(html.h_out==4) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
+  if(html.h_out==5){
+    sensors_event_t event;
+    dht.humidity().getEvent(&event);
+    if(isnan(event.relative_humidity));
+    else hum=event.relative_humidity;
+  }
+  if(html.h_out==6) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
+  return hum+html.ho_cor;
+}
+
+float get_pres_out(void){
+  float pres=4040;
+  if(html.p_out==0) pres=weather.pressure;
+  if(html.p_out==1) pres=outside.presi;
+  if(html.p_out==2) pres=outside.pres;
+  if(html.p_out==3) if(bme1Detected){bme1.readTempC(); pres=bme1.readPressure();}
+  if(html.p_out==4) if(bme2Detected){bme2.readTempC(); pres=bme2.readPressure();}
+  return pres+html.po_cor;
 }
 
 void read_eeprom(void){
