@@ -12,7 +12,7 @@
 //extern unsigned int nowifi[0x0100];
 
 String lang="";
-String fw="3.9.3";
+String fw="3.9.4";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;

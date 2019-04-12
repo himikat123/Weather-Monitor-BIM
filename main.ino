@@ -1,4 +1,4 @@
-/* Weather Monitor BIM v3.9.3
+/* Weather Monitor BIM v3.9.4
  * © Alexandru Piteli himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
  * http://esp8266.atwebpages.com
  */
@@ -144,7 +144,7 @@ void setup(){
     showBatteryLevel();
     showTime();
     showInsideTemp();
-    showWeatherNow();
+    showWeatherNow(true);
     showWeatherToday();
     showWeatherTomorrow();
     showWeatherAfterTomorrow();
@@ -206,6 +206,7 @@ void loop(){
     out_bat();
     is_settings();
     showInsideTemp();
+    showWeatherNow(false);
     rssi=viewRSSI(String(WiFi.SSID()));
     showBatteryLevel();
     showTime();
@@ -320,7 +321,7 @@ void update_weather(void){
   getWeatherDaily();
   showTime();
   showInsideTemp();
-  showWeatherNow();
+  showWeatherNow(true);
   showWeatherToday();
   showWeatherTomorrow();
   showWeatherAfterTomorrow();
@@ -755,7 +756,7 @@ float get_temp(bool units){
   if(html.temp==100) temp=units?outside.tempi:outside.tempi*1.8+32;
   if(html.temp==101) temp=units?outside.temp:outside.temp*1.8+32;
   if(html.temp==102) temp=units?outside.tempe:outside.tempe*1.8+32;
-  if(html.temp==3 or html.temp==4 or html.t_out==3 or html.t_out==4) sensors.requestTemperatures();
+  if(html.temp==3 or html.temp==4 or html.t_out==6 or html.t_out==7) sensors.requestTemperatures();
   return temp+html.t_cor;
 }
 
