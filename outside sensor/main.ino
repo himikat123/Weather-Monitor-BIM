@@ -1,5 +1,5 @@
 /* Outside sensor v2.0
-   © Alexandr Piteli himikat123@gmail.com, Chisinau, Moldova, 2017-2018
+   © himikat123@gmail.com, Chisinau, Moldova, 2017-2018
    http://esp8266.atwebpages.com
 */
 //                                1MB SPIFFS 144kB
