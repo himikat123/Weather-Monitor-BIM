@@ -1,5 +1,5 @@
 /* Weather Monitor BIM v3.9.4
- * © Alexandru Piteli himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
+ * © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
  * http://esp8266.atwebpages.com
  */
                                // Board Generic ESP8266 Module 
