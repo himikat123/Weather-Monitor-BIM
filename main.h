@@ -9,10 +9,8 @@
 #define BAT75 0x08
 #define BAT100 0x09
 
-//extern unsigned int nowifi[0x0100];
-
 String lang="";
-String fw="3.9.4";
+String fw="4.0";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -45,8 +43,8 @@ bool ap_flag=true;
 bool bme1Detected=false;
 bool bme2Detected=false;
 bool shtDetected=false;
+bool dhtDetected=false;
 uint8_t dsDetected=0;
-bool need_upd_icon=false;
 String updtd="";
 uint8_t r_str=0;
 uint8_t e_str=0;
@@ -91,7 +89,6 @@ struct html_structure{
   String      appid="";
   uint8_t     adj=0;
   uint8_t     lang=0;
-  char        id[32]="0";
   uint8_t     timef=0;
   int         bright=0;
   int         bright_n=0;
@@ -143,7 +140,6 @@ struct html_structure{
   uint8_t     snr=128;
   uint8_t     sng=128;
   uint8_t     snb=0;
-  String      upd_icn="";
   bool        dl=false;
   int         fh=0;
   int         fm=0;
@@ -159,14 +155,12 @@ struct weather_structure{
   float       humidity=404;
   char        latitude[32]="";
   char        longitude[32]="";
-  char        city[32]="";
   int         id=0;
   int         icon=0;
   char        descript[100]="";
   float       speed=404;
   float       deg=404;
   time_t      updated=0;
-  char        country[16]="";
   time_t      sunrise=0;
   time_t      sunset=0;
   bool        isDay=false;

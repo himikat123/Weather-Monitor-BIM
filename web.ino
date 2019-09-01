@@ -201,7 +201,6 @@ void web_settings(void){
     float cor=-html.k;
     cor=cor+400;
     String json="{\"fw\":\""; json+="v"+fw;                    json+="\",";
-    json+="\"id\":\"";        json+=html.id;                   json+="\",";
     json+="\"ssid\":\"";      json+=WiFi.SSID();               json+="\",";
     json+="\"ch\":\"";        json+=WiFi.channel();            json+="\",";
     json+="\"sig\":\"";       json+=WiFi.RSSI();               json+="dB\",";

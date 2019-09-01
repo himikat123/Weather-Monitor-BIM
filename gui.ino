@@ -83,19 +83,17 @@ void showBatteryLevel(void){
 }
 
 void weatherIcon(uint8_t picture,bool isDay,uint8_t x,uint8_t y){
-  if(!need_upd_icon){
-    switch(picture){
-      case 1:drawFSJpeg(isDay?"/pic/01d.jpg":"/pic/01n.jpg",x,y);break;
-      case 2:drawFSJpeg(isDay?"/pic/02d.jpg":"/pic/02n.jpg",x,y);break;
-      case 3:drawFSJpeg(isDay?"/pic/03d.jpg":"/pic/03n.jpg",x,y);break;
-      case 4:drawFSJpeg("/pic/04d.jpg",x,y);break;
-      case 9:drawFSJpeg("/pic/09d.jpg",x,y);break;
-      case 10:drawFSJpeg("/pic/10d.jpg",x,y);break;
-      case 11:drawFSJpeg(isDay?"/pic/11d.jpg":"/pic/11n.jpg",x,y);break;
-      case 13:drawFSJpeg("/pic/13d.jpg",x,y);break;
-      case 50:drawFSJpeg("/pic/50d.jpg",x,y);break;
-      default:;;
-    }
+  switch(picture){
+    case 1:drawFSJpeg(isDay?"/pic/01d.jpg":"/pic/01n.jpg",x,y);break;
+    case 2:drawFSJpeg(isDay?"/pic/02d.jpg":"/pic/02n.jpg",x,y);break;
+    case 3:drawFSJpeg(isDay?"/pic/03d.jpg":"/pic/03n.jpg",x,y);break;
+    case 4:drawFSJpeg("/pic/04d.jpg",x,y);break;
+    case 9:drawFSJpeg("/pic/09d.jpg",x,y);break;
+    case 10:drawFSJpeg("/pic/10d.jpg",x,y);break;
+    case 11:drawFSJpeg(isDay?"/pic/11d.jpg":"/pic/11n.jpg",x,y);break;
+    case 13:drawFSJpeg("/pic/13d.jpg",x,y);break;
+    case 50:drawFSJpeg("/pic/50d.jpg",x,y);break;
+    default:;;
   }
 }
 
@@ -213,7 +211,7 @@ void showWeatherNow(bool l_upd){
     temp=weather.temp;
     out=false;
   }
-  if(!need_upd_icon) drawFSJpeg((temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x+2,y+64);
+  drawFSJpeg((temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x+2,y+64);
   int cen=round(((x+112)-(x+32))/2)+x+32;
   if(html.to_round){
     char buf[16];
@@ -247,7 +245,7 @@ void showWeatherNow(bool l_upd){
   if(l_upd){
       //wind
     int e=0; String units; float w;
-    if(!need_upd_icon) drawFSJpeg("/pic/wind.jpg",x+5,y+104);
+    drawFSJpeg("/pic/wind.jpg",x+5,y+104);
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x+21,y+120,x+22,y+121);
     if(html.w_units==0) w=html.w_round?weather.speed:round(weather.speed);
@@ -260,6 +258,7 @@ void showWeatherNow(bool l_upd){
     if(html.w_units==3) units=UTF8(WeatherNow[html.lang].knots);
     if(w>400) printInt("--",units,x+27,y+120,text_color,back_color);
     else{
+      myGLCD.setFont(BigFontRu);
       if(html.w_round) printData(String(w),units,x+27,y+120,text_color,back_color);
       else printInt(String(round(w)),units,x+27,y+120,text_color,back_color);
     }
@@ -280,7 +279,7 @@ void showWeatherNow(bool l_upd){
   }
     //humidity
   float humidity=get_humidity_out();
-  if(!need_upd_icon) drawFSJpeg("/pic/hum.jpg",x+109,y+64);
+  drawFSJpeg("/pic/hum.jpg",x+109,y+64);
   if(updated<1800 and humidity<120 and (html.h_out==1 or html.h_out==2)) out=true;
   else if(html.h_out>=3 and html.h_out<=6) out=true;
   else{
@@ -291,7 +290,7 @@ void showWeatherNow(bool l_upd){
   if(humidity<120.0) printInt(str,"%",x+122,y+80,out?out_color:text_color,back_color);
   else printInt("--","",x+122,y+80,text_color,back_color);    
     //pressure
-  if(!need_upd_icon) drawFSJpeg("/pic/pres.jpg",x+108,y+104);
+  drawFSJpeg("/pic/pres.jpg",x+108,y+104);
   int pres=get_pres_out();
   if(updated<1800 and pres<1300 and (html.p_out==1 or html.p_out==2)) out=true;
   else if(html.p_out==3 or html.p_out==4) out=true;
@@ -398,10 +397,10 @@ void showInsideTemp(void){
   if(temp_draw==0 or hum_draw==0){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x,y,myGLCD.getDisplayXSize()-1,y+74);
-    if(html.hum==0) if(!need_upd_icon) drawFSJpeg("/pic/home.jpg",x+2,y+16);
+    if(html.hum==0) /*if(!need_upd_icon)*/ drawFSJpeg("/pic/home.jpg",x+2,y+16);
     if(html.hum>0){
-      if(!need_upd_icon) drawFSJpeg("/pic/home.jpg",x+2,y);
-      if(!need_upd_icon) drawFSJpeg("/pic/hum.jpg",x+3,y+31);
+      drawFSJpeg("/pic/home.jpg",x+2,y);
+      drawFSJpeg("/pic/hum.jpg",x+3,y+31);
     }
     myGLCD.setColor(rama_color);
     myGLCD.drawRect(x,y,x+96,y+64);
@@ -424,7 +423,7 @@ void showInsideTemp(void){
         printInt(tempInside<10.0?" "+String(round(tempInside)):String(round(tempInside)),html.ti_units?"^F":"^C",x+19,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
-    if(!need_upd_icon) temp_draw=tempInside;
+    temp_draw=tempInside;
   }
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
@@ -437,7 +436,7 @@ void showInsideTemp(void){
         printInt(humInside<10.0?" "+String(round(humInside)):String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
-    if(!need_upd_icon) hum_draw=humInside;
+    hum_draw=humInside;
     myGLCD.setFont(BigFontRu);
   }
     //update line

@@ -1,6 +1,6 @@
-/* Weather Monitor BIM v3.9.4
+/* Weather Monitor BIM v4.0
  * © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
- * http://esp8266.atwebpages.com
+ * https://github.com/himikat123/Weather-Monitor-BIM
  */
                                // Board Generic ESP8266 Module 
                                // 4MB (1MB SPIFFS) (or 1MB (512kB SPIFFS) w/o OTA)
@@ -38,7 +38,6 @@ extern "C"{
   #include "languages.h"
 }
 
-#define site "http://esp8266.atwebpages.com/api/"
 #define ONE_WIRE_BUS 2
 #define DHTPIN       0
 #define DHTTYPE      DHT22
@@ -92,6 +91,7 @@ void setup(){
     //Sensors
   sensors_init();
     //Bat check
+    //Serial.print("html.ac:");Serial.println(html.ac);
   if(!html.ac){
     float adc=analogRead(A0);
     float cor=-html.k;
@@ -111,20 +111,6 @@ void setup(){
       ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);
     }
   }
-    //checking if icons need update
-  String fileData="",upd_icn="";
-  File file=SPIFFS.open("/save/upd_icon.json","r");
-  if(file){
-    fileData=file.readString();
-    file.close();
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root=jsonBuffer.parseObject(fileData);
-    if(root.success()){
-      String upd=root["UPD"];
-      upd_icn=upd;  
-    }
-  }
-  if(upd_icn!=html.upd_icn) need_upd_icon=true;
     //old data
   if(ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,8)){
     uint32_t crcOfData=calculateCRC32((uint8_t*)&weather.temp,sizeof(weather.temp));
@@ -151,6 +137,7 @@ void setup(){
   }
     //WIFI MODE
   WiFi.mode(WIFI_STA);
+  if(WiFi.status()!=WL_CONNECTED) connectToWiFi();
     //NTP
   ntp=ntpClient::getInstance("time.windows.com",1);
   ntp->setInterval(15,1800);
@@ -272,51 +259,6 @@ void update_weather(void){
     connectToWiFi();
   }
   if(html.os>0) out();
-  siteTime();
-  
-  if(need_upd_icon){
-    Dir dir=SPIFFS.openDir("/pic");
-    myGLCD.setColor(back_color);
-    myGLCD.fillRect(0,0,280,16);
-    while(dir.next()){
-      String fname=dir.fileName();
-      if(fname!="logo.jpg"){
-        String file_name=fname;
-        String msg="updating file ";
-        msg+=file_name;
-        printCent(msg,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
-        fname.replace("+","p");
-        url=site;
-        url+="icon.php?icon="; url+=fname;
-        url+="&r="; url+=html.bgr;
-        url+="&g="; url+=html.bgg;
-        url+="&b="; url+=html.bgb;
-        HTTPClient http;
-        File f=SPIFFS.open(file_name,"w");
-        if(f){
-          http.begin(url);
-          int httpCode=http.GET();
-          if(httpCode>0){
-            if(httpCode==HTTP_CODE_OK){
-              http.writeToStream(&f);
-            }
-          } 
-          f.close();
-        }
-        http.end();
-      }
-    }
-    File flupd=SPIFFS.open("/save/upd_icon.json","w");
-    if(flupd){
-      String upd="{\"UPD\":\"";
-      upd+=html.upd_icn;
-      upd+="\"}";
-      flupd.print(upd);
-      flupd.close();
-      need_upd_icon=false;
-    }
-  }
-  
   getWeatherNow();
   getWeatherDaily();
   showTime();
@@ -325,7 +267,6 @@ void update_weather(void){
   showWeatherToday();
   showWeatherTomorrow();
   showWeatherAfterTomorrow();
-  database();
 }
 
 void connectToWiFi(void){
@@ -476,69 +417,6 @@ boolean summertime(){
   else return false;
 }
 
-void siteTime(){
-  String url=site; 
-  url+="time.php";
-  HTTPClient client;
-  client.begin(url);
-  int httpCode=client.GET();
-  if(httpCode==HTTP_CODE_OK){
-    httpData=client.getString();
-    char stamp[12];
-    httpData.toCharArray(stamp,12);
-    int dayLight=0;
-    if(summertime() and html.adj) dayLight=3600;
-    setTime(atol(stamp)+(html.zone*3600)+dayLight);
-  }
-  httpData="";
-}
-
-void database(void){
-  String url;
-  int id=atoi(html.id);
-  if(id==0){
-    url=site;
-    url+="get_id.php?MAC="; url+=WiFi.macAddress();
-    HTTPClient client;
-    client.begin(url);
-    int httpCode=client.GET();
-    if(httpCode>0){
-      if(httpCode==HTTP_CODE_OK){
-        httpData=client.getString();
-        char myID[32];
-        httpData.toCharArray(myID,10);
-        if(myID>0){
-          EEPROM.begin(512);
-          EEPROM.put(140,myID);
-          EEPROM.commit();
-          EEPROM.end();
-        }
-      }
-    }
-  }
-  String country=weather.country;
-  String city=weather.city;
-  url=site; url+="database.php";
-  url+="?ID="; url+=html.id;
-  url+="&COUNTRY="; country.replace(" ","_"); url+=country;
-  url+="&CITY="; city.replace(" ","_"); url+=city;
-  url+="&FW="; url+=fw;
-  url+="&LANG="; url+=urlLang;
-  url+="&MAC="; url+=WiFi.macAddress();
-  url+="&KEY="+sha1(html.id+city)+html.id;
-  url.replace(" ","%20");
-  HTTPClient client;
-  client.begin(url);
-  int httpCode=client.GET();
-
-  if(httpCode>0){
-    if(httpCode==HTTP_CODE_OK){
-      httpData=client.getString();
-    }
-  }
-  client.end();
-}
-
 void sensor(void){
   myGLCD.setFont(SmallFontRu);
   if(WiFi.SSID()!=html.sssid){
@@ -552,12 +430,10 @@ void sensor(void){
       html.sssid.toCharArray(ssid,(html.sssid.length())+1);
       html.spass.toCharArray(password,(html.spass.length())+1);
       WiFi.begin(ssid,password);
-      //myGLCD.print(UTF8(status_lng[html.lang].connecting_sensor),2,2);
       printCent(UTF8(status_lng[html.lang].connecting_sensor),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
       uint8_t e=0;
       while(WiFi.status()!=WL_CONNECTED){
         if((e++)>20){
-          //myGLCD.print(UTF8(status_lng[html.lang].unable_connect_sensor),2,2);
           printCent(UTF8(status_lng[html.lang].unable_connect_sensor),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
           delay(5000);
           break;
@@ -594,33 +470,6 @@ void sensor(void){
 }
 
 void out(void){
-  if(html.os==1){
-    String url=site;
-    url+="outside.php?MAC=";
-    url+=html.sensor;
-    HTTPClient client;
-    client.begin(url);
-    int httpCode=client.GET();
-    if(httpCode>0){
-      if(httpCode==HTTP_CODE_OK){
-        httpData=client.getString();
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& root=jsonBuffer.parseObject(httpData);
-        if(root.success()){
-          outside.temp     =root["temp"];
-          outside.pres     =root["press"];
-          outside.humidity =root["hum"];
-          outside.bat      =root["bat"];
-          outside.updated  =root["updated"];
-          outside.tempi    =root["tempi"];
-          outside.presi    =root["pressi"];
-          outside.humidityi=root["humi"];
-          outside.tempe    =root["tempe"];
-        }
-        client.end();
-      }
-    }
-  }
   if(html.os==2){
     String url="http://api.thingspeak.com/channels/";
     url+=html.chid;
@@ -711,11 +560,20 @@ void sensors_init(void){
   if(bme1.init()==0x60) bme1Detected=true;
   if(bme2.init()==0x60) bme2Detected=true;
     //DHT22
-  if((html.temp==3) or (html.hum==2)){
+  if((html.temp==5) or (html.hum==3)){
+    float temp=0.0,hum=0.0;
     dht.begin();
     sensor_t sensor;
     dht.temperature().getSensor(&sensor);
     dht.humidity().getSensor(&sensor);
+    sensors_event_t event;
+    dht.temperature().getEvent(&event);
+    if(isnan(event.temperature));
+    else temp=event.temperature;
+    dht.humidity().getEvent(&event);
+    if(isnan(event.relative_humidity));
+    else hum=event.relative_humidity;
+    if(temp!=0.0 and hum>0.0) dhtDetected=true;
   }  
     //DS18B20
   sensors.begin();
@@ -747,10 +605,12 @@ float get_temp(bool units){
   if(html.temp==3) if(dsDetected) temp=units?sensors.getTempC(thermometer1):sensors.getTempF(thermometer1);
   if(html.temp==4) if(dsDetected) temp=units?sensors.getTempC(thermometer2):sensors.getTempF(thermometer2);
   if(html.temp==5){
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
-    if(isnan(event.temperature));
-    else temp=units?event.temperature:event.temperature*1.8+32;
+    if(dhtDetected){
+      sensors_event_t event;
+      dht.temperature().getEvent(&event);
+      if(isnan(event.temperature));
+      else temp=units?event.temperature:event.temperature*1.8+32;
+    }
   }
   if(html.temp==6) if(shtDetected) temp=units?SHT21.getTemperature():SHT21.getTemperature()*1.8+32;
   if(html.temp==100) temp=units?outside.tempi:outside.tempi*1.8+32;
@@ -765,10 +625,12 @@ float get_humidity(void){
   if(html.hum==1) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
   if(html.hum==2) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
   if(html.hum==3){
-    sensors_event_t event;
-    dht.humidity().getEvent(&event);
-    if(isnan(event.relative_humidity));
-    else hum=event.relative_humidity;
+    if(dhtDetected){
+      sensors_event_t event;
+      dht.humidity().getEvent(&event);
+      if(isnan(event.relative_humidity));
+      else hum=event.relative_humidity;
+    }
   }
   if(html.hum==4) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
   if(html.hum==100) hum=outside.humidityi;
@@ -787,10 +649,12 @@ float get_temp_out(void){
   if(html.t_out==6) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer1):sensors.getTempC(thermometer1);
   if(html.t_out==7) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer2):sensors.getTempC(thermometer2);
   if(html.t_out==8){
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
-    if(isnan(event.temperature));
-    else temp=html.to_units?event.temperature*1.8+32:event.temperature;
+    if(dhtDetected){
+      sensors_event_t event;
+      dht.temperature().getEvent(&event);
+      if(isnan(event.temperature));
+      else temp=html.to_units?event.temperature*1.8+32:event.temperature;
+    }
   }
   if(html.t_out==9) if(shtDetected) temp=html.to_units?SHT21.getTemperature()*1.8+32:SHT21.getTemperature();
   return temp+html.to_cor;
@@ -804,10 +668,12 @@ float get_humidity_out(void){
   if(html.h_out==3) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
   if(html.h_out==4) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
   if(html.h_out==5){
-    sensors_event_t event;
-    dht.humidity().getEvent(&event);
-    if(isnan(event.relative_humidity));
-    else hum=event.relative_humidity;
+    if(dhtDetected){
+      sensors_event_t event;
+      dht.humidity().getEvent(&event);
+      if(isnan(event.relative_humidity));
+      else hum=event.relative_humidity;
+    }
   }
   if(html.h_out==6) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
   return hum+html.ho_cor;
@@ -824,13 +690,6 @@ float get_pres_out(void){
 }
 
 void read_eeprom(void){
-  EEPROM.begin(512);
-  EEPROM.get(140,html.id);
-  EEPROM.end();
-  int id=atoi(html.id);
-  String n="0";
-  if(id==0) n.toCharArray(html.id,(n.length())+1); 
-  
   String fileData;
   File file=SPIFFS.open("/save/save.json","r");
   if(file){
@@ -905,13 +764,11 @@ void read_eeprom(void){
       html.snr      =root["SNSR"];
       html.sng      =root["SNSG"];
       html.snb      =root["SNSB"];
-      String upd_icn=root["UPD_ICN"];
       html.dl       =root["DL"];
       html.fh       =root["FH"];
       html.fm       =root["FM"];
       html.th       =root["TH"];
       html.tm       =root["TM"];
-      html.upd_icn  =upd_icn;
       html.sensor=mac;
       html.ip=ip;
       html.mask=mask;
