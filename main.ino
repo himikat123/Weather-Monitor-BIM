@@ -1,6 +1,7 @@
-/* Weather Monitor BIM v4.0
+/* Weather Monitor BIM v4.1
  * © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2019 
  * https://github.com/himikat123/Weather-Monitor-BIM
+ * http://b-i-m.online
  */
                                // Board Generic ESP8266 Module 
                                // 4MB (1MB SPIFFS) (or 1MB (512kB SPIFFS) w/o OTA)
@@ -91,10 +92,9 @@ void setup(){
     //Sensors
   sensors_init();
     //Bat check
-    //Serial.print("html.ac:");Serial.println(html.ac);
-  if(!html.ac){
+  if(!config.ac){
     float adc=analogRead(A0);
-    float cor=-html.k;
+    float cor=-config.k;
     cor=cor+400;
     float Ubat=adc/cor;
     if(Ubat<3.36){
@@ -121,12 +121,12 @@ void setup(){
       drawFSJpeg("/pic/logo.jpg",0,0);
       myGLCD.setColor(back_color);
       myGLCD.fillRect(0,0,319,18);
-      analogWrite(BACKLIGHT,html.bright);
+      analogWrite(BACKLIGHT,config.bright);
       delay(1000);
       is_settings();
     }
     else ESP.rtcUserMemoryRead(0,(uint32_t*)&weather,sizeof(weather));
-    analogWrite(BACKLIGHT,html.bright);
+    analogWrite(BACKLIGHT,config.bright);
     showBatteryLevel();
     showTime();
     showInsideTemp();
@@ -141,18 +141,18 @@ void setup(){
     //NTP
   ntp=ntpClient::getInstance("time.windows.com",1);
   ntp->setInterval(15,1800);
-  ntp->setTimeZone(html.zone);
-  ntp->setDayLight(html.adj);
+  ntp->setTimeZone(config.zone);
+  ntp->setDayLight(config.adj);
   ntp->begin();
     // Ticker
   updater.attach(1200,updateWeather);
   handler.attach(5,hndlr);
-  if(html.sleep==0) sleeper.attach(1201,goSleep);
-  else sleeper.attach(html.sleep*60,goSleep);
+  if(config.sleep==0) sleeper.attach(1201,goSleep);
+  else sleeper.attach(config.sleep*60,goSleep);
   ap.attach(60,apTime);
   rn.attach(1,rn_str_plus);
     //mDNS
-  html.mdns.toCharArray(text_buf,(html.mdns.length())+1);
+  config.mdns.toCharArray(text_buf,(config.mdns.length())+1);
   MDNS.begin(text_buf);
   MDNS.addService("http","tcp",80);
     //if settings button is pressed
@@ -166,12 +166,12 @@ void loop(){
       showBatteryLevel();
       update_weather();
       update_flag=false;
-      if(weather.isDay) analogWrite(BACKLIGHT,html.bright);
-      else analogWrite(BACKLIGHT,html.bright_n);
+      if(weather.isDay) analogWrite(BACKLIGHT,config.bright);
+      else analogWrite(BACKLIGHT,config.bright_n);
       showWiFiLevel(rssi);
     }
     else{
-      printCent(UTF8(status_lng[html.lang].unable_to_connect_to),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+      printCent(UTF8(status_lng[config.lang].unable_to_connect_to),23,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
       connectToWiFi();
       is_settings();
       showInsideTemp();
@@ -180,16 +180,16 @@ void loop(){
     }
   }
   else{
-    if(html.dl!=0){
-      tmElements_t from={0,html.fm,html.fh,weekday(),day(),month(),year()-1970};
+    if(config.dl!=0){
+      tmElements_t from={0,config.fm,config.fh,weekday(),day(),month(),year()-1970};
       uint32_t fromT=makeTime(from);
-      tmElements_t to={0,html.tm,html.th,weekday(),day(),month(),year()-1970};
+      tmElements_t to={0,config.tm,config.th,weekday(),day(),month(),year()-1970};
       uint32_t toT=makeTime(to);
       if(fromT<=now() and now()<=toT) weather.isDay=true;
       else weather.isDay=false;
     }
-    if(weather.isDay) analogWrite(BACKLIGHT,html.bright);
-    else analogWrite(BACKLIGHT,html.bright_n);
+    if(weather.isDay) analogWrite(BACKLIGHT,config.bright);
+    else analogWrite(BACKLIGHT,config.bright_n);
     out_bat();
     is_settings();
     showInsideTemp();
@@ -200,23 +200,23 @@ void loop(){
     showWiFiLevel(rssi);
     if(r_str==0) printCent(updtd,6,211,156,text_color,back_color,SmallFontRu);
     if(r_str==1){
-      String str=UTF8(WeatherNow[html.lang].srise); str+=" ";
+      String str=UTF8(WeatherNow[config.lang].srise); str+=" ";
       str+=hour(weather.sunrise); str+=":";
       if(minute(weather.sunrise)<10) str+="0";
       str+=minute(weather.sunrise);
       printCent(str,6,211,156,text_color,back_color,SmallFontRu);
     }
     if(r_str==2){
-      String str=UTF8(WeatherNow[html.lang].sset); str+=" ";
+      String str=UTF8(WeatherNow[config.lang].sset); str+=" ";
       str+=hour(weather.sunset); str+=":";
       if(minute(weather.sunset)<10) str+="0";
       str+=minute(weather.sunset);
       printCent(str,6,211,156,text_color,back_color,SmallFontRu);
     }
-    if(html.sleep and sleep_flag){
+    if(config.sleep and sleep_flag){
       sleep_flag=false;
-      if(weather.isDay) analogWrite(BACKLIGHT,html.bright/3);
-      else analogWrite(BACKLIGHT,html.bright_n/3);
+      if(weather.isDay) analogWrite(BACKLIGHT,config.bright/3);
+      else analogWrite(BACKLIGHT,config.bright_n/3);
       delay(5000);
       analogWrite(BACKLIGHT,0);
       myGLCD.lcdOff();
@@ -254,11 +254,11 @@ void rn_str_plus(){
 
 void update_weather(void){
   String url;
-  if(html.os==0){
+  if(config.os==0){
     sensor();
     connectToWiFi();
   }
-  if(html.os>0) out();
+  if(config.os>0) out();
   getWeatherNow();
   getWeatherDaily();
   showTime();
@@ -274,20 +274,20 @@ void connectToWiFi(void){
   sprintf(text_buf,"%c",ANT100);
   myGLCD.setFont(Symbols);
   sprintf(text_buf,"%c",ANT100);
-  if(html.ac){
+  if(config.ac){
     myGLCD.print(text_buf,290,0);
     myGLCD.setColor(VGA_RED);
     myGLCD.drawLine(290,0,305,15);
     myGLCD.drawLine(290,15,305,0);
   }
   else{
-    if(html.battery==0){
+    if(config.battery==0){
       myGLCD.print(text_buf,273,0);
       myGLCD.setColor(VGA_RED);
       myGLCD.drawLine(273,0,288,15);
       myGLCD.drawLine(273,15,288,0);
     }
-    if(html.battery==1){
+    if(config.battery==1){
       myGLCD.print(text_buf,265,0);
       myGLCD.setColor(VGA_RED);
       myGLCD.drawLine(265,0,280,15);
@@ -300,11 +300,11 @@ void connectToWiFi(void){
     IPAddress ip;
     IPAddress subnet;
     IPAddress gateway;
-    if(ip.fromString(html.ap_ip) and gateway.fromString(html.ap_ip) and subnet.fromString(html.ap_mask)){
+    if(ip.fromString(config.ap_ip) and gateway.fromString(config.ap_ip) and subnet.fromString(config.ap_mask)){
       WiFi.softAPConfig(ip,gateway,subnet);
     }
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(html.ap_ssid,html.ap_pass,html.chnl,html.hide);
+    WiFi.softAP(config.ap_ssid,config.ap_pass,config.chnl,config.hide);
     String IP=WiFi.localIP().toString();
     if(IP=="0.0.0.0") WiFi.disconnect(); 
     web_settings();
@@ -313,7 +313,7 @@ void connectToWiFi(void){
     }
   }
   else{
-    if(WiFi.SSID()==html.sssid) WiFi.disconnect();
+    if(WiFi.SSID()==config.sssid) WiFi.disconnect();
     if(WiFi.status()!=WL_CONNECTED){
       uint8_t n=WiFi.scanNetworks();
       if(n!=0){
@@ -326,9 +326,9 @@ void connectToWiFi(void){
               ssids.ssid[k].toCharArray(ssid,(ssids.ssid[k].length())+1);
               ssids.pass[k].toCharArray(password,(ssids.pass[k].length())+1);
               WiFi.begin(ssid,password);
-              sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
+              sprintf(text_buf,"%s %s",UTF8(status_lng[config.lang].connecting_to),ssid);
               text_buf[30]='\0';
-              printCent(text_buf,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+              printCent(text_buf,0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
               break;
             }
           }
@@ -343,22 +343,22 @@ void connectToWiFi(void){
             ssids.ssid[k].toCharArray(ssid,(ssids.ssid[k].length())+1);
             ssids.pass[k].toCharArray(password,(ssids.pass[k].length())+1);
             WiFi.begin(ssid,password);
-            sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connecting_to),ssid);
+            sprintf(text_buf,"%s %s",UTF8(status_lng[config.lang].connecting_to),ssid);
             text_buf[30]='\0';
-            printCent(text_buf,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+            printCent(text_buf,0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
             if(WiFi.status()==WL_CONNECTED) goto connectedd;
           }
-          printCent(UTF8(status_lng[html.lang].unable_to_connect_to),0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+          printCent(UTF8(status_lng[config.lang].unable_to_connect_to),0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
           showSettingsMode();
           WiFi.mode(WIFI_AP_STA);
-          WiFi.softAP(html.ap_ssid,html.ap_pass);
+          WiFi.softAP(config.ap_ssid,config.ap_pass);
           String IP=WiFi.localIP().toString();
           if(IP=="0.0.0.0") WiFi.disconnect();
           web_settings();
           while(ap_flag){
             webServer.handleClient();
           }
-          if(html.sleep==0) ESP.reset();
+          if(config.sleep==0) ESP.reset();
           else{
             analogWrite(BACKLIGHT,0);
             myGLCD.lcdOff();
@@ -372,28 +372,28 @@ void connectToWiFi(void){
  connectedd:
     WiFi.setAutoConnect(true);
     WiFi.setAutoReconnect(true);
-    if(html.typ==1){
+    if(config.typ==1){
       IPAddress ip;
       IPAddress subnet;
       IPAddress gateway;
       IPAddress dns1;
       IPAddress dns2;
-      if(ip.fromString(html.ip) and 
-         gateway.fromString(html.gateway) and 
-         subnet.fromString(html.mask) and
-         dns1.fromString(html.dns1) and
-         dns2.fromString(html.dns2)){
+      if(ip.fromString(config.ip) and 
+         gateway.fromString(config.gateway) and 
+         subnet.fromString(config.mask) and
+         dns1.fromString(config.dns1) and
+         dns2.fromString(config.dns2)){
         WiFi.config(ip,gateway,subnet,dns1,dns2);
       }
     }
     rssi=viewRSSI(String(WiFi.SSID())); 
   }
   WiFi.SSID().toCharArray(ssid,(WiFi.SSID().length())+1);
-  sprintf(text_buf,"%s %s",UTF8(status_lng[html.lang].connected_to),ssid);
+  sprintf(text_buf,"%s %s",UTF8(status_lng[config.lang].connected_to),ssid);
   text_buf[30]='\0';
-  printCent(text_buf,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+  printCent(text_buf,0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
   
-  html.mdns.toCharArray(text_buf,(html.mdns.length())+1);
+  config.mdns.toCharArray(text_buf,(config.mdns.length())+1);
   MDNS.begin(text_buf);
   MDNS.addService("http","tcp",80);
   web_settings();
@@ -419,22 +419,22 @@ boolean summertime(){
 
 void sensor(void){
   myGLCD.setFont(SmallFontRu);
-  if(WiFi.SSID()!=html.sssid){
+  if(WiFi.SSID()!=config.sssid){
     uint8_t n=WiFi.scanNetworks();
     bool o=false;
     for(uint8_t i=0;i<n;i++){
-      if(WiFi.SSID(i)==html.sssid) o=true;
+      if(WiFi.SSID(i)==config.sssid) o=true;
     }
     if(o){
       WiFi.disconnect();
-      html.sssid.toCharArray(ssid,(html.sssid.length())+1);
-      html.spass.toCharArray(password,(html.spass.length())+1);
+      config.sssid.toCharArray(ssid,(config.sssid.length())+1);
+      config.spass.toCharArray(password,(config.spass.length())+1);
       WiFi.begin(ssid,password);
-      printCent(UTF8(status_lng[html.lang].connecting_sensor),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+      printCent(UTF8(status_lng[config.lang].connecting_sensor),23,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
       uint8_t e=0;
       while(WiFi.status()!=WL_CONNECTED){
         if((e++)>20){
-          printCent(UTF8(status_lng[html.lang].unable_connect_sensor),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
+          printCent(UTF8(status_lng[config.lang].unable_connect_sensor),23,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,2,text_color,back_color,SmallFontRu);
           delay(5000);
           break;
         }
@@ -444,7 +444,7 @@ void sensor(void){
   }  
   if(WiFi.status()==WL_CONNECTED){
     String url="http://";
-    url+=html.sip;
+    url+=config.sip;
     url+="/esp/local.php";
     HTTPClient client;
     client.begin(url);
@@ -459,7 +459,7 @@ void sensor(void){
           outside.pres    =root["HPA"];
           outside.humidity=root["HUM"];
           int dayLight=summertime()?3600:0;
-          outside.updated=now()-(html.zone*3600)-dayLight;
+          outside.updated=now()-(config.zone*3600)-dayLight;
         }
         client.end();
       }
@@ -470,9 +470,9 @@ void sensor(void){
 }
 
 void out(void){
-  if(html.os==2){
+  if(config.os==2){
     String url="http://api.thingspeak.com/channels/";
-    url+=html.chid;
+    url+=config.chid;
     url+="/feeds.json?results=1";
     HTTPClient client;
     client.begin(url);
@@ -519,11 +519,11 @@ void is_settings(void){
     IPAddress ip;
     IPAddress subnet;
     IPAddress gateway;
-    if(ip.fromString(html.ap_ip) and gateway.fromString(html.ap_ip) and subnet.fromString(html.ap_mask)){
+    if(ip.fromString(config.ap_ip) and gateway.fromString(config.ap_ip) and subnet.fromString(config.ap_mask)){
       WiFi.softAPConfig(ip,gateway,subnet);
     }
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(html.ap_ssid,html.ap_pass,html.chnl,html.hide);
+    WiFi.softAP(config.ap_ssid,config.ap_pass,config.chnl,config.hide);
     String IP=WiFi.localIP().toString();
     if(IP=="0.0.0.0") WiFi.disconnect();
     analogWrite(BACKLIGHT,512);
@@ -560,7 +560,7 @@ void sensors_init(void){
   if(bme1.init()==0x60) bme1Detected=true;
   if(bme2.init()==0x60) bme2Detected=true;
     //DHT22
-  if((html.temp==5) or (html.hum==3)){
+  if((config.temp==5) or (config.hum==3)){
     float temp=0.0,hum=0.0;
     dht.begin();
     sensor_t sensor;
@@ -600,11 +600,11 @@ void sensors_init(void){
 
 float get_temp(bool units){
   float temp=404;
-  if(html.temp==1) if(bme1Detected) temp=units?bme1.readTempC():bme1.readTempF();
-  if(html.temp==2) if(bme2Detected) temp=units?bme2.readTempC():bme2.readTempF();  
-  if(html.temp==3) if(dsDetected) temp=units?sensors.getTempC(thermometer1):sensors.getTempF(thermometer1);
-  if(html.temp==4) if(dsDetected) temp=units?sensors.getTempC(thermometer2):sensors.getTempF(thermometer2);
-  if(html.temp==5){
+  if(config.temp==1) if(bme1Detected) temp=units?bme1.readTempC():bme1.readTempF();
+  if(config.temp==2) if(bme2Detected) temp=units?bme2.readTempC():bme2.readTempF();  
+  if(config.temp==3) if(dsDetected) temp=units?sensors.getTempC(thermometer1):sensors.getTempF(thermometer1);
+  if(config.temp==4) if(dsDetected) temp=units?sensors.getTempC(thermometer2):sensors.getTempF(thermometer2);
+  if(config.temp==5){
     if(dhtDetected){
       sensors_event_t event;
       dht.temperature().getEvent(&event);
@@ -612,19 +612,19 @@ float get_temp(bool units){
       else temp=units?event.temperature:event.temperature*1.8+32;
     }
   }
-  if(html.temp==6) if(shtDetected) temp=units?SHT21.getTemperature():SHT21.getTemperature()*1.8+32;
-  if(html.temp==100) temp=units?outside.tempi:outside.tempi*1.8+32;
-  if(html.temp==101) temp=units?outside.temp:outside.temp*1.8+32;
-  if(html.temp==102) temp=units?outside.tempe:outside.tempe*1.8+32;
-  if(html.temp==3 or html.temp==4 or html.t_out==6 or html.t_out==7) sensors.requestTemperatures();
-  return temp+html.t_cor;
+  if(config.temp==6) if(shtDetected) temp=units?SHT21.getTemperature():SHT21.getTemperature()*1.8+32;
+  if(config.temp==100) temp=units?outside.tempi:outside.tempi*1.8+32;
+  if(config.temp==101) temp=units?outside.temp:outside.temp*1.8+32;
+  if(config.temp==102) temp=units?outside.tempe:outside.tempe*1.8+32;
+  if(config.temp==3 or config.temp==4 or config.t_out==6 or config.t_out==7) sensors.requestTemperatures();
+  return temp+config.t_cor;
 }
 
 float get_humidity(void){
   float hum=404;
-  if(html.hum==1) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
-  if(html.hum==2) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
-  if(html.hum==3){
+  if(config.hum==1) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
+  if(config.hum==2) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
+  if(config.hum==3){
     if(dhtDetected){
       sensors_event_t event;
       dht.humidity().getEvent(&event);
@@ -632,42 +632,42 @@ float get_humidity(void){
       else hum=event.relative_humidity;
     }
   }
-  if(html.hum==4) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
-  if(html.hum==100) hum=outside.humidityi;
-  if(html.hum==101) hum=outside.humidity;
-  return hum+html.h_cor;
+  if(config.hum==4) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
+  if(config.hum==100) hum=outside.humidityi;
+  if(config.hum==101) hum=outside.humidity;
+  return hum+config.h_cor;
 }
 
 float get_temp_out(void){
   float temp=404;
-  if(html.t_out==0) temp=html.to_units?weather.temp*1.8+32:weather.temp;
-  if(html.t_out==1) temp=html.to_units?outside.tempi*1.8+32:outside.tempi;
-  if(html.t_out==2) temp=html.to_units?outside.temp*1.8+32:outside.temp;
-  if(html.t_out==3) temp=html.to_units?outside.tempe*1.8+32:outside.tempe;
-  if(html.t_out==4) if(bme1Detected) temp=html.to_units?bme1.readTempF():bme1.readTempC();
-  if(html.t_out==5) if(bme2Detected) temp=html.to_units?bme2.readTempF():bme2.readTempC();  
-  if(html.t_out==6) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer1):sensors.getTempC(thermometer1);
-  if(html.t_out==7) if(dsDetected) temp=html.to_units?sensors.getTempF(thermometer2):sensors.getTempC(thermometer2);
-  if(html.t_out==8){
+  if(config.t_out==0) temp=config.to_units?weather.temp*1.8+32:weather.temp;
+  if(config.t_out==1) temp=config.to_units?outside.tempi*1.8+32:outside.tempi;
+  if(config.t_out==2) temp=config.to_units?outside.temp*1.8+32:outside.temp;
+  if(config.t_out==3) temp=config.to_units?outside.tempe*1.8+32:outside.tempe;
+  if(config.t_out==4) if(bme1Detected) temp=config.to_units?bme1.readTempF():bme1.readTempC();
+  if(config.t_out==5) if(bme2Detected) temp=config.to_units?bme2.readTempF():bme2.readTempC();  
+  if(config.t_out==6) if(dsDetected) temp=config.to_units?sensors.getTempF(thermometer1):sensors.getTempC(thermometer1);
+  if(config.t_out==7) if(dsDetected) temp=config.to_units?sensors.getTempF(thermometer2):sensors.getTempC(thermometer2);
+  if(config.t_out==8){
     if(dhtDetected){
       sensors_event_t event;
       dht.temperature().getEvent(&event);
       if(isnan(event.temperature));
-      else temp=html.to_units?event.temperature*1.8+32:event.temperature;
+      else temp=config.to_units?event.temperature*1.8+32:event.temperature;
     }
   }
-  if(html.t_out==9) if(shtDetected) temp=html.to_units?SHT21.getTemperature()*1.8+32:SHT21.getTemperature();
-  return temp+html.to_cor;
+  if(config.t_out==9) if(shtDetected) temp=config.to_units?SHT21.getTemperature()*1.8+32:SHT21.getTemperature();
+  return temp+config.to_cor;
 }
 
 float get_humidity_out(void){
   float hum=404;
-  if(html.h_out==0) hum=weather.humidity;
-  if(html.h_out==1) hum=outside.humidityi;
-  if(html.h_out==2) hum=outside.humidity;
-  if(html.h_out==3) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
-  if(html.h_out==4) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
-  if(html.h_out==5){
+  if(config.h_out==0) hum=weather.humidity;
+  if(config.h_out==1) hum=outside.humidityi;
+  if(config.h_out==2) hum=outside.humidity;
+  if(config.h_out==3) if(bme1Detected){bme1.readTempC(); hum=bme1.readHumidity();}
+  if(config.h_out==4) if(bme2Detected){bme2.readTempC(); hum=bme2.readHumidity();}
+  if(config.h_out==5){
     if(dhtDetected){
       sensors_event_t event;
       dht.humidity().getEvent(&event);
@@ -675,18 +675,18 @@ float get_humidity_out(void){
       else hum=event.relative_humidity;
     }
   }
-  if(html.h_out==6) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
-  return hum+html.ho_cor;
+  if(config.h_out==6) if(shtDetected){SHT21.getTemperature(); hum=SHT21.getHumidity();}
+  return hum+config.ho_cor;
 }
 
 float get_pres_out(void){
   float pres=4040;
-  if(html.p_out==0) pres=weather.pressure;
-  if(html.p_out==1) pres=outside.presi;
-  if(html.p_out==2) pres=outside.pres;
-  if(html.p_out==3) if(bme1Detected){bme1.readTempC(); pres=bme1.readPressure();}
-  if(html.p_out==4) if(bme2Detected){bme2.readTempC(); pres=bme2.readPressure();}
-  return pres+html.po_cor;
+  if(config.p_out==0) pres=weather.pressure;
+  if(config.p_out==1) pres=outside.presi;
+  if(config.p_out==2) pres=outside.pres;
+  if(config.p_out==3) if(bme1Detected){bme1.readTempC(); pres=bme1.readPressure();}
+  if(config.p_out==4) if(bme2Detected){bme2.readTempC(); pres=bme2.readPressure();}
+  return pres+config.po_cor;
 }
 
 void read_eeprom(void){
@@ -702,45 +702,45 @@ void read_eeprom(void){
       String ap_pass=root["APPASS"];
       String ap_ip  =root["APIP"];
       String ap_mask=root["APMASK"];
-      html.chnl     =root["CHNL"];
-      html.hide     =root["HIDE"];
+      config.chnl     =root["CHNL"];
+      config.hide     =root["HIDE"];
       String city   =root["CITY"];
-      html.city_id  =root["CITY_ID"];
+      config.city_id  =root["CITY_ID"];
       String cid    =root["CID"];
       String lat    =root["LAT"];
       String lon    =root["LON"];
       String appid  =root["APPID"];
-      html.zone     =root["ZONE"];
-      html.bright   =root["BRIGHT"];
-      html.bright_n =root["BRIGHT_N"];
-      html.adj      =root["DAYLIGHT"];
-      html.timef    =root["TIME"];
-      html.lang     =root["LANG"];
-      html.sleep    =root["SLEEP"];
-      html.typ      =root["TYPE"];
-      html.k        =root["K"];
-      html.temp     =root["TEMP"];
-      html.hum      =root["HUM"];
-      html.t_cor    =root["T_COR"];
-      html.h_cor    =root["H_COR"];
-      html.provider =root["PROVIDER"];
-      html.battery  =root["BATTERY"];
-      html.os       =root["OS"];
-      html.ti_units =root["TI_UNITS"];
-      html.ti_round =root["TI_ROUND"];
-      html.hi_round =root["HI_ROUND"];
-      html.t_out    =root["T_OUT"];
-      html.to_units =root["TO_UNITS"];
-      html.to_round =root["TO_ROUND"];
-      html.h_out    =root["H_OUT"];
-      html.p_out    =root["P_OUT"];
-      html.po_units =root["PO_UNITS"];
-      html.w_units  =root["W_UNITS"];
-      html.w_round  =root["W_ROUND"];
-      html.ac       =root["AC"];
-      html.to_cor   =root["TO_COR"];
-      html.ho_cor   =root["HO_COR"];
-      html.po_cor   =root["PO_COR"];
+      config.zone     =root["ZONE"];
+      config.bright   =root["BRIGHT"];
+      config.bright_n =root["BRIGHT_N"];
+      config.adj      =root["DAYLIGHT"];
+      config.timef    =root["TIME"];
+      config.lang     =root["LANG"];
+      config.sleep    =root["SLEEP"];
+      config.typ      =root["TYPE"];
+      config.k        =root["K"];
+      config.temp     =root["TEMP"];
+      config.hum      =root["HUM"];
+      config.t_cor    =root["T_COR"];
+      config.h_cor    =root["H_COR"];
+      config.provider =root["PROVIDER"];
+      config.battery  =root["BATTERY"];
+      config.os       =root["OS"];
+      config.ti_units =root["TI_UNITS"];
+      config.ti_round =root["TI_ROUND"];
+      config.hi_round =root["HI_ROUND"];
+      config.t_out    =root["T_OUT"];
+      config.to_units =root["TO_UNITS"];
+      config.to_round =root["TO_ROUND"];
+      config.h_out    =root["H_OUT"];
+      config.p_out    =root["P_OUT"];
+      config.po_units =root["PO_UNITS"];
+      config.w_units  =root["W_UNITS"];
+      config.w_round  =root["W_ROUND"];
+      config.ac       =root["AC"];
+      config.to_cor   =root["TO_COR"];
+      config.ho_cor   =root["HO_COR"];
+      config.po_cor   =root["PO_COR"];
       String ip     =root["IP"];
       String mask   =root["MASK"];
       String gw     =root["GATEWAY"];
@@ -752,52 +752,52 @@ void read_eeprom(void){
       String sip    =root["SIP"];
       String mdns   =root["MDNS"];
       String chid   =root["CHID"];
-      html.bgr      =root["BGSR"];
-      html.bgg      =root["BGSG"];
-      html.bgb      =root["BGSB"];
-      html.txr      =root["TXSR"];
-      html.txg      =root["TXSG"];
-      html.txb      =root["TXSB"];
-      html.rmr      =root["RMSR"];
-      html.rmg      =root["RMSG"];
-      html.rmb      =root["RMSB"];
-      html.snr      =root["SNSR"];
-      html.sng      =root["SNSG"];
-      html.snb      =root["SNSB"];
-      html.dl       =root["DL"];
-      html.fh       =root["FH"];
-      html.fm       =root["FM"];
-      html.th       =root["TH"];
-      html.tm       =root["TM"];
-      html.sensor=mac;
-      html.ip=ip;
-      html.mask=mask;
-      html.gateway=gw;
-      html.dns1=dns1;
-      html.dns2=dns2;
-      html.lat=lat;
-      html.lon=lon;
-      if(ap_ssid!="") ap_ssid.toCharArray(html.ap_ssid,(ap_ssid.length())+1);
-      if(ap_pass!="") ap_pass.toCharArray(html.ap_pass,(ap_pass.length())+1);
-      if(ap_ip!="") html.ap_ip=ap_ip;
-      if(ap_mask!="") html.ap_mask=ap_mask;
-      html.city=city;
-      html.appid=appid;
-      html.sssid=sssid;
-      html.spass=spass;
-      html.sip=sip;
-      if(mdns!="") html.mdns=mdns;
-      html.chid=chid;
-      html.cid=cid;
+      config.bgr      =root["BGSR"];
+      config.bgg      =root["BGSG"];
+      config.bgb      =root["BGSB"];
+      config.txr      =root["TXSR"];
+      config.txg      =root["TXSG"];
+      config.txb      =root["TXSB"];
+      config.rmr      =root["RMSR"];
+      config.rmg      =root["RMSG"];
+      config.rmb      =root["RMSB"];
+      config.snr      =root["SNSR"];
+      config.sng      =root["SNSG"];
+      config.snb      =root["SNSB"];
+      config.dl       =root["DL"];
+      config.fh       =root["FH"];
+      config.fm       =root["FM"];
+      config.th       =root["TH"];
+      config.tm       =root["TM"];
+      config.sensor=mac;
+      config.ip=ip;
+      config.mask=mask;
+      config.gateway=gw;
+      config.dns1=dns1;
+      config.dns2=dns2;
+      config.lat=lat;
+      config.lon=lon;
+      if(ap_ssid!="") ap_ssid.toCharArray(config.ap_ssid,(ap_ssid.length())+1);
+      if(ap_pass!="") ap_pass.toCharArray(config.ap_pass,(ap_pass.length())+1);
+      if(ap_ip!="") config.ap_ip=ap_ip;
+      if(ap_mask!="") config.ap_mask=ap_mask;
+      config.city=city;
+      config.appid=appid;
+      config.sssid=sssid;
+      config.spass=spass;
+      config.sip=sip;
+      if(mdns!="") config.mdns=mdns;
+      config.chid=chid;
+      config.cid=cid;
     }
   }
-  if(html.sleep>100) html.sleep=1;
-  if(html.lang>9) html.lang=0;
-  if(html.adj>1) html.adj=0;
-  if((html.zone>13) and (html.zone<-13)) html.zone=0;
-  if(html.timef>1) html.timef=0;
-  if(html.bright>1024 or html.bright==0) html.bright=500;
-  switch(html.lang){
+  if(config.sleep>100) config.sleep=1;
+  if(config.lang>9) config.lang=0;
+  if(config.adj>1) config.adj=0;
+  if((config.zone>13) and (config.zone<-13)) config.zone=0;
+  if(config.timef>1) config.timef=0;
+  if(config.bright>1024 or config.bright==0) config.bright=500;
+  switch(config.lang){
     case 0:urlLang="en";break;
     case 1:urlLang="ru";break;
     case 2:urlLang="ro";break;
@@ -824,10 +824,10 @@ void read_eeprom(void){
       }
     }
   }
-  back_color=rgb565(html.bgr,html.bgg,html.bgb);
-  text_color=rgb565(html.txr,html.txg,html.txb);
-  out_color=rgb565(html.snr,html.sng,html.snb);
-  rama_color=rgb565(html.rmr,html.rmg,html.rmb); 
+  back_color=rgb565(config.bgr,config.bgg,config.bgb);
+  text_color=rgb565(config.txr,config.txg,config.txb);
+  out_color=rgb565(config.snr,config.sng,config.snb);
+  rama_color=rgb565(config.rmr,config.rmg,config.rmb); 
 }
 
 uint16_t rgb565(uint8_t red, uint8_t green, uint8_t blue){

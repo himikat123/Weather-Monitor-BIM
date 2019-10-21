@@ -78,9 +78,9 @@ void web_settings(void){
       if(file){
         file.print(webServer.arg("JS"));
         file.close();
-        webServer.send(200,"text/plain",saved[html.lang].saved);
+        webServer.send(200,"text/plain",saved[config.lang].saved);
       }
-      else webServer.send(200,"text/plain",saved[html.lang].not_saved);
+      else webServer.send(200,"text/plain",saved[config.lang].not_saved);
     }
     if(webServer.arg("JSSIDS")!=""){  
       File file=SPIFFS.open("/save/jssids.json","w");
@@ -105,9 +105,9 @@ void web_settings(void){
       if(file){
         file.print(webServer.arg("D"));
         file.close();
-        webServer.send(200,"text/plain",saved[html.lang].saved);
+        webServer.send(200,"text/plain",saved[config.lang].saved);
       }
-      else webServer.send(200,"text/plain",saved[html.lang].not_saved);
+      else webServer.send(200,"text/plain",saved[config.lang].not_saved);
     }  
   });
 
@@ -132,27 +132,27 @@ void web_settings(void){
   });
 
   webServer.on("/esp/lang.php",HTTP_POST,[](){
-    html.lang=(webServer.arg("LANG").toInt());
+    config.lang=(webServer.arg("LANG").toInt());
     webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/temp.php",HTTP_POST,[](){
-    html.temp=webServer.arg("SENSOR").toInt();
+    config.temp=webServer.arg("SENSOR").toInt();
     webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/hum.php",HTTP_POST,[](){
-    html.hum=webServer.arg("SENSOR").toInt();
+    config.hum=webServer.arg("SENSOR").toInt();
     webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/tcor.php",HTTP_POST,[](){
-    html.t_cor=webServer.arg("COR").toFloat();
+    config.t_cor=webServer.arg("COR").toFloat();
     webServer.send(200,"text/plain","OK");
   });
 
   webServer.on("/esp/hcor.php",HTTP_POST,[](){
-    html.h_cor=webServer.arg("COR").toFloat();
+    config.h_cor=webServer.arg("COR").toFloat();
     webServer.send(200,"text/plain","OK");
   });
   
@@ -179,7 +179,7 @@ void web_settings(void){
     String json="{\"t\":\""; json+=(t==404)?"--":String(t); json+="\",";
     json+="\"h\":\""; json+=(h==404)?"--":String(h); json+="\"}";
     webServer.send(200,"text/plain",json);
-    if(html.temp==3) sensors.requestTemperatures();
+    if(config.temp==3) sensors.requestTemperatures();
   });
 
   webServer.on("/esp/mac_ip.php",HTTP_POST,[](){
@@ -198,7 +198,7 @@ void web_settings(void){
   webServer.on("/esp/status.php",HTTP_POST,[](){
     float t=get_temp(1);
     float h=get_humidity();
-    float cor=-html.k;
+    float cor=-config.k;
     cor=cor+400;
     String json="{\"fw\":\""; json+="v"+fw;                    json+="\",";
     json+="\"ssid\":\"";      json+=WiFi.SSID();               json+="\",";
@@ -208,7 +208,7 @@ void web_settings(void){
     json+="\"ip\":\"";        json+=WiFi.localIP().toString(); json+="\",";
     json+="\"temp\":\"";      json+=(t==404)?"--":String(t);   json+="\",";
     json+="\"t\":\"";
-    switch(html.temp){
+    switch(config.temp){
       case 0: json+="\","; break;
       case 1: json+="BME280 (76)\","; break;
       case 2: json+="BME280 (77)\","; break;
@@ -220,7 +220,7 @@ void web_settings(void){
     }
     json+="\"hum\":\""; json+=(h==404)?"--":String(h); json+="\","; 
     json+="\"h\":\"";
-    switch(html.hum){
+    switch(config.hum){
       case 0: json+="\","; break;
       case 1: json+="BME280 (76)\","; break;
       case 2: json+="BME280 (77)\","; break;
@@ -230,7 +230,7 @@ void web_settings(void){
     }
     json+="\"bat\":\""; json+=analogRead(A0)/cor; json+="V\"}";
     webServer.send(200,"text/plain",json);
-    if(html.temp==3) sensors.requestTemperatures();
+    if(config.temp==3) sensors.requestTemperatures();
   });
 
   webServer.on("/esp/reboot.php",HTTP_POST,[](){
@@ -346,19 +346,19 @@ void web_settings(void){
       String new_pass=webServer.arg("NEWPAS");
       if(String(pass)==old_pass){
         if(user==username and old_pass==new_pass)
-          webServer.send(200,"text/plain",saved[html.lang].saved);
+          webServer.send(200,"text/plain",saved[config.lang].saved);
         else{
           File filew=SPIFFS.open("/save/user.us","w");
           if(filew){
             filew.print("{\"user\":\""+user+"\",\"pass\":\""+new_pass+"\"}");
             filew.close();
-            webServer.send(200,"text/plain",saved[html.lang].saved);
+            webServer.send(200,"text/plain",saved[config.lang].saved);
           } 
         } 
       }
-      else webServer.send(200,"text/plain",saved[html.lang].old_pass);
+      else webServer.send(200,"text/plain",saved[config.lang].old_pass);
     }
-    else webServer.send(200,"text/plain",saved[html.lang].not_saved);
+    else webServer.send(200,"text/plain",saved[config.lang].not_saved);
   });
 
   webServer.on("/esp/name.php",HTTP_POST,[](){

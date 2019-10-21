@@ -8,9 +8,10 @@
 #define BAT50 0x07
 #define BAT75 0x08
 #define BAT100 0x09
+#define SITE "http://b-i-m.online/api/"
 
 String lang="";
-String fw="4.0";
+String fw="4.1";
 String vers="BIM v"+fw;
 char text_buf[255]="";
 float tempInside=0;
@@ -34,8 +35,8 @@ int out_color=0xFFF6;
 int back_color=0x02F3;
 int rama_color=VGA_WHITE;
 time_t startTime=0;
-String latitude="";
-String longitude="";
+//String latitude="";
+//String longitude="";
 bool update_flag=true;
 bool sleep_flag=false;
 bool handle_flag=true;
@@ -51,6 +52,8 @@ uint8_t e_str=0;
 uint8_t sm=12;
 uint8_t sd=32;
 char events[65]="";
+String country="";
+String city="";
 
 struct{
   uint8_t num=0;
@@ -73,7 +76,7 @@ struct{
   uint32_t    updated=0;
 } outside;
 
-struct html_structure{
+struct config_structure{
   char        ap_ssid[32]="WeatherMonitor";
   char        ap_pass[32]="1234567899";
   String      ap_ip="192.168.4.1";
@@ -146,7 +149,7 @@ struct html_structure{
   int         th=0;
   int         tm=0;
 };
-html_structure html;
+config_structure config;
 
 struct weather_structure{
   uint32_t    crc32=0;
@@ -164,7 +167,7 @@ struct weather_structure{
   time_t      sunrise=0;
   time_t      sunset=0;
   bool        isDay=false;
-
+  
   int         icon1=0;
   float       day1=404;
   float       night1=404;

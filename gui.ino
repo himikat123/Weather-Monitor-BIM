@@ -2,15 +2,15 @@ void showSettingsMode(void){
   myGLCD.fillScr(back_color);
   printCent(WiFi.macAddress(),0,200,5,text_color,back_color,SmallFontRu);
   printCent(WiFi.localIP().toString(),0,150,20,text_color,back_color,SmallFontRu);
-  printCent(UTF8(settings_lng[html.lang].str1),0,319,75,text_color,back_color,SmallFontRu);
-  printCent(UTF8(settings_lng[html.lang].str2),0,319,90,text_color,back_color,SmallFontRu);
-  printCent(UTF8(settings_lng[html.lang].str3),0,319,105,text_color,back_color,SmallFontRu);
-  sprintf(text_buf,"%s \"%s\"",settings_lng[html.lang].str4,html.ap_ssid);
+  printCent(UTF8(settings_lng[config.lang].str1),0,319,75,text_color,back_color,SmallFontRu);
+  printCent(UTF8(settings_lng[config.lang].str2),0,319,90,text_color,back_color,SmallFontRu);
+  printCent(UTF8(settings_lng[config.lang].str3),0,319,105,text_color,back_color,SmallFontRu);
+  sprintf(text_buf,"%s \"%s\"",settings_lng[config.lang].str4,config.ap_ssid);
   printCent(UTF8(text_buf),0,319,120,text_color,back_color,SmallFontRu);
-  sprintf(text_buf,"%s \"%s\".",settings_lng[html.lang].str5,html.ap_pass);
+  sprintf(text_buf,"%s \"%s\".",settings_lng[config.lang].str5,config.ap_pass);
   printCent(UTF8(text_buf),0,319,135,text_color,back_color,SmallFontRu);
-  printCent(UTF8(settings_lng[html.lang].str6),0,319,150,text_color,back_color,SmallFontRu);
-  printCent(UTF8(settings_lng[html.lang].str7),0,319,165,text_color,back_color,SmallFontRu);
+  printCent(UTF8(settings_lng[config.lang].str6),0,319,150,text_color,back_color,SmallFontRu);
+  printCent(UTF8(settings_lng[config.lang].str7),0,319,165,text_color,back_color,SmallFontRu);
 }
 
 void showWiFiLevel(int myRSSI){
@@ -21,20 +21,20 @@ void showWiFiLevel(int myRSSI){
   myGLCD.setFont(Symbols);
   if(level_wifi==0){
     sprintf(text_buf,"%c",ANT100);
-    if(html.ac){
+    if(config.ac){
       myGLCD.print(text_buf,290,0);
       myGLCD.setColor(VGA_RED);
       myGLCD.drawLine(290,0,305,15);
       myGLCD.drawLine(290,15,305,0);
     }
     else{
-      if(html.battery==0){
+      if(config.battery==0){
         myGLCD.print(text_buf,273,0);
         myGLCD.setColor(VGA_RED);
         myGLCD.drawLine(273,0,288,15);
         myGLCD.drawLine(273,15,288,0);
       }
-      if(html.battery==1){
+      if(config.battery==1){
         myGLCD.print(text_buf,265,0);
         myGLCD.setColor(VGA_RED);
         myGLCD.drawLine(265,0,280,15);
@@ -52,23 +52,23 @@ void showWiFiLevel(int myRSSI){
     myGLCD.setBackColor(back_color);
     myGLCD.setFont(Symbols);
     sprintf(text_buf,"%c",ant);
-    if(html.ac) myGLCD.print(text_buf,290,0);
+    if(config.ac) myGLCD.print(text_buf,290,0);
     else{
-      if(html.battery==0) myGLCD.print(text_buf,273,0);
-      if(html.battery==1) myGLCD.print(text_buf,265,0);
+      if(config.battery==0) myGLCD.print(text_buf,273,0);
+      if(config.battery==1) myGLCD.print(text_buf,265,0);
     }
   }
 }
 
 void showBatteryLevel(void){
-  if(!html.ac){
+  if(!config.ac){
     myGLCD.setColor(text_color);
     myGLCD.setBackColor(back_color);
-    if(html.battery==0) myGLCD.setFont(Symbols);
-    if(html.battery==1) myGLCD.setFont(SmallFontRu);
+    if(config.battery==0) myGLCD.setFont(Symbols);
+    if(config.battery==1) myGLCD.setFont(SmallFontRu);
     char bat=BAT0;
     float adc=analogRead(A0);
-    float cor=-html.k;
+    float cor=-config.k;
     cor=cor+400;
     float Ubat=adc/cor;
     if(Ubat<3.3){analogWrite(BACKLIGHT,0);myGLCD.lcdOff();ESP.deepSleep(999999999*999999999U,WAKE_NO_RFCAL);}
@@ -77,8 +77,8 @@ void showBatteryLevel(void){
     if(Ubat>=3.7 and Ubat<3.8) bat=BAT50;
     if(Ubat>=3.8 and Ubat<3.9) bat=BAT75;
     if(Ubat>=3.9) bat=BAT100;
-    if(html.battery==0) myGLCD.print(String(bat),296,0);
-    if(html.battery==1) myGLCD.print(String(Ubat),286,3);
+    if(config.battery==0) myGLCD.print(String(bat),296,0);
+    if(config.battery==1) myGLCD.print(String(Ubat),286,3);
   }
 }
 
@@ -155,27 +155,27 @@ void showWeatherDaily(int x,int y,uint8_t icon,uint8_t wd,float tempDay,float te
   myGLCD.drawRect(x+1,y+1,x+95,myGLCD.getDisplayYSize()-3);
   if(wd>6) wd-=7;
   myGLCD.setColor(text_color);
-  printWD(UTF8(WD[wd][html.lang]),x,y);
+  printWD(UTF8(WD[wd][config.lang]),x,y);
     //temperature and wind
   myGLCD.setBackColor(VGA_TRANSPARENT);
   myGLCD.setFont(BigFontRu);
-  String s=tempDay>200?"---":String(round(html.to_units?tempDay*1.8+32:tempDay));
+  String s=tempDay>200?"---":String(round(config.to_units?tempDay*1.8+32:tempDay));
   myGLCD.print(s,(x+75)-s.length()*16,y+18);
-  s=tempNight>200?"---":String(round(html.to_units?tempNight*1.8+32:tempNight));
+  s=tempNight>200?"---":String(round(config.to_units?tempNight*1.8+32:tempNight));
   myGLCD.print(s,(x+75)-s.length()*16,y+36);
   myGLCD.setFont(SmallFontRu);
-  myGLCD.print(html.to_units?"^F":"^C",x+75,y+22);
-  myGLCD.print(html.to_units?"^F":"^C",x+75,y+40);
-  if(html.provider!=2){
-    String str=UTF8(WeatherNow[html.lang].Wind); 
-    if(html.w_units==0) str+=wind>200?"--":String(round(wind));
-    if(html.w_units==1) str+=wind>200?"--":String(round(wind*3.6));
-    if(html.w_units==2) str+=wind>200?"--":String(round(wind*2.237));
-    if(html.w_units==3) str+=wind>200?"--":String(round(wind*1.94));
-    if(html.w_units==0) str+=UTF8(WeatherNow[html.lang].meter_sec);
-    if(html.w_units==1) str+=UTF8(WeatherNow[html.lang].km_hour);
-    if(html.w_units==2) str+=UTF8(WeatherNow[html.lang].miles_hour);
-    if(html.w_units==3) str+=UTF8(WeatherNow[html.lang].knots);
+  myGLCD.print(config.to_units?"^F":"^C",x+75,y+22);
+  myGLCD.print(config.to_units?"^F":"^C",x+75,y+40);
+  if(config.provider!=2){
+    String str=UTF8(WeatherNow[config.lang].Wind); 
+    if(config.w_units==0) str+=wind>200?"--":String(round(wind));
+    if(config.w_units==1) str+=wind>200?"--":String(round(wind*3.6));
+    if(config.w_units==2) str+=wind>200?"--":String(round(wind*2.237));
+    if(config.w_units==3) str+=wind>200?"--":String(round(wind*1.94));
+    if(config.w_units==0) str+=UTF8(WeatherNow[config.lang].meter_sec);
+    if(config.w_units==1) str+=UTF8(WeatherNow[config.lang].km_hour);
+    if(config.w_units==2) str+=UTF8(WeatherNow[config.lang].miles_hour);
+    if(config.w_units==3) str+=UTF8(WeatherNow[config.lang].knots);
     printCent(str,x+2,x+94,y+52,text_color,VGA_TRANSPARENT,SmallFontRu);
   }  
 }
@@ -194,8 +194,8 @@ void showWeatherAfterTomorrow(void){
 
 void showWeatherNow(bool l_upd){
   int x=3,y=18; String str; int dayLight=0; bool out=false;
-  if(html.adj) if(summertime()) dayLight=3600;
-  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  if(config.adj) if(summertime()) dayLight=3600;
+  uint32_t updated=now()-(config.zone*3600)-dayLight-outside.updated;
   if(l_upd){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x-3,y-1,x+211,y+152); 
@@ -205,15 +205,15 @@ void showWeatherNow(bool l_upd){
   }
     //temperature
   float temp=get_temp_out();
-  if(updated<1800 and temp<120 and (html.t_out==1 or html.t_out==2 or html.t_out==3)) out=true;
-  else if(html.t_out>=4 and html.t_out<=9) out=true;
+  if(updated<1800 and temp<120 and (config.t_out==1 or config.t_out==2 or config.t_out==3)) out=true;
+  else if(config.t_out>=4 and config.t_out<=9) out=true;
   else{
     temp=weather.temp;
     out=false;
   }
   drawFSJpeg((temp<0.0)?"/pic/temp-.jpg":"/pic/temp+.jpg",x+2,y+64);
   int cen=round(((x+112)-(x+32))/2)+x+32;
-  if(html.to_round){
+  if(config.to_round){
     char buf[16];
     String(temp).toCharArray(buf,16);
     String integ=strtok(buf,".");
@@ -229,7 +229,7 @@ void showWeatherNow(bool l_upd){
     myGLCD.setFont(SmallFontRu);
     if(temp<120.0) myGLCD.print(fract,cen-(leng/2)+1+(leng-42),y+83);
     myGLCD.setFont(BigFontRu);
-    myGLCD.print(html.to_units?"^F":"^C",cen-(leng/2)+(leng-42)+14,y+80);
+    myGLCD.print(config.to_units?"^F":"^C",cen-(leng/2)+(leng-42)+14,y+80);
   }
   else{
     str=String(round(temp));
@@ -240,7 +240,7 @@ void showWeatherNow(bool l_upd){
     if(temp<120.0) myGLCD.print(str,cen-leng,y+75);
     else myGLCD.print("--",x+30,y+75);
     myGLCD.setFont(BigFontRu);
-    myGLCD.print(html.to_units?"^F":"^C",cen-leng+1+str.length()*myGLCD.getFontXsize(),y+80); 
+    myGLCD.print(config.to_units?"^F":"^C",cen-leng+1+str.length()*myGLCD.getFontXsize(),y+80); 
   }
   if(l_upd){
       //wind
@@ -248,18 +248,18 @@ void showWeatherNow(bool l_upd){
     drawFSJpeg("/pic/wind.jpg",x+5,y+104);
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x+21,y+120,x+22,y+121);
-    if(html.w_units==0) w=html.w_round?weather.speed:round(weather.speed);
-    if(html.w_units==1) w=html.w_round?(weather.speed*3.6):round(weather.speed*3.6);
-    if(html.w_units==2) w=html.w_round?(weather.speed*2.237):round(weather.speed*2.237);
-    if(html.w_units==3) w=html.w_round?(weather.speed*1.94):round(weather.speed*1.94);
-    if(html.w_units==0) units=UTF8(WeatherNow[html.lang].meter_sec);
-    if(html.w_units==1) units=UTF8(WeatherNow[html.lang].km_hour);
-    if(html.w_units==2) units=UTF8(WeatherNow[html.lang].miles_hour);
-    if(html.w_units==3) units=UTF8(WeatherNow[html.lang].knots);
+    if(config.w_units==0) w=config.w_round?weather.speed:round(weather.speed);
+    if(config.w_units==1) w=config.w_round?(weather.speed*3.6):round(weather.speed*3.6);
+    if(config.w_units==2) w=config.w_round?(weather.speed*2.237):round(weather.speed*2.237);
+    if(config.w_units==3) w=config.w_round?(weather.speed*1.94):round(weather.speed*1.94);
+    if(config.w_units==0) units=UTF8(WeatherNow[config.lang].meter_sec);
+    if(config.w_units==1) units=UTF8(WeatherNow[config.lang].km_hour);
+    if(config.w_units==2) units=UTF8(WeatherNow[config.lang].miles_hour);
+    if(config.w_units==3) units=UTF8(WeatherNow[config.lang].knots);
     if(w>400) printInt("--",units,x+27,y+120,text_color,back_color);
     else{
       myGLCD.setFont(BigFontRu);
-      if(html.w_round) printData(String(w),units,x+27,y+120,text_color,back_color);
+      if(config.w_round) printData(String(w),units,x+27,y+120,text_color,back_color);
       else printInt(String(round(w)),units,x+27,y+120,text_color,back_color);
     }
       //wind direction
@@ -280,8 +280,8 @@ void showWeatherNow(bool l_upd){
     //humidity
   float humidity=get_humidity_out();
   drawFSJpeg("/pic/hum.jpg",x+109,y+64);
-  if(updated<1800 and humidity<120 and (html.h_out==1 or html.h_out==2)) out=true;
-  else if(html.h_out>=3 and html.h_out<=6) out=true;
+  if(updated<1800 and humidity<120 and (config.h_out==1 or config.h_out==2)) out=true;
+  else if(config.h_out>=3 and config.h_out<=6) out=true;
   else{
     humidity=weather.humidity;
     out=false;
@@ -292,26 +292,26 @@ void showWeatherNow(bool l_upd){
     //pressure
   drawFSJpeg("/pic/pres.jpg",x+108,y+104);
   int pres=get_pres_out();
-  if(updated<1800 and pres<1300 and (html.p_out==1 or html.p_out==2)) out=true;
-  else if(html.p_out==3 or html.p_out==4) out=true;
+  if(updated<1800 and pres<1300 and (config.p_out==1 or config.p_out==2)) out=true;
+  else if(config.p_out==3 or config.p_out==4) out=true;
   else{
     pres=weather.pressure;
     out=false;
   }
-  pres+=html.po_cor;
-  html.po_units?str=String(round(pres),DEC):str=String(round(0.75*pres),DEC);
+  pres+=config.po_cor;
+  config.po_units?str=String(round(pres),DEC):str=String(round(0.75*pres),DEC);
   if(pres>2000) str="--";
-  if(html.po_units)
-    printCent(UTF8(WeatherNow[html.lang].hpa),x+142,x+210,y+108,out?out_color:text_color,back_color,SmallFontRu);
-  printInt(str,html.po_units?"":UTF8(WeatherNow[html.lang].mm),x+124,y+120,out?out_color:text_color,back_color);  
+  if(config.po_units)
+    printCent(UTF8(WeatherNow[config.lang].hpa),x+142,x+210,y+108,out?out_color:text_color,back_color,SmallFontRu);
+  printInt(str,config.po_units?"":UTF8(WeatherNow[config.lang].mm),x+124,y+120,out?out_color:text_color,back_color);  
   if(l_upd){
       //updated
     updtd="~ ";
-    if(!html.timef){
-      updtd+=isAM()?UTF8(WeatherNow[html.lang].AM):UTF8(WeatherNow[html.lang].PM);
+    if(!config.timef){
+      updtd+=isAM()?UTF8(WeatherNow[config.lang].AM):UTF8(WeatherNow[config.lang].PM);
       updtd+=" ";
     }
-    updtd+=html.timef?String(hour(weather.updated)):String(hourFormat12(weather.updated));
+    updtd+=config.timef?String(hour(weather.updated)):String(hourFormat12(weather.updated));
     updtd+=":";
     if(minute(weather.updated)<10) updtd+="0";
     updtd+=String(minute(weather.updated)); updtd+=":";
@@ -325,8 +325,8 @@ void showWeatherNow(bool l_upd){
     out_bat();
       //description
     char descript[80];
-    if(html.lang==1 or html.lang==5 or html.lang==7 or html.lang==8){
-      if(html.provider==0){
+    if(config.lang==1 or config.lang==5 or config.lang==7 or config.lang==8){
+      if(config.provider==0){
         String d=description(weather.id); 
         if(d) d.toCharArray(descript,d.length()+1);
       }
@@ -366,8 +366,8 @@ void showWeatherNow(bool l_upd){
 
 void out_bat(void){
   int dayLight=0;
-  if(html.adj) if(summertime()) dayLight=3600;
-  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  if(config.adj) if(summertime()) dayLight=3600;
+  uint32_t updated=now()-(config.zone*3600)-dayLight-outside.updated;
   char bat=BAT0;
   if(updated<1800 and outside.bat<6){
     myGLCD.setColor(out_color);
@@ -392,48 +392,48 @@ void out_bat(void){
 
 void showInsideTemp(void){
   int x=215,y=96, dayLight=0;
-  if(html.adj) if(summertime()) dayLight=3600;
-  uint32_t updated=now()-(html.zone*3600)-dayLight-outside.updated;
+  if(config.adj) if(summertime()) dayLight=3600;
+  uint32_t updated=now()-(config.zone*3600)-dayLight-outside.updated;
   if(temp_draw==0 or hum_draw==0){
     myGLCD.setColor(back_color);
     myGLCD.fillRect(x,y,myGLCD.getDisplayXSize()-1,y+74);
-    if(html.hum==0) /*if(!need_upd_icon)*/ drawFSJpeg("/pic/home.jpg",x+2,y+16);
-    if(html.hum>0){
+    if(config.hum==0) /*if(!need_upd_icon)*/ drawFSJpeg("/pic/home.jpg",x+2,y+16);
+    if(config.hum>0){
       drawFSJpeg("/pic/home.jpg",x+2,y);
       drawFSJpeg("/pic/hum.jpg",x+3,y+31);
     }
     myGLCD.setColor(rama_color);
     myGLCD.drawRect(x,y,x+96,y+64);
     myGLCD.drawRect(x+1,y+1,x+95,y+63);
-    tempInside=get_temp(!html.ti_units);
+    tempInside=get_temp(!config.ti_units);
     humInside=get_humidity();
   }
-  if(html.sleep==0 or html.sleep>3){
-    tempInside=get_temp(!html.ti_units);
+  if(config.sleep==0 or config.sleep>3){
+    tempInside=get_temp(!config.ti_units);
     humInside=get_humidity();
   }
   if(temp_draw!=tempInside){
     if(tempInside>=0 and tempInside<100){
-      if(html.ti_round){
+      if(config.ti_round){
         myGLCD.setFont(BigFontRu);
-        printData(tempInside<10.0?" "+String(tempInside):String(tempInside),html.ti_units?"^F":"^C",x+23,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printData(tempInside<10.0?" "+String(tempInside):String(tempInside),config.ti_units?"^F":"^C",x+23,!config.hum?y+25:y+9,config.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
         myGLCD.setFont(Arial_round);
-        printInt(tempInside<10.0?" "+String(round(tempInside)):String(round(tempInside)),html.ti_units?"^F":"^C",x+19,!html.hum?y+25:y+9,html.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printInt(tempInside<10.0?" "+String(round(tempInside)):String(round(tempInside)),config.ti_units?"^F":"^C",x+19,!config.hum?y+25:y+9,config.temp>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     temp_draw=tempInside;
   }
   if(hum_draw!=humInside){
     if(humInside>=0 and humInside<=100){
-      if(html.hi_round){
+      if(config.hi_round){
         myGLCD.setFont(BigFontRu);
-        printData(humInside<10.0?" "+String(humInside):String(humInside),"%",x+25,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printData(humInside<10.0?" "+String(humInside):String(humInside),"%",x+25,y+41,config.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
       else{
         myGLCD.setFont(Arial_round);
-        printInt(humInside<10.0?" "+String(round(humInside)):String(round(humInside)),"%",x+16,y+41,html.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
+        printInt(humInside<10.0?" "+String(round(humInside)):String(round(humInside)),"%",x+16,y+41,config.hum>99?updated>1800?VGA_RED:out_color:text_color,back_color);
       }
     }
     hum_draw=humInside;
@@ -463,12 +463,12 @@ void showTime(void){
   if(clock_upd!=minute()){
     clock_upd=minute();
       //weekday
-    printCent(UTF8(Weekday[weekday()-1][html.lang]),x+2,x+94,y+45,text_color,back_color,SmallFontRu);
+    printCent(UTF8(Weekday[weekday()-1][config.lang]),x+2,x+94,y+45,text_color,back_color,SmallFontRu);
       //time
-    sprintf(text_buf,"%d:%02d",html.timef?hour():hourFormat12(),minute());
+    sprintf(text_buf,"%d:%02d",config.timef?hour():hourFormat12(),minute());
     printCent(text_buf,x+7,x+89,y+18,text_color,back_color,DotMatrix_M_Num);
-    if(!html.timef) 
-      printCent(isAM()?UTF8(WeatherNow[html.lang].AM):UTF8(WeatherNow[html.lang].PM),x+7,x+89,y+2,text_color,back_color,SmallFontRu);
+    if(!config.timef) 
+      printCent(isAM()?UTF8(WeatherNow[config.lang].AM):UTF8(WeatherNow[config.lang].PM),x+7,x+89,y+2,text_color,back_color,SmallFontRu);
   }
 
   if(sm!=month()-1 || sd!=day()){
@@ -494,24 +494,24 @@ void showTime(void){
     myGLCD.setBackColor(back_color);
     myGLCD.setFont(BigFontRu);
     uint8_t ld=(String(day()).length())*16;
-    uint8_t lm=(String(UTF8(Month[month()-1][html.lang])).length())*8;
+    uint8_t lm=(String(UTF8(Month[month()-1][config.lang])).length())*8;
     uint8_t ly=64;
     uint8_t ls=ld+lm+ly;
     myGLCD.print(String(day()),160-ls/2,0);
     myGLCD.setFont(SmallFontRu);
-    myGLCD.print(UTF8(Month[month()-1][html.lang]),160-ls/2+ld,4);
+    myGLCD.print(UTF8(Month[month()-1][config.lang]),160-ls/2+ld,4);
     myGLCD.setFont(BigFontRu);
     myGLCD.print(String(year()),160-ls/2+ld+lm,0);
     myGLCD.setColor(back_color);
     myGLCD.fillRect(23,0,159-ls/2,17);
-    myGLCD.fillRect(160-ls/2+ls,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,17);
+    myGLCD.fillRect(160-ls/2+ls,0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,17);
     myGLCD.fillRect(160-ls/2+ld,0,160-ls/2+ld+lm,3);
   }
   if(e_str==1 && String(UTF8(events)).length()>1){
-    if(String(UTF8(events)).length()<16) printCent(UTF8(events),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,0,text_color,back_color,BigFontRu);
+    if(String(UTF8(events)).length()<16) printCent(UTF8(events),23,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,0,text_color,back_color,BigFontRu);
     else{
-      printCent(UTF8(events),23,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,4,text_color,back_color,SmallFontRu);
-      myGLCD.fillRect(23,0,html.ac==0?html.battery==0?272:html.battery==1?264:289:289,3);
+      printCent(UTF8(events),23,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,4,text_color,back_color,SmallFontRu);
+      myGLCD.fillRect(23,0,config.ac==0?config.battery==0?272:config.battery==1?264:289:289,3);
     }    
   }
 }
@@ -617,53 +617,46 @@ char* UTF8(char str[80]){
 String description(int code){
   String descr=""; File file;
   if(code>=200 and code<300){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru200.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et200.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua200.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az200.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by200.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et200.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua200.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az200.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by200.json","r");
   }
   if(code>=300 and code<400){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru300.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et300.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua300.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az300.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by300.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et300.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua300.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az300.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by300.json","r");
   }
   if(code>=500 and code<600){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru500.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et500.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua500.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az500.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by500.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et500.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua500.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az500.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by500.json","r");
   }
   if(code>=600 and code<700){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru600.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et600.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua600.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az600.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by600.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et600.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua600.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az600.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by600.json","r");
   }
   if(code>=700 and code<800){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru700.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et700.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua700.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az700.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by700.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et700.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua700.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az700.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by700.json","r");
   }
   if(code>=800 and code<900){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru800.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et800.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua800.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az800.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by800.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et800.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua800.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az800.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by800.json","r");
   }
   if(code>=900 and code<1000){
-    if(html.lang==1) file=SPIFFS.open("/lang/ru900.json","r");
-    if(html.lang==5) file=SPIFFS.open("/lang/et900.json","r");
-    if(html.lang==6) file=SPIFFS.open("/lang/ua900.json","r");
-    if(html.lang==7) file=SPIFFS.open("/lang/az900.json","r");
-    if(html.lang==8) file=SPIFFS.open("/lang/by900.json","r");
+    if(config.lang==5) file=SPIFFS.open("/lang/et900.json","r");
+    if(config.lang==6) file=SPIFFS.open("/lang/ua900.json","r");
+    if(config.lang==7) file=SPIFFS.open("/lang/az900.json","r");
+    if(config.lang==8) file=SPIFFS.open("/lang/by900.json","r");
   }
   if(file){
     String fileData=file.readString();
