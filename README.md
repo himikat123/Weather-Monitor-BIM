@@ -28,7 +28,7 @@ And finally, a few photos of the resulting gadget.<br>
 <img src="./img/IMG_20180515_104518.jpg"><br>
 <img src="./img/IMG_20180515_104727.jpg"><br>
 
-A small video of the gadget <a href="https://www.youtube.com/embed/-WY_yKaUAVI"><img src="./img/youtube.png"></a><br>
+A small video of the gadget <a href="https://www.youtube.com/embed/-WY_yKaUAVI" target="_blank"><img src="./img/youtube.png"></a><br>
 
 Versions history:<br>
 v1.0 The first release.<br>
