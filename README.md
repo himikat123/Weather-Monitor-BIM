@@ -14,8 +14,6 @@ The USB->UART converter on the CP2102 chip is also in a modular design. Since th
 To charge the built-in Li-pol battery, the TP4056 chip is used. Also, by due to low cost and reluctance to bother with strapping applied module. Before installing the module, it is desirable to remove the mini/micro-USB connector from it, since it is in this device is not needed. We will charge the device through a micro-USB connector which is on the CP2102 module.<br><img src="./img/TP4056-prot.png"><hr>
 All modules and other discrete elements are mounted on a single-sided printed circuit board. The PCB is hand-made its manufacture should not cause difficulties, since the width tracks and the distance between them is quite large.<br><img src="./img/pcb.png"></hr>
 
-After assembly the gadget must be flashed. Use the <a href="?p=flashing" class="link">firmware guide</a>.
-
 Go to the gadget's settings:<br>Press and release the RESET button, press and hold the SETTINGS button until instructions on entering the settings mode appear on the screen of the gadget.<br><img src="./img/set.jpg"><br>
 You can use a laptop, tablet, or smartphone. Connect it to the "WeatherMonitor" network, the default password is "1234567890"<br>Open your browser and go to the address http://192.168.4.1<br><img src="./img/setingz.png"><hr>
 The case of the device is printed on a 3d printer and consists of several parts of different colors glued together between each other. The appearance resembles an old TV, even “antennas” are present. One from the “antennas” this is a DS18B20 temperature sensor, it is moved outside the case so that its readings more truthful. The second "antenna" is any transistor, not connected anywhere, decorative.<br>
@@ -29,8 +27,8 @@ And finally, a few photos of the resulting gadget.<br>
 <img src="./img/IMG_20180515_104351.jpg"><br>
 <img src="./img/IMG_20180515_104518.jpg"><br>
 <img src="./img/IMG_20180515_104727.jpg"><br>
-A small video of the gadget
-<iframe src="https://www.youtube.com/embed/-WY_yKaUAVI" frameborder="0" allowfullscreen></iframe>
+
+A small video of the gadget <a href="https://www.youtube.com/embed/-WY_yKaUAVI"><img src="./img/youtube.png"></a><br>
 
 Versions history:<br>
 v1.0 The first release.<br>
