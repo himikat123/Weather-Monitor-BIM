@@ -385,7 +385,7 @@ void web_settings(void){
       case 3: json += "BMP180\","; break;
       default: json += "\","; break;
     }
-    json += "\"hum\":\""; json += (h == 404.0) ? "--" : String(h); json += "\","; 
+    json += "\"hum\":\""; json += (h == 404.0) ? "--" : String(h) + "%"; json += "\","; 
     json += "\"h\":\"";
     switch(config.hum[0]){
       case 0: json += "\","; break;
@@ -430,7 +430,7 @@ void web_settings(void){
       case 3: json += "BMP180\","; break;
       default: json += "\","; break;
     }
-    json += "\"humi\":\""; json += (hi == 404.0) ? "--" : String(hi); json += "\","; 
+    json += "\"humi\":\""; json += (hi == 404.0) ? "--" : String(hi) + "%"; json += "\","; 
     json += "\"hi\":\"";
     switch(config.hum[1]){
       case 0: json += "\","; break;
