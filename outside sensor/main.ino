@@ -1,4 +1,4 @@
-/* Wireless Sensor BIM (esp part) v3.0
+/* Wireless Sensor BIM v3.0
    © himikat123@gmail.com, Nürnberg, Deutschland, 2020
 */
                                // Board: Generic ESP8266 Module 
