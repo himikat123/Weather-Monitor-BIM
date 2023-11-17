@@ -1,0 +1,15 @@
+<svg viewBox="0 0 99.21 99.21">
+    <circle cx="49.61" cy="49.61" r="49.61" className='menu-svg-bg'/>
+    <ellipse cx="252.89" cy="334.57" rx="6.71" ry="10.86" transform="translate(-379.31 7.93) rotate(-51.19)" className='menu-svg-col1'/>
+    <polygon points="46.63 5.71 37.48 16.07 35.43 14.52 44.58 4.16 46.63 5.71" className='menu-svg-col1'/>
+    <rect x="255.68" y="330.56" width="15.16" height="2.53" transform="translate(-372.76 -3.74) rotate(-48.65)" className='menu-svg-col1'/>
+    <rect x="25.07" y="51.24" width="20.65" height="38.46" className='menu-svg-col1'/>
+    <rect x="29.12" y="46.04" width="12.63" height="5.21" className='menu-svg-col1'/>
+    <rect x="279.32" y="330.75" width="6.69" height="40.26" transform="translate(17.46 -410.66) rotate(32.2)" className='menu-svg-col1'/>
+    <rect x="272.7" y="359.01" width="25.46" height="6.19" transform="translate(-326.85 -182.48) rotate(-21.75)" className='menu-svg-col1'/>
+    <rect x="285.59" y="353.55" width="6.69" height="45.96" transform="translate(-14.82 -403.33) rotate(26.48)" className='menu-svg-col1'/>
+    <rect x="274.55" y="384.02" width="5.25" height="15.53" transform="translate(-318.04 -212.45) rotate(-17.51)" className='menu-svg-col1'/>
+    <rect x="280.43" y="391.66" width="11.85" height="5.24" transform="translate(-318.37 -209.56) rotate(-17.51)" className='menu-svg-col1'/>
+    <rect x="233.54" y="331.49" width="3.13" height="50.4" transform="translate(62.46 -382.6) rotate(38.81)" className='menu-svg-col1'/>
+    <rect x="243.88" y="326.55" width="24.78" height="7.59" transform="translate(50.63 -401.69) rotate(38.81)" className='menu-svg-col1'/>
+</svg>

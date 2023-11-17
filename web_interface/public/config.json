@@ -1,0 +1,239 @@
+{
+	"comfort": {
+		"temp": {
+			"source": 2,
+			"thing": 0,
+			"min": 21,
+			"max": 25
+		},
+		"hum": {
+			"source": 2,
+			"thing": 1,
+			"min": 30,
+			"max": 60
+		}
+	},
+	"network": {
+		"ssid": [
+			"Vodafone-43DC",
+			"",
+			""
+		],
+		"pass": [
+			"X4bm4RfnNCJFahqt",
+			"",
+			""
+		],
+		"ip": "",
+		"mask": "",
+		"gw": "",
+		"dns1": "",
+		"dns2": "",
+		"type": 0
+	},
+	"accessPoint": {
+		"ssid": "Weather monitor BIM",
+		"pass": "1234567890",
+		"chnl": 1,
+		"ip": "192.168.1.4",
+		"mask": "255.255.255.0"
+	},
+	"weather": {
+		"appid": [
+			"0d95d60df98e84ec2b4070be53c4d580",
+			""
+		],
+		"city": "Nuremberg",
+		"cityid": 0,
+		"lat": 0,
+		"lon": 0,
+		"provider": 0,
+		"citysearch": 0,
+		"parsingServer": "http://152.70.50.126/"
+	},
+	"lang": "ru",
+	"clock": {
+		"format": 1,
+		"ntp": "time.nist.gov",
+		"utc": 1,
+		"dlst": 1,
+		"ntp_period": 15
+	},
+	"display": {
+		"dayTime": "07:00",
+		"nightTime": "21:00",
+		"brightMethod": 3,
+		"brightness": {
+			"day": 100,
+			"night": 50,
+			"min": 1,
+			"max": 255
+		},
+		"lightSensor": 0,
+		"sensitivity": 50,
+		"source": {
+			"tempOut": {
+				"sens": 1,
+				"thing": 0
+			},
+			"humOut": {
+				"sens": 1,
+				"thing": 0
+			},
+			"presOut": {
+				"sens": 1,
+				"thing": 0
+			},
+			"tempIn": {
+				"sens": 2,
+				"thing": 0
+			},
+			"humIn": {
+				"sens": 2,
+				"thing": 1
+			},
+			"volt": {
+				"sens": 1,
+				"volt": 0,
+				"thing": 3
+			},
+			"bat": {
+				"sens": 1,
+				"thing": 4
+			},
+			"descr": 1
+		}
+	},
+	"sensors": {
+		"bme280": {
+			"t": 0,
+			"h": 0,
+			"p": 0
+		},
+		"bmp180": {
+			"t": 0,
+			"p": 0
+		},
+		"sht21": {
+			"t": 0,
+			"h": 0
+		},
+		"dht22": {
+			"t": 0,
+			"h": 0
+		},
+		"ds18b20": {
+			"t": 0
+		},
+		"max44009": {
+			"l": 0
+		},
+		"bh1750": {
+			"l": 0
+		},
+		"analog": {
+			"v": 0
+		}
+	},
+	"thingspeakSend": {
+		"turnOn": 0,
+		"period": 5,
+		"channelID": "",
+		"wrkey": "",
+		"rdkey": "",
+		"fields": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		"types": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	},
+	"thingspeakReceive": {
+		"turnOn": 1,
+		"period": 5,
+		"channelID": "875056",
+		"rdkey": "L57VOS7PR67PDTWT",
+		"expire": 20
+	},
+	"narodmonSend": {
+		"turnOn": 0,
+		"period": 5,
+		"lat": "",
+		"lon": "",
+		"name": "bim",
+		"sensors": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		"types": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		"thing": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		"metrics": [
+			"A",
+			"B",
+			"C",
+			"D",
+			"E",
+			"F",
+			"G",
+			"H",
+			"I",
+			"J",
+			"K",
+			"L"
+		]
+	},
+	"account": {
+		"name": "admin",
+		"required": 0
+	}
+}
