@@ -47,7 +47,7 @@
 
 Ну и, конечно, нормальная общая схема для общего развития.
 
-<p align="center"><img src="schematic%20diagramm/bim.png" alt="weather monitor BIM schematic diagramm"></p>
+<p align="center"><img src="schematic%20diagramm/BIM.png" alt="weather monitor BIM schematic diagramm"></p>
 
 ## Прошивка монитора погоды
 
