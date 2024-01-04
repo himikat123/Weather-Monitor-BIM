@@ -32,9 +32,6 @@ Ticker clockPoints;
 #include <ArduinoJson.h> // v6.19.3 https://github.com/bblanchon/ArduinoJson
 #include <TimeLib.h> // v1.6.0 https://playground.arduino.cc/Code/Time/
 #include <ESP8266TrueRandom.h>
-//#include <ESPAsyncTCP.h> // v1.2.4 https://github.com/dvarrel/ESPAsyncTCP
-//#include <ESPAsyncWebServer.h> // v1.2.3 https://github.com/me-no-dev/ESPAsyncWebServer
-//AsyncWebServer server(80);
 
 /* Own classes */
 #include "globals.hpp"
