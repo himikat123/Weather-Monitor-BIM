@@ -578,4 +578,4 @@ void webInterface_init(void) {
   webServer.collectHeaders(headerkeys, headerkeyssize);
   webServer.begin();
   web_listAllFilesInDir("/");
-} проверять залогинен ли при уплоаде
+}
