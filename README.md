@@ -47,7 +47,7 @@ You can connect any one, several, or all sensors from this list at once. The con
 
 Well, as promised, a normal schematic diagramm for general development. 
 
-<p align="center"><img src="schematic%20diagramm/BIM.png" alt="weather monitor BIM schematic diagramm"></p>
+<p align="center"><img src="Schematic_Diagramm/BIM.png" alt="weather monitor BIM schematic diagramm"></p>
 
 ## Weather monitor firmware
 
