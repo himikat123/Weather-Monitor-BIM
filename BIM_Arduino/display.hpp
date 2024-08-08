@@ -239,7 +239,7 @@ void Display::_showAntenna() {
   }
   else {
     _prevNetConnected = true;
-    unsigned int ant = 0;
+    int ant = 0;
     int rssi = WiFi.RSSI();
     if(rssi > -51) ant = 4;
     if(rssi < -50 && rssi > -76) ant = 3;
@@ -256,8 +256,9 @@ void Display::_showAntenna() {
 }
 
 void Display::_showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color) {
-  char buf[5] = "";
-  sprintf(buf, "%s°C", sensors.checkTemp(temp) ? String(temp) : "--");
+  char buf[10] = "";
+  if(sensors.checkTemp(temp)) sprintf(buf, "%d°C", temp);
+  else sprintf(buf, "--°C");
   _printText(x, y, font == FONT3 ? 70 : 56, font == FONT3 ? 26 : 20, buf, font, font == FONT3 ? CENTER : RIGHT, color);
 }
 
@@ -279,7 +280,8 @@ void Display::_showTemperatureOutside(int temp) {
 
 void Display::_showHumidity(int hum, uint16_t x, uint16_t y) {
   char buf[5] = "";
-  sprintf(buf, "%s%%", sensors.checkHum(hum) ? String(hum) : "--");
+  if(sensors.checkHum(hum)) sprintf(buf, "%d%%", hum);
+  else sprintf(buf, "--%%");
   _printText(x, y, 58, 20, buf, FONT2, CENTER, HUMIDITY_COLOR);
 }
 
@@ -332,7 +334,7 @@ void Display::_showBatteryLevel() {
   }
   if(_prevBatLevel != level) {
     if(level >= 1 && level <= 4) {
-      char buf[10] = "";
+      char buf[30] = "";
       sprintf(buf, "/img/bat/bat%d.jpg", level);
       _showImg(258, 2, buf);
       _prevBatLevel = level;

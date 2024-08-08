@@ -37,8 +37,8 @@ void Network::connect(void) {
       unsigned int numberOfNetworks = WiFi.scanNetworks();
       if(numberOfNetworks > 0) {
         int knownNetwork = -1;
-        for(int i=0; i<numberOfNetworks; i++) {
-          for(int k=0; k<NETWORKS; k++) {
+        for(unsigned int i=0; i<numberOfNetworks; i++) {
+          for(unsigned int k=0; k<NETWORKS; k++) {
             if(WiFi.SSID(i) == config.network_ssid(k)) {
               knownNetwork = k;
               break;

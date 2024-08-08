@@ -55,8 +55,8 @@ class Config {
   int _comfort_hum_max = 60; // Maximum comfort humidity: 0...100
     
   //WiFi network
-  char _network_ssid[NETWORKS][33] = { "Vodafone-43DC", "", "" }; // SSID list
-  char _network_pass[NETWORKS][33] = { "X4bm4RfnNCJFahqt", "", "" }; // Password list
+  char _network_ssid[NETWORKS][33] = { "", "", "" }; // SSID list
+  char _network_pass[NETWORKS][33] = { "", "", "" }; // Password list
   bool _network_type = false; // Connection type: false = dynamic IP, true = static IP
   char _network_ip[16] = ""; // Static IP address
   char _network_mask[16] = ""; // Static Subnet mask
@@ -72,17 +72,17 @@ class Config {
   char _accessPoint_mask[33] = "255.255.255.0"; // Subnet mask
   
   // Weather
-  char _weather_appid[PROVIDERS][33] = { "", "" }; // [0]->APPID openweathermap.org, [1]->KEY weatherbit.io
+  char _weather_appid[PROVIDERS][33] = { "", "" }; // [0]->nothing, [1]->KEY weatherbit.io
   float _weather_lon = 0.0; // Longitude
   float _weather_lat = 0.0; // Latitude
-  unsigned int _weather_provider = 0; // Weather forecast provider: 0-openweathermap.org, 1-weatherbit.io
+  unsigned int _weather_provider = 0; // Weather forecast provider: 0-open-meteo.com, 1-weatherbit.io
   char _weather_parsingServer[128] = ""; // Parsing server web address
   char _weather_city[41] = ""; // City name
   unsigned int _weather_cityid = 0; // City ID
   unsigned int _weather_citysearch = 0; // The way to recognize a city: 0-by name, 1-by ID, 2-by coordinates
 
   // Language
-  char _lang[3] = "ru";
+  char _lang[3] = "en";
 
   // Clock
   bool _clock_format = false; // Clock format: false-12 hour, true-24 hour 

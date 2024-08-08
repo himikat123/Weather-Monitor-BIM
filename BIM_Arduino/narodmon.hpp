@@ -32,7 +32,7 @@ void Narodmon::send() {
   }
   while(client.available()) {
     String line = client.readStringUntil('\r');
-    Serial.printf("Successfull. Server returned %s\r\n", line);
+    Serial.println("Successfull. Server returned " + line);
   }
   client.stop();
 }

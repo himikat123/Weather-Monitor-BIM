@@ -70,53 +70,6 @@ bool web_isLogged() {
   return false;
 }
 
-/**
- * Checks if the user is logged in and sends the requested file, otherwise sends the login page
- */
-//bool web_fileRead(AsyncWebServerRequest *request) {
-//  String path = request->url();
-//  if(!path.endsWith(".ico") && !path.endsWith(".jpg")) {
-//    if(path == "/config.json") {
-//      if(!web_isLogged(request)) {
-//        request->send(200, "text/plain", "{\"lang\": \"" + config.lang() + "\", \"state\": \"LOGIN\"}");
-//        return true;
-//      }
-//    }
-//    else path = "/index.html";
-//  }
-//  String pathWithGz = path + ".gz";
-//  if(LittleFS.exists(pathWithGz) || LittleFS.exists(path)) {
-//    if(LittleFS.exists(pathWithGz)) path += ".gz";
-//    AsyncWebServerResponse *response = request->beginResponse(LittleFS, path);
-//    if(request->hasArg("download")) response->addHeader("Content-Type", "application/octet-stream");
-//    else if(path.endsWith(".json")) response->addHeader("Content-Type", "application/json");
-//    else if(path.endsWith(".jpg")) response->addHeader("Content-Type", "image/jpeg");
-//    else if(path.endsWith(".ico")) response->addHeader("Content-Type", "image/x-icon");
-//    else if(path.endsWith(".gz")) {
-//      response->addHeader("Content-Encoding", "gzip");
-//      response->addHeader("Content-Type", "text/html");
-//    }
-//    else response->addHeader("Content-Type", "text/plain");
-//    request->send(response);
-//    return true;
-//  }
-//  return false;
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 String web_getContentType(String filename) {
   if(webServer.hasArg("download"))    return "application/octet-stream";
   else if(filename.endsWith(".html")) return "text/html";
@@ -127,37 +80,8 @@ String web_getContentType(String filename) {
 }
 
 bool web_handleFileRead(String path) {
-  //if(webServer.hasHeader("Cookie")) {
-    //String cookie = webServer.header("Cookie");
-    //int8_t au = cookie.indexOf("auth");
-    //uint8_t cook[10]; 
-    //uint8_t coincid = 0;
-    //uint8_t code_auth[10];
-    //ESP.rtcUserMemoryRead(0, (uint32_t*)&code_auth, 10);
-    //for(uint8_t i=0; i<10; i++) cook[i] = (uint8_t)cookie[au + 5 + i] - 48;
-    //for(uint8_t i=0; i<10; i++) if(code_auth[i] == cook[i]) coincid++;
-    //if(au != -1 and coincid == 10 or 
-    //   path.endsWith("json") or 
-    //   path == "/log-err.htm" or
-    //   path == "/ok.htm" or
-    /*   path == "/fail.htm")*/ return web_FileRead(path); 
-    //else return FileRead("/login.htm"); 
-  //}
-  //else {
-  //  if(path.endsWith("json")) return FileRead(path);
-  //  else return FileRead("/login.htm");
-  //}
-}
-
-bool web_FileRead(String path) {
   if(!path.endsWith(".jpg")) {
-    if(path == "/config.json") {
-//    if(!web_isLogged(request)) {
-//      request->send(200, "text/plain", "{\"lang\": \"" + config.lang() + "\", \"state\": \"LOGIN\"}");
-//      return true;
-//    }
-    }
-    else path = "/index.html";
+    if(path != "/config.json") path = "/index.html";
   }
   
   String contentType = web_getContentType(path);
@@ -166,7 +90,7 @@ bool web_FileRead(String path) {
   if(LittleFS.exists(pathWithGz) || LittleFS.exists(path)) {
     if(LittleFS.exists(pathWithGz)) path += ".gz";
     File file = LittleFS.open(path, "r");
-    size_t sent = webServer.streamFile(file, contentType);
+    webServer.streamFile(file,contentType);
     file.close();
     return true;
   }
