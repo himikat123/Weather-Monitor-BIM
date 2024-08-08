@@ -59,11 +59,14 @@ class AppFn extends React.Component {
                 }, 5000);
             }
         })
-        fetch("https://raw.githubusercontent.com/himikat123/Weather-monitor-BIM/master/BIM/globals.hpp")
+        fetch("https://raw.githubusercontent.com/himikat123/Weather-monitor-BIM/master/BIM_Arduino/globals.hpp")
         .then((response) => response.text())
         .then((text) => {
-            let regex = /] = "(v.+)"/gm;
-            this.setState({ gitVersion: regex.exec(text)[1] });
+            try {
+                let regex = /] = "(v.+)"/gm;
+                this.setState({ gitVersion: regex.exec(text)[1] });
+            }
+            catch(e) { console.error(e); }
         });
     }
 

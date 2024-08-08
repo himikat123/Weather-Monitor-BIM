@@ -1557,5 +1557,133 @@
         "ru": "Обнаружено обновление прошивки, версия XXX доступна:",
         "pl": "Wykryto aktualizację oprogramowania układowego, dostępna wersja XXX:",
         "ua": "Виявлено оновлення прошивки, версія XXX доступна:"
+    },
+
+    "clearSky": {
+        "en": "Clear sky",
+        "de": "Klarer Himmel",
+        "ru": "Ясно",
+        "pl": "Czyste Niebo",
+        "ua": "Ясно"
+    },
+
+    "mainlyClear": {
+        "en": "Mainly clear",
+        "de": "Überwiegend klar",
+        "ru": "Преимущественно ясно",
+        "pl": "Głównie jasne",
+        "ua": "Переважно ясно"
+    },
+
+    "partlyCloudy": {
+        "en": "Partly cloudy",
+        "de": "Teilweise bewölkt",
+        "ru": "Переменная облачность",
+        "pl": "Częściowe zachmurzenie",
+        "ua": "Мінлива хмарність"
+    },
+
+    "overcast":	{
+        "en": "Overcast",
+        "de": "Bedeckt",
+        "ru": "Пасмурно",
+        "pl": "Pochmurny",
+        "ua": "Хмарно"
+    },
+
+    "fog": {
+        "en": "Fog",
+        "de": "Nebel",
+        "ru": "Туман",
+        "pl": "Mgła",
+        "ua": "Туман"
+    },
+
+    "deposRimeFog": {
+        "en": "Depositing rime fog",
+        "de": "Ablagerung von Raureifnebel",
+        "ru": "Туман с инеем",
+        "pl": "Deponująca się mgła szronowa",
+        "ua": "Туман з інеєм"
+    },
+
+    "drizzle": {
+        "en": "Drizzle",
+        "de": "Nieselregen",
+        "ru": "Морось",
+        "pl": "Mżawka",
+        "ua": "Мряка"
+    },
+
+    "freezingDrizzle": {
+        "en": "Freezing drizzle",
+        "de": "Gefrierender Nieselregen",
+        "ru": "Изморозь",
+        "pl": "Marznąca mżawka",
+        "ua": "Ізморозь"
+    },
+
+    "rain": {
+        "en": "Rain",
+        "de": "Regen",
+        "ru": "Дождь",
+        "pl": "Deszcz",
+        "ua": "Дощ"
+    },
+
+    "freezingRain": {
+        "en": "Freezing rain",
+        "de": "Gefrierender Regen",
+        "ru": "Ледяной дождь",
+        "pl": "Marznący deszcz",
+        "ua": "Крижаний дощ"
+    },
+
+    "snowFall": {
+        "en": "Snowfall",
+        "de": "Schneefall",
+        "ru": "Снегопад",
+        "pl": "Opady śniegu",
+        "ua": "Снігопад"
+    }, 
+
+    "snowGrains": {
+        "en": "Snow grains",
+        "de": "Schneekörner",
+        "ru": "Снежные зерна",
+        "pl": "Ziarna śniegu",
+        "ua": "Снігові зерна"
+    },
+
+    "rainShowers": {
+        "en": "Rain showers",
+        "de": "Regenschauer",
+        "ru": "Ливень",
+        "pl": "Przelotne opady deszczu",
+        "ua": "Злива"
+    },
+
+    "snowShowers": {
+        "en": "Snow showers",
+        "de": "Schneeschauer",
+        "ru": "Сильный снегопад",
+        "pl": "Opady śniegu",
+        "ua": "Сильний снігопад"
+    },
+
+    "thunderstorm": {
+        "en": "Thunderstorm",
+        "de": "Gewitter",
+        "ru": "Гроза",
+        "pl": "Burza z piorunami",
+        "ua": "Гроза"
+    },
+
+    "thunderstormWithHail": {
+        "en": "Thunderstorm with hail",
+        "de": "Gewitter mit Hagel",
+        "ru": "Гроза с градом",
+        "pl": "Burza z gradem",
+        "ua": "Гроза з градом"
     }
 }

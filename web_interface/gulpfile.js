@@ -25,7 +25,7 @@ gulp.task('inline', function() {
 gulp.task('compress', async function() {
     gulp.src('build/index.html')
     .pipe(gzip())
-    .pipe(gulp.dest('../BIM/data'));
+    .pipe(gulp.dest('../BIM_Arduino/data'));
 });
 
 gulp.task('configCopy', async function() {
@@ -37,7 +37,7 @@ gulp.task('configCopy', async function() {
 gulp.task('defaultConfigCopy', async function() {
     return gulp.src('src/pages/system/defaultConfig.json')
         .pipe(rename('config.json'))
-        .pipe(gulp.dest('../BIM/data')
+        .pipe(gulp.dest('../BIM_Arduino/data')
     );
 });
 

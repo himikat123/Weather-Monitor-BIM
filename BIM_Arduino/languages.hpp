@@ -196,4 +196,84 @@ class Lang {
         default: return su(); break;
       }
     }
+
+    String clearSky() {
+      if(config.lang() == "ru") return "Ясно";
+      return "Clear sky";
+    }
+        
+    String mainlyClear() {
+      if(config.lang() == "ru") return "Преимущественно ясно";
+      return "Mainly clear";
+    }
+
+    String partlyCloudy() {
+      if(config.lang() == "ru") return "Переменная облачность";
+      return "Partly cloudy";
+    }
+
+    String overcast() {
+      if(config.lang() == "ru") return "Пасмурно";
+      return "Overcast";
+    }
+
+    String fog() {
+      if(config.lang() == "ru") return "Туман";
+      return "Fog";
+    }
+
+    String deposRimeFog() {
+      if(config.lang() == "ru") return "Туман с инеем";
+      return "Depositing rime fog";
+    }
+
+    String drizzle() {
+      if(config.lang() == "ru") return "Морось";
+      return "Drizzle";
+    }
+
+    String freezingDrizzle() {
+      if(config.lang() == "ru") return "Изморозь";
+      return "Freezing drizzle";
+    }
+
+    String rain() {
+      if(config.lang() == "ru") return "Дождь";
+      return "Rain";
+    }
+
+    String freezingRain() {
+      if(config.lang() == "ru") return "Ледяной дождь";
+      return "Freezing rain";
+    }
+
+    String snowFall() {
+      if(config.lang() == "ru") return "Снегопад";
+      return "Snowfall";
+    }
+
+    String snowGrains() {
+      if(config.lang() == "ru") return "Снежные зерна";
+      return "Snow grains";
+    }
+
+    String rainShowers() {
+      if(config.lang() == "ru") return "Ливень";
+      return "Rain showers";
+    }
+
+    String snowShowers() {
+      if(config.lang() == "ru") return "Сильный снегопад";
+      return "Snow showers";
+    }
+
+    String thunderstorm() {
+      if(config.lang() == "ru") return "Гроза";
+      return "Thunderstorm";
+    }
+
+    String thunderstormWithHail() {
+      if(config.lang() == "ru") return "Гроза с градом";
+      return "Thunderstorm with hail";
+    }
 };
