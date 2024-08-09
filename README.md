@@ -51,7 +51,15 @@ Well, as promised, a normal schematic diagramm for general development.
 
 ## Weather monitor firmware
 
-To flash **ESP8266**:
+To flash **ESP8266** with binary:
+1. Download flash_download_tools from Espressif
+2. Check the boxes as in the screenshot
+3. Select the firmware binary and COM port number
+4. Click the Start button
+
+<p align="center"><img src="img/flash_download_tools_v3.6.8.png" alt="weather monitor BIM flashing"></p>
+
+Or to compile and flash via Arduino **ESP8266**: 
 1. Add **ESP8266** support to **Arduino IDE**, find [instruction](https://www.google.com/search?q=arduino+ide+install+esp8266&newwindow=1&sca_esv=556563504&biw=1536&bih=739&ei=IhjZZLShKNmLi-gP3saC8Ak&ved=0ahUKEwi0upvEmdqAAxXZxQIHHV6jAJ4Q4dUDCBA&oq=arduino+ide+install+esp8266&gs_lp=Egxnd3Mtd2l6LXNlcnAiG2FyZHVpbm8gaWRlIGluc3RhbGwgZXNwODI2NjIFEAAYgAQyBhAAGBYYHjIGEAAYFhgeMgYQABgWGB4yBhAAGBYYHjIGEAAYFhgeMgYQABgWGB4yBhAAGBYYHjIGEAAYFhgeSKwrUKcHWMYccAR4AZABAJgBhAGgAdoGqgEDNi4zuAEMyAEA-AEBwgIKEAAYRxjWBBiwA8ICBxAhGKABGArCAgUQIRigAeIDBBgAIEGIBgGQBgg&sclient=gws-wiz-serp)
 2. Add to **Arduino** plug-in for upload **LittleFS** find [instruction](https://www.google.com/search?q=esp8266+littlefs+sketch+data+upload+tool&newwindow=1&sca_esv=556563504&ei=aRjZZIXpFsGCi-gPqOGs-Ao&oq=esp8266+littlefs+data+upload+tool&gs_lp=Egxnd3Mtd2l6LXNlcnAiIWVzcDgyNjYgbGl0dGxlZnMgZGF0YSB1cGxvYWQgdG9vbCoCCAAyCBAhGKABGMMESMdhUIwLWOBDcAF4AZABAJgBlAGgAYwPqgEEMTguNLgBA8gBAPgBAcICChAAGEcY1gQYsAPCAgkQABgNGBMYgATCAgUQABiiBMICCBAAGAcYHhgTwgIHEAAYExiABMICBhAAGAcYHsICBBAAGB7CAgoQIRigARjDBBgK4gMEGAAgQYgGAZAGCA&sclient=gws-wiz-serp)
 3. Unpack the libraries from the file **libraries.zip** to the folder C:/Users/**Username**/Documents/Arduino/libraries
@@ -64,9 +72,17 @@ After the flashing **the weather monitor** needs to be configured. An unconfigur
 
 Also when the device is already configured and connected to the network you can get into the settings without pressing the **Settings** button just enter the IP address of the **weather monitor** in the browser.
 
-## A demo of the settings page can be viewed <a href="https://bim32demo.000webhostapp.com/" target="_blank">here</a><hr />
-
 <hr>
+
+And finally a few photos of the resulting device
+
+<p align="center">
+    <img src="img/1.png" alt="weather monitor BIM">
+    <img src="img/2.png" alt="weather monitor BIM">
+    <img src="img/3.png" alt="weather monitor BIM">
+    <img src="img/4.png" alt="weather monitor BIM">
+    <img src="img/5.jpg" alt="weather monitor BIM">
+</p>
 
 ## Do you like the project? Buy me a coffee or a beer.
 

@@ -1,5 +1,5 @@
-<a href="README.md"><img src="img/en.png" alt="Read this in english" width="50px" style="margin-right:20px"></a>
-<a href="README_RU.md"><img src="img/ru.png" alt="Читать на русском" width="50px"></a> 
+<a href="README.md"><img src="img/en.png" alt="Read this in english" width="50" style="margin-right:20px"></a>
+<a href="README_RU.md"><img src="img/ru.png" alt="Читать на русском" width="50"></a> 
 
 # Монитор погоды BIM
 ## Монитор погоды на ESP8266
@@ -24,7 +24,7 @@
 ## Схема подключения базовых модулей монитора погоды
 Для запуска и работы монитора погоды достаточно соединить **дисплей** с **ESP8266**. Подключение всех остальных модулей является необязательным. 
 
-Выкладываю вместо схем полурисунки/полуфотографии, чтоб было понятно и начинающим и даже непрофессионалам. Профессионалов прошу не расстраиваться, нормальная схема тоже будут.
+Выкладываю вместо схем полурисунки/полуфотографии, чтоб было понятно и начинающим и даже непрофессионалам. Профессионалов прошу не расстраиваться, нормальная схема тоже будет.
 
 <p align="center"><img src="img/base.png" alt="weather monitor BIM base wiring diagramm"></p>
 
@@ -51,7 +51,15 @@
 
 ## Прошивка монитора погоды
 
-Для прошивки **ESP8266**:
+Для прошивки **ESP8266** бинарником:
+1. Скачиваем flash_download_tools от Espressif
+2. Ставим галочки как на скриншоте
+3. Выбираем бинарник прошивки и номер COM-порта
+4. Жмем кнопку Start
+
+<p align="center"><img src="img/flash_download_tools_v3.6.8.png" alt="weather monitor BIM flashing"></p>
+
+Или, чтоб скомпилировать и прошить через Ардуино **ESP8266**: 
 1. Добавляем в **Arduino IDE** поддержку **ESP8266**, находим [инструкцию](https://www.google.ru/search?q=arduino+esp8266+%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0&newwindow=1&sca_esv=556551428&bih=739&biw=1536&hl=ru&ei=lhHZZLeeKK7_7_UPkau0wAs&oq=arduino+esp8266+%D1%83%D1%81%D1%82&gs_lp=Egxnd3Mtd2l6LXNlcnAiFmFyZHVpbm8gZXNwODI2NiDRg9GB0YIqAggAMgUQABiABEjaIFD3AViBFnABeAGQAQCYAWagAdwCqgEDMy4xuAEDyAEA-AEBwgIKEAAYRxjWBBiwA8ICChAAGIoFGLADGEPiAwQYACBBiAYBkAYK&sclient=gws-wiz-serp)
 2. Добавляем в **Ардуино** плагин для заливки **LittleFS** находим [инструкцию](https://www.google.ru/search?q=arduino+esp8266+littlefs+%D0%BF%D0%BB%D0%B0%D0%B3%D0%B8%D0%BD&newwindow=1&sca_esv=556551428&bih=739&biw=1536&hl=ru&ei=ohHZZOGaGZqW9u8PlO-8GA&oq=arduino+esp8266+littlefs+%D0%BF%D0%BB%D0%B0&gs_lp=Egxnd3Mtd2l6LXNlcnAiH2FyZHVpbm8gZXNwODI2NiBsaXR0bGVmcyDQv9C70LAqAggBMgUQIRigATIFECEYoAEyBRAhGKABMgUQIRigATIFECEYoAFIlm1QjAhY_2FwA3gBkAEAmAGLAaABlxCqAQQxOS40uAEDyAEA-AEBwgIKEAAYRxjWBBiwA8ICBRAAGIAEwgIGEAAYFhge4gMEGAAgQYgGAZAGCA&sclient=gws-wiz-serp)
 3. Распаковываем библиотеки из файла **libraries.zip** в папку C:/Users/**Username**/Documents/Arduino/libraries
@@ -64,12 +72,19 @@
 
 Также, когда прибор уже настроен и подключен к сети, в настройки можно попасть и без нажатия кнопки **Settings**, достаточно ввести в браузере IP-адрес **монитора погоды**.
 
-## Демо страницы настроек можно посмотреть <a href="https://bim32demo.000webhostapp.com/" target="_blank">здесь</a><hr />
-
 <hr>
 
+И, напоследок, несколько фоток получившегося девайса
 
-## Нравится проект? Купи мне кофе, или пиво.
+<p align="center">
+    <img src="img/1.png" alt="weather monitor BIM">
+    <img src="img/2.png" alt="weather monitor BIM">
+    <img src="img/3.png" alt="weather monitor BIM">
+    <img src="img/4.png" alt="weather monitor BIM">
+    <img src="img/5.jpg" alt="weather monitor BIM">
+</p>
+
+## Нравится проект? Угости меня кофейком, или пивком.
 
 <a href="https://www.buymeacoffee.com/himikat123Q">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate" width="150">
