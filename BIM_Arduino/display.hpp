@@ -88,7 +88,7 @@ class Display {
     int _prevAnt = 0;
     bool _prevApMode = false;
     bool _prevNetConnected = true;
-    int _prevBatLevel = 10;
+    unsigned int _prevBatLevel = 10;
     float _prevVolt = -40400.00;
     int _prevPercent = -40400;
     float _prevThingBat = 40400.00;
@@ -323,11 +323,12 @@ void Display::_printText(uint16_t x, uint16_t y, uint16_t width, uint16_t height
 }
 
 void Display::_showBatteryLevel() {
-  int level = 0;
+  unsigned int level = 0;
   if(config.display_source_bat_sens()) {
     if(config.display_source_bat_sens() == 1) {
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60) {
         level = thingspeak.get_field(config.display_source_bat_thing());
+        if(level == 5) level = 4;
       }
       else level = 0;
     }
