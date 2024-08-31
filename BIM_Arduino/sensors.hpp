@@ -97,7 +97,7 @@ void Sensors::init(void) {
   Serial.println(SEPARATOR);
   Serial.println("Sensor initialization");
   
-  Wire.pins(ONE_WIRE_BUS_PIN, DHT22_PIN);
+  Wire.begin(ONE_WIRE_BUS_PIN, DHT22_PIN);
   _BME280Init();
   _BMP180Init();
   _SHT21Init();
@@ -121,13 +121,15 @@ void Sensors::init(void) {
  * Reads all sensors
  */
 void Sensors::read(void) {
+  pinMode(DHT22_PIN, INPUT);
+  digitalWrite(DHT22_PIN, LOW);
   _BME280Read();
   _BMP180Read();
   _SHT21Read();
-  _DHT22Read();
-  _DS18B20Read();
   _MAX44009Read();
   _BH1750Read();
+  _DS18B20Read();
+  _DHT22Read();
   _AnalogRead();
 }
 

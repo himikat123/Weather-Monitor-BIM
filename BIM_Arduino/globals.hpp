@@ -14,7 +14,7 @@
 #define SEPARATOR "**********************************************************************"
 
 struct {
-  char fw[7] = "v5.0"; // Firmware version
+  char fw[7] = "v5.1"; // Firmware version
   bool clockSynchronized = false; // Is the time synchronized with the ntp server?
   bool clockSynchronize = false; // Should the display RTC be updated?
   bool net_connected = false; // Is the device connected to the network?
@@ -532,7 +532,7 @@ class Config {
   }
 
   unsigned int display_source_tempOut_sens() {
-    if(_display_source_tempOut_sens > 6) return 0;
+    if(_display_source_tempOut_sens > 7) return 0;
     return _display_source_tempOut_sens;
   }
 
@@ -542,7 +542,7 @@ class Config {
   }
 
   unsigned int display_source_humOut_sens() {
-    if(_display_source_humOut_sens > 4) return 0;
+    if(_display_source_humOut_sens > 5) return 0;
     return _display_source_humOut_sens; 
   }
 
@@ -562,7 +562,7 @@ class Config {
   }
 
   unsigned int display_source_tempIn_sens() {
-    if(_display_source_tempIn_sens > 6) return 0;
+    if(_display_source_tempIn_sens > 7) return 0;
     return _display_source_tempIn_sens; 
   }
 
@@ -572,7 +572,7 @@ class Config {
   }
 
   unsigned int display_source_humIn_sens() {
-    if(_display_source_humIn_sens > 4) return 0;
+    if(_display_source_humIn_sens > 5) return 0;
     return _display_source_humIn_sens; 
   }
 
