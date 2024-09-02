@@ -4,7 +4,8 @@
         "de": "Status",
         "ru": "Статус",
         "pl": "Status",
-        "ua": "Статус"
+        "ua": "Статус",
+        "bg": "Статус"
     },
 
     "save": {
@@ -12,7 +13,8 @@
         "de": "Speichern",
         "ru": "Сохранить",
         "pl": "Zapisz",
-        "ua": "Зберегти"
+        "ua": "Зберегти",
+        "bg": "Запазване"
     },
 
     "restart": {
@@ -20,7 +22,8 @@
         "de": "Neustarten",
         "ru": "Перезагрузить",
         "pl": "Przeładować",
-        "ua": "Перезавантажити"
+        "ua": "Перезавантажити",
+        "bg": "Рестартирайте"
     },
 
     "confirmation": {
@@ -28,7 +31,8 @@
         "de": "Bestätigung",
         "ru": "Подтверждение",
         "pl": "Potwierdzenie",
-        "ua": "Підтвердження"
+        "ua": "Підтвердження",
+        "bg": "Потвърждение"
     },
 
     "restartConfirmation": {
@@ -36,7 +40,8 @@
         "de": "Möchten Sie Ihr Gerät wirklich neu starten?",
         "ru": "Вы действительно хотите перезагрузить устройство?",
         "pl": "Czy na pewno chcesz ponownie uruchomić urządzenie?",
-        "ua": "Ви дійсно бажаєте перезавантажити пристрій?"
+        "ua": "Ви дійсно бажаєте перезавантажити пристрій?",
+        "bg": "Сигурни ли сте, че искате да рестартирате устройството си?"
     },
 
     "network": {
@@ -44,7 +49,8 @@
         "de": "Netzwerk",
         "ru": "Сеть",
         "pl": "Sieć",
-        "ua": "Мережа"
+        "ua": "Мережа",
+        "bg": "Мрежа"
     },
 
     "connections": {
@@ -52,7 +58,8 @@
         "de": "Verbindungen",
         "ru": "Подключения",
         "pl": "Znajomości",
-        "ua": "Підключення"
+        "ua": "Підключення",
+        "bg": "Връзки"
     },
 
     "accessPoint": {
@@ -60,7 +67,8 @@
         "de": "Zugangspunkt",
         "ru": "Точка доступа",
         "pl": "Punkt dostępu",
-        "ua": "Точка доступу"
+        "ua": "Точка доступу",
+        "bg": "Точка за достъп"
     },
 
     "dataSource": {
@@ -68,7 +76,8 @@
         "de": "Datenquelle",
         "ru": "Источник данных",
         "pl": "Źródło danych",
-        "ua": "Джерело даних"
+        "ua": "Джерело даних",
+        "bg": "Източник на данни"
     },
 
     "dataSources": {
@@ -76,7 +85,8 @@
         "de": "Datenquellen",
         "ru": "Источники данных",
         "pl": "Źródła danych",
-        "ua": "Джерела даних"
+        "ua": "Джерела даних",
+        "bg": "Източници на данни"
     },
 
     "sensors": {
@@ -84,7 +94,8 @@
         "de": "Sensoren",
         "ru": "Датчики",
         "pl": "Czujniki",
-        "ua": "Датчики"
+        "ua": "Датчики",
+        "bg": "Сензори"
     },
 
     "sensor": {
@@ -92,7 +103,8 @@
         "de": "Sensor",
         "ru": "Датчик",
         "pl": "Czujnik",
-        "ua": "Датчик"
+        "ua": "Датчик",
+        "bg": "Сензор"
     },
 
     "weatherForecast": {
@@ -100,7 +112,8 @@
         "de": "Wettervorhersage",
         "ru": "Прогноз погоды",
         "pl": "Prognoza pogody",
-        "ua": "Прогноз погоди"
+        "ua": "Прогноз погоди",
+        "bg": "Прогноза за времето"
     },
 
     "clock": {
@@ -108,7 +121,8 @@
         "de": "Uhr",
         "ru": "Часы",
         "pl": "Zegar",
-        "ua": "Годинник"
+        "ua": "Годинник",
+        "bg": "Час"
     },
 
     "display": {
@@ -116,7 +130,8 @@
         "de": "Anzeige",
         "ru": "Дисплей",
         "pl": "Wyświetlacz",
-        "ua": "Дисплей"
+        "ua": "Дисплей",
+        "bg": "Дисплей"
     },
 
     "comfort": {
@@ -124,7 +139,8 @@
         "de": "Kompfort",
         "ru": "Комфорт",
         "pl": "Komfort",
-        "ua": "Комфорт"
+        "ua": "Комфорт",
+        "bg": "Комфорт"
     },
 
     "dataSend": {
@@ -132,7 +148,8 @@
         "de": "Daten senden",
         "ru": "Отправка данных",
         "pl": "Wysyłanie danych",
-        "ua": "Надсилання даних"
+        "ua": "Надсилання даних",
+        "bg": "Изпращане на данни"
     },
 
     "dataReceive": {
@@ -140,7 +157,8 @@
         "de": "Daten erhalten",
         "ru": "Прием данных",
         "pl": "Odbieranie danych",
-        "ua": "Отримання даних"
+        "ua": "Отримання даних",
+        "bg": "Получаване на данни"
     },
 
     "system": {
@@ -148,7 +166,8 @@
         "de": "System",
         "ru": "Система",
         "pl": "System",
-        "ua": "Система"
+        "ua": "Система",
+        "bg": "Система"
     },
     
     "backup": {
@@ -156,7 +175,8 @@
         "de": "Sicherung",
         "ru": "Резервная копия",
         "pl": "Kopia zapasowa",
-        "ua": "Резервна копія"
+        "ua": "Резервна копія",
+        "bg": "Резервно копие"
     },
     
     "defaultSettings": {
@@ -164,7 +184,8 @@
         "de": "Standardeinstellungen",
         "ru": "Заводские настройки",
         "pl": "Ustawienia domyślne",
-        "ua": "Заводські налаштування"
+        "ua": "Заводські налаштування",
+        "bg": "Заводски настройки"
     },
     
     "firmware": {
@@ -172,7 +193,8 @@
         "de": "Firmware",
         "ru": "Прошивка",
         "pl": "Oprogramowanie",
-        "ua": "Прошивка"
+        "ua": "Прошивка",
+        "bg": "Фърмуер"
     },
     
     "fileSystem": {
@@ -180,7 +202,8 @@
         "de": "Dateisystem",
         "ru": "Файловая система",
         "pl": "System plików",
-        "ua": "Файлова система"
+        "ua": "Файлова система",
+        "bg": "Файлова система"
     },
 
     "account": {
@@ -188,7 +211,8 @@
         "de": "Konto",
         "ru": "Аккаунт",
         "pl": "Rachunek",
-        "ua": "Обліковий запис"
+        "ua": "Обліковий запис",
+        "bg": "Акаунт"
     },
 
     "logout": {
@@ -196,7 +220,8 @@
         "de": "Ausloggen",
         "ru": "Выход",
         "pl": "Wyloguj",
-        "ua": "Вийти"
+        "ua": "Вийти",
+        "bg": "Изход"
     },
 
     "networkName": {
@@ -204,7 +229,8 @@
         "de": "Netzwerkname",
         "ru": "Имя сети",
         "pl": "Nazwa sieci",
-        "ua": "Назва мережі"
+        "ua": "Назва мережі",
+        "bg": "Име на мрежата"
     },
 
     "password": {
@@ -212,7 +238,8 @@
         "de": "Passwort",
         "ru": "Пароль",
         "pl": "Hasło",
-        "ua": "Пароль"
+        "ua": "Пароль",
+        "bg": "Парола"
     },
 
     "oldPassword": {
@@ -220,7 +247,8 @@
         "de": "Altes Kennwort",
         "ru": "Старый пароль",
         "pl": "Stare hasło",
-        "ua": "Старий пароль"
+        "ua": "Старий пароль",
+        "bg": "Стара парола"
     },
 
     "newPassword": {
@@ -228,7 +256,8 @@
         "de": "Neues Kennwort",
         "ru": "Новый пароль",
         "pl": "Nowe hasło",
-        "ua": "Новий пароль"
+        "ua": "Новий пароль",
+        "bg": "Нова парола"
     },
 
     "changePassword": {
@@ -236,7 +265,8 @@
         "de": "Ändere das Passwort",
         "ru": "Смена пароля",
         "pl": "Zmiana hasła",
-        "ua": "Зміна пароля"
+        "ua": "Зміна пароля",
+        "bg": "Промяна на паролата"
     },
 
     "username": {
@@ -244,7 +274,8 @@
         "de": "Benutzername",
         "ru": "Имя пользователя",
         "pl": "Nazwa użytkownika",
-        "ua": "Ім'я користувача"
+        "ua": "Ім'я користувача",
+        "bg": "Потребителско име"
     },
 
     "name": {
@@ -252,7 +283,8 @@
         "de": "Name",
         "ru": "Имя",
         "pl": "Nazwa",
-        "ua": "Ім'я"
+        "ua": "Ім'я",
+        "bg": "Име"
     },
 
     "listOfAvailableNetworks": {
@@ -260,7 +292,8 @@
         "de": "Liste der verfügbaren Netzwerke",
         "ru": "Список доступных сетей",
         "pl": "Lista dostępnych sieci",
-        "ua": "Список доступних мереж"
+        "ua": "Список доступних мереж",
+        "bg": "Списък на наличните мрежи"
     },
 
     "connectionOptions": {
@@ -268,7 +301,8 @@
         "de": "Verbindungsoptionen",
         "ru": "Параметры соединения",
         "pl": "Opcje połączenia",
-        "ua": "Параметри з'єднання"
+        "ua": "Параметри з'єднання",
+        "bg": "Параметри на връзката"
     },
 
     "connectionType": {
@@ -276,7 +310,8 @@
         "de": "Verbindungstyp",
         "ru": "Тип соединения",
         "pl": "Rodzaj połączenia",
-        "ua": "Тип з'єднання"
+        "ua": "Тип з'єднання",
+        "bg": "Тип връзка"
     },
 
     "dynamicIp": {
@@ -284,7 +319,8 @@
         "de": "Dynamische IP",
         "ru": "Динамический IP",
         "pl": "Dynamiczny adres IP",
-        "ua": "Динамічний IP"
+        "ua": "Динамічний IP",
+        "bg": "Динамичен IP"
     },
 
     "staticIp": {
@@ -292,7 +328,8 @@
         "de": "Statische IP",
         "ru": "Статический IP",
         "pl": "Stałe IP",
-        "ua": "Статичний IP"
+        "ua": "Статичний IP",
+        "bg": "Статичен IP"
     },
 
     "ipAddress": {
@@ -300,7 +337,8 @@
         "de": "IP-Adresse",
         "ru": "IP адрес",
         "pl": "Adres IP",
-        "ua": "IP адреса"
+        "ua": "IP адреса",
+        "bg": "IP адрес"
     },
 
     "subnetMask": {
@@ -308,7 +346,8 @@
         "de": "Subnetzmaske",
         "ru": "Маска подсети",
         "pl": "Maska podsieci",
-        "ua": "Маска підмережі"
+        "ua": "Маска підмережі",
+        "bg": "Подмрежова маска"
     },
 
     "defaultGateway": {
@@ -316,7 +355,8 @@
         "de": "Standard-Gateway",
         "ru": "Шлюз по умолчанию",
         "pl": "Brama domyślna",
-        "ua": "За замовчуванням шлюз"
+        "ua": "За замовчуванням шлюз",
+        "bg": "Шлюз по подразбиране"
     },
 
     "preferredDns": {
@@ -324,7 +364,8 @@
         "de": "Bevorzugt DNS",
         "ru": "Предпочитаемый DNS",
         "pl": "Preferowany DNS",
-        "ua": "Переважний DNS"
+        "ua": "Переважний DNS",
+        "bg": "Предпочитан DNS"
     },
 
     "alternativeDns": {
@@ -332,7 +373,8 @@
         "de": "Alternative DNS",
         "ru": "Альтернативный DNS",
         "pl": "Alternatywny DNS",
-        "ua": "Альтернативний DNS"
+        "ua": "Альтернативний DNS",
+        "bg": "Алтернативен DNS"
     },
 
     "accessPointName": {
@@ -340,7 +382,8 @@
         "de": "Name des Zugangspunkts",
         "ru": "Имя точки доступа",
         "pl": "Nazwa punktu dostępu",
-        "ua": "Ім'я точки доступу"
+        "ua": "Ім'я точки доступу",
+        "bg": "Име на точката за достъп"
     },
 
     "channelNumber": {
@@ -348,7 +391,8 @@
         "de": "Kanal Nummer",
         "ru": "Номер канала",
         "pl": "Numer kanału",
-        "ua": "Номер каналу"
+        "ua": "Номер каналу",
+        "bg": "Номер канал"
     },
 
     "wrongFormat": {
@@ -356,7 +400,8 @@
         "de": "Falsches Format",
         "ru": "Неверный формат",
         "pl": "Zły format",
-        "ua": "Невірний формат"
+        "ua": "Невірний формат",
+        "bg": "Невалиден формат"
     },
 
     "cancel": {
@@ -364,7 +409,8 @@
         "de": "Abbrechen",
         "ru": "Отмена",
         "pl": "Anulować",
-        "ua": "Скасування"
+        "ua": "Скасування",
+        "bg": "Отказ"
     },
 
     "close": {
@@ -372,7 +418,8 @@
         "de": "Schließen",
         "ru": "Закрыть",
         "pl": "Blisko",
-        "ua": "Закрити"
+        "ua": "Закрити",
+        "bg": "Затвори"
     },
 
     "showHide": {
@@ -380,7 +427,8 @@
         "de": "anzeigen/ausblenden",
         "ru": "скрыть/показать",
         "pl": "show/hide",
-        "ua": "приховати/показати"
+        "ua": "приховати/показати",
+        "bg": "скрий/покажи"
     },
 
     "loadingListOfAvailableNetworks": {
@@ -388,7 +436,8 @@
         "de": "Liste der verfügbaren Netzwerke wird geladen...",
         "ru": "Загрузка списка доступных сетей...",
         "pl": "Wczytuję listę dostępnych sieci...",
-        "ua": "Завантаження списку доступних мереж..."
+        "ua": "Завантаження списку доступних мереж...",
+        "bg": "Зареждане на списък с налични мрежи..."
     },
 
     "analogInput": {
@@ -396,7 +445,8 @@
         "de": "Analoger Eingang",
         "ru": "Аналоговый вход",
         "pl": "Wejście analogowe",
-        "ua": "Аналоговий вхід"
+        "ua": "Аналоговий вхід",
+        "bg": "Аналогов вход"
     },
 
     "correction": {
@@ -404,7 +454,8 @@
         "de": "Korrektur",
         "ru": "Коррекция",
         "pl": "Korekta",
-        "ua": "Корекція"
+        "ua": "Корекція",
+        "bg": "Корекция"
     },
 
     "temperature": {
@@ -412,7 +463,8 @@
         "de": "Temperatur",
         "ru": "Температура",
         "pl": "Temperatura",
-        "ua": "Температура"
+        "ua": "Температура",
+        "bg": "Температура"
     },
 
     "humidity": {
@@ -420,7 +472,8 @@
         "de": "Feuchtigkeit",
         "ru": "Влажность",
         "pl": "Wilgotność",
-        "ua": "Вологість"
+        "ua": "Вологість",
+        "bg": "Влажност"
     },
 
     "pressure": {
@@ -428,7 +481,8 @@
         "de": "Atmosphärendruck",
         "ru": "Атмосферное давление",
         "pl": "Ciśnienie atmosferyczne",
-        "ua": "Атмосферний тиск"
+        "ua": "Атмосферний тиск",
+        "bg": "Атмосферно налягане"
     },
 
     "ambientLight": {
@@ -436,7 +490,8 @@
         "de": "Umgebungslicht",
         "ru": "Освещенность",
         "pl": "Oświetlenie",
-        "ua": "Освітленість"
+        "ua": "Освітленість",
+        "bg": "Осветеност"
     },
 
     "voltage": {
@@ -444,7 +499,8 @@
         "de": "Spannung",
         "ru": "Напряжение",
         "pl": "Napięcie",
-        "ua": "Напруга"
+        "ua": "Напруга",
+        "bg": "Напрежение"
     },
 
     "weatherCheckError": {
@@ -452,7 +508,8 @@
         "de": "Wetter konnte nicht geladen werden, bitte überprüfen Sie die Einstellungen und die Internetverbindung",
         "ru": "Не удалось загрузить погоду, проверьте настройки и интернет соединение",
         "pl": "Nie udało się załadować pogody, sprawdź ustawienia i połączenie internetowe",
-        "ua": "Не вдалося завантажити погоду, перевірте налаштування та інтернет-з'єднання"
+        "ua": "Не вдалося завантажити погоду, перевірте налаштування та інтернет-з'єднання",
+        "bg": "Неуспешно зареждане на времето, проверка на вашите настройки и интернет връзка"
     },
 
     "byCityName": {
@@ -460,7 +517,8 @@
         "de": "Nach Stadtnamen",
         "ru": "По названию города",
         "pl": "",
-        "ua": ""
+        "ua": "",
+        "bg": "По името на града"
     },
 
     "byCityId": {
@@ -468,7 +526,8 @@
         "de": "Nach Stadt-ID",
         "ru": "По ID номеру города",
         "pl": "Według nazwy miasta",
-        "ua": "За назвою міста"
+        "ua": "За назвою міста",
+        "bg": "По ID номер на града"
     },
 
     "byCoordinates": {
@@ -476,7 +535,8 @@
         "de": "Nach Koordinaten",
         "ru": "По координатам",
         "pl": "Według współrzędnych",
-        "ua": "За координатами"
+        "ua": "За координатами",
+        "bg": "По координати"
     },
 
     "weatherForecastSource": {
@@ -484,7 +544,8 @@
         "de": "Quelle der Wettervorhersage",
         "ru": "Источник прогноза погоды",
         "pl": "Źródło prognozy pogody",
-        "ua": "Джерело прогнозу погоди"
+        "ua": "Джерело прогнозу погоди",
+        "bg": "Източник на прогноза за времето"
     },
 
     "cityIdentification": {
@@ -492,7 +553,8 @@
         "de": "Stadtidentifikation",
         "ru": "Идентификация города",
         "pl": "Identyfikacja miasta",
-        "ua": "Ідентифікація міста"
+        "ua": "Ідентифікація міста",
+        "bg": "Идентификация на града"
     },
 
     "cityName": {
@@ -500,7 +562,8 @@
         "de": "Stadtname",
         "ru": "Название города",
         "pl": "Nazwa miasta",
-        "ua": "Назва міста"
+        "ua": "Назва міста",
+        "bg": "Име на града"
     },
 
     "city": {
@@ -508,7 +571,8 @@
         "de": "Stadt",
         "ru": "Город",
         "pl": "Miasto",
-        "ua": "Місто"
+        "ua": "Місто",
+        "bg": "Град"
     },
 
     "cityIdNumber": {
@@ -516,7 +580,8 @@
         "de": "ID-Nummer der Stadt",
         "ru": "ID номер города",
         "pl": "ID numer miasta",
-        "ua": "ID номер міста"
+        "ua": "ID номер міста",
+        "bg": "ID номер на града"
     },
 
     "cityIdSearchProgram": {
@@ -524,7 +589,8 @@
         "de": "City-ID-Suchprogramm",
         "ru": "Программа поиска ID номера города",
         "pl": "Program wyszukiwania identyfikatorów miasta",
-        "ua": "Програма пошуку ID номера міста"
+        "ua": "Програма пошуку ID номера міста",
+        "bg": "Програма за търсене ID номер на града"
     },
 
     "latitude": {
@@ -532,7 +598,8 @@
         "de": "Breite",
         "ru": "Широта",
         "pl": "Szerokość geograficzna",
-        "ua": "Широта"
+        "ua": "Широта",
+        "bg": "Ширина"
     },
 
     "longitude": {
@@ -540,7 +607,8 @@
         "de": "Längengrad",
         "ru": "Долгота",
         "pl": "Długość geograficzna",
-        "ua": "Довгота"
+        "ua": "Довгота",
+        "bg": "Дължина"
     },
 
     "detectCoordinatesAutomatically": {
@@ -548,7 +616,8 @@
         "de": "Koordinaten automatisch erkennen",
         "ru": "Определить координаты автоматически",
         "pl": "Automatyczne wykrywanie współrzędnych",
-        "ua": "Визначити координати автоматично"
+        "ua": "Визначити координати автоматично",
+        "bg": "Автоматично определяне на координатите"
     },
 
     "mm": {
@@ -556,7 +625,8 @@
         "de": "mm",
         "ru": "мм",
         "pl": "mm",
-        "ua": "мм"
+        "ua": "мм",
+        "bg": "мм"
     },
 
     "wind": {
@@ -564,7 +634,8 @@
         "de": "Wind",
         "ru": "Ветер",
         "pl": "Wiatr",
-        "ua": "Вітер"
+        "ua": "Вітер",
+        "bg": "Вятър"
     },
 
     "mps": {
@@ -572,7 +643,8 @@
         "de": "m/s",
         "ru": "м/с",
         "pl": "m/s",
-        "ua": "м/с"
+        "ua": "м/с",
+        "bg": "м/с"
     },
 
     "lux": {
@@ -580,7 +652,8 @@
         "de": "lux",
         "ru": "люкс",
         "pl": "lux",
-        "ua": "люкс"
+        "ua": "люкс",
+        "bg": "лукс"
     },
 
     "v": {
@@ -588,7 +661,8 @@
         "de": "V",
         "ru": "В",
         "pl": "V",
-        "ua": "В"
+        "ua": "В",
+        "bg": "В"
     },
 
     "check": {
@@ -596,7 +670,8 @@
         "de": "Überprüfen",
         "ru": "Проверить",
         "pl": "Zweryfikować",
-        "ua": "Перевірити"
+        "ua": "Перевірити",
+        "bg": "Проверете"
     },
 
     "checkingWeatherSettings": {
@@ -604,7 +679,8 @@
         "de": "Überprüfen der Leistung der Wettervorhersageeinstellungen",
         "ru": "Проверка работоспособности настроек прогноза погоды",
         "pl": "Sprawdzenie działania ustawień prognozy pogody",
-        "ua": "Перевірка працездатності налаштувань прогнозу погоди"
+        "ua": "Перевірка працездатності налаштувань прогнозу погоди",
+        "bg": "Проверка на функционалността на настройките за прогноза за времето"
     },
 
     "disabled": {
@@ -612,7 +688,8 @@
         "de": "Ausgeschaltet",
         "ru": "Отключен",
         "pl": "Wyłączone",
-        "ua": "Вимкнено"
+        "ua": "Вимкнено",
+        "bg": "Забранено"
     },
 
     "automatically": {
@@ -620,7 +697,8 @@
         "de": "Automatisch",
         "ru": "Автоматически",
         "pl": "Automatycznie",
-        "ua": "Автоматично"
+        "ua": "Автоматично",
+        "bg": "Автоматично"
     },
 
     "clockFormat": {
@@ -628,7 +706,8 @@
         "de": "Uhrzeitformat",
         "ru": "Формат часов",
         "pl": "Format zegara",
-        "ua": "Формат годинника"
+        "ua": "Формат годинника",
+        "bg": "Формат час"
     },
 
     "format12": {
@@ -636,7 +715,8 @@
         "de": "12-Stunden",
         "ru": "12-часовой",
         "pl": "12 godzin",
-        "ua": "12-годинний"
+        "ua": "12-годинний",
+        "bg": "12-часов"
     },
 
     "format24": {
@@ -644,7 +724,8 @@
         "de": "24-Stunden",
         "ru": "24-часовой",
         "pl": "24 godziny",
-        "ua": "24-годинний"
+        "ua": "24-годинний",
+        "bg": "24-часов"
     },
 
     "timezone": {
@@ -652,7 +733,8 @@
         "de": "Zeitzone",
         "ru": "Часовой пояс",
         "pl": "Strefa czasowa",
-        "ua": "Часовий пояс "
+        "ua": "Часовий пояс",
+        "bg": "Часова зона"
     },
 
     "daylightSavingTime": {
@@ -660,7 +742,8 @@
         "de": "Umstellung auf Sommerzeit",
         "ru": "Переход на летнее время",
         "pl": "Czas letni",
-        "ua": "Перехід на літній час"
+        "ua": "Перехід на літній час",
+        "bg": "Лятно часово време"
     },
 
     "ntpServerAddress": {
@@ -668,7 +751,8 @@
         "de": "NTP-Serveradresse",
         "ru": "Адрес NTP сервера",
         "pl": "Adres serwera NTP",
-        "ua": "Адреса сервера NTP"
+        "ua": "Адреса сервера NTP",
+        "bg": "Адрес NTP сървъри"
     },
 
     "ntpUpdatePeriod": {
@@ -676,7 +760,8 @@
         "de": "NTP-Aktualisierungszeitraum (Minuten)",
         "ru": "Период обновления NTP (минут)",
         "pl": "Okres aktualizacji NTP (minuty)",
-        "ua": "Період оновлення NTP (хвилин)"
+        "ua": "Період оновлення NTP (хвилин)",
+        "bg": "Период на актуализация NTP (минути)"
     },
 
     "syncNtp": {
@@ -684,7 +769,8 @@
         "de": "Mit NTP synchronisieren",
         "ru": "Синхронизировать с NTP",
         "pl": "Synchronizuj z NTP",
-        "ua": "Синхронізувати з NTP"
+        "ua": "Синхронізувати з NTP",
+        "bg": "Синхронизирайте с NTP"
     },
 
     "syncPc": {
@@ -692,7 +778,8 @@
         "de": "Mit PC synchronisieren",
         "ru": "Синхронизировать с ПК",
         "pl": "Synchronizuj z komputerem",
-        "ua": "Синхронізувати із ПК"
+        "ua": "Синхронізувати із ПК",
+        "bg": "Синхронизирайте с ПК"
     },
 
     "synchronizingNTP": {
@@ -700,7 +787,8 @@
         "de": "Synchronisieren mit NTP",
         "ru": "Синхронизация с NTP",
         "pl": "Synchronizacja z NTP",
-        "ua": "Синхронізація з NTP"
+        "ua": "Синхронізація з NTP",
+        "bg": "Синхронизация с NTP"
     },
 
     "ntpSyncError": {
@@ -708,7 +796,8 @@
         "de": "NTP-Synchronisationsfehler",
         "ru": "Ошибка синхронизации NTP",
         "pl": "Błąd synchronizacji NTP",
-        "ua": "Помилка синхронізації NTP"
+        "ua": "Помилка синхронізації NTP",
+        "bg": "Грешка при синхронизиране NTP"
     },
 
     "synchronized": {
@@ -716,7 +805,8 @@
         "de": "Synchronisiert",
         "ru": "Синхронизировано",
         "pl": "Zsynchronizowane",
-        "ua": "Синхронізовано"
+        "ua": "Синхронізовано",
+        "bg": "Синхронизирано"
     },
 
     "setTimeManually": {
@@ -724,7 +814,8 @@
         "de": "Datum und Uhrzeit manuell einstellen",
         "ru": "Установить дату и время вручную",
         "pl": "Ustaw datę i godzinę ręcznie",
-        "ua": "Встановити дату та час вручну"
+        "ua": "Встановити дату та час вручну",
+        "bg": "Задайте дата и час ръчно"
     },
 
     "set": {
@@ -732,7 +823,8 @@
         "de": "Einstellen",
         "ru": "Установить",
         "pl": "Zainstalować",
-        "ua": "Встановити"
+        "ua": "Встановити",
+        "bg": "Задайте"
     },
 
     "neverSync": {
@@ -740,7 +832,8 @@
         "de": "Niemals synchronisieren",
         "ru": "Никогда не синхронизировать",
         "pl": "Nigdy nie synchronizuj",
-        "ua": "Ніколи не синхронізувати"
+        "ua": "Ніколи не синхронізувати",
+        "bg": "Никога не синхронизирайте"
     },
 
     "mo": {
@@ -748,7 +841,8 @@
         "de": "Mo",
         "ru": "Пн",
         "pl": "Pn",
-        "ua": "Пн"
+        "ua": "Пн",
+        "bg": "По"
     },
 
     "tu": {
@@ -756,7 +850,8 @@
         "de": "Di",
         "ru": "Вт",
         "pl": "Wt",
-        "ua": "Вт"
+        "ua": "Вт",
+        "bg": "Вт"
     },
 
     "we": {
@@ -764,7 +859,8 @@
         "de": "Mi",
         "ru": "Ср",
         "pl": "Śr",
-        "ua": "Ср"
+        "ua": "Ср",
+        "bg": "Ср"
     },
 
     "th": {
@@ -772,7 +868,8 @@
         "de": "Do",
         "ru": "Чт",
         "pl": "Cz",
-        "ua": "Чт"
+        "ua": "Чт",
+        "bg": "Че"
     },
 
     "fr": {
@@ -780,7 +877,8 @@
         "de": "Fr",
         "ru": "Пт",
         "pl": "Pi",
-        "ua": "Пт"
+        "ua": "Пт",
+        "bg": "Пе"
     },
 
     "sa": {
@@ -788,7 +886,8 @@
         "de": "Sa",
         "ru": "Сб",
         "pl": "So",
-        "ua": "Сб"
+        "ua": "Сб",
+        "bg": "Съ"
     },
 
     "su": {
@@ -796,7 +895,8 @@
         "de": "So",
         "ru": "Вс",
         "pl": "Nd",
-        "ua": "Нд"
+        "ua": "Нд",
+        "bg": "Не"
     },
 
     "alwaysOn": {
@@ -804,7 +904,8 @@
         "de": "Immer auf",
         "ru": "Включен всегда",
         "pl": "Zawsze włączone",
-        "ua": "Включено завжди"
+        "ua": "Включено завжди",
+        "bg": "Винаги включен"
     },
 
     "alwaysOff": {
@@ -812,7 +913,8 @@
         "de": "Immer aus",
         "ru": "Выключен всегда",
         "pl": "Zawsze wyłączone",
-        "ua": "Вимкнений завжди"
+        "ua": "Вимкнений завжди",
+        "bg": "Винаги изключен"
     },
 
     "onFromDawnToDusk": {
@@ -820,7 +922,8 @@
         "de": "Von morgens bis abends auf",
         "ru": "Включен от рассвета до заката",
         "pl": "Od świtu do zmierzchu",
-        "ua": "Увімкнений від світанку до заходу"
+        "ua": "Увімкнений від світанку до заходу",
+        "bg": "Включен от зори до здрач"
     },
 
     "enabledByTime": {
@@ -828,7 +931,8 @@
         "de": "Zeitlich aktiviert",
         "ru": "Включен по времени",
         "pl": "Włączone przez czas",
-        "ua": "Включено за часом"
+        "ua": "Включено за часом",
+        "bg": "Включено по време"
     },
 
     "from": {
@@ -836,7 +940,8 @@
         "de": "von",
         "ru": "с",
         "pl": "od",
-        "ua": "від"
+        "ua": "від",
+        "bg": "с"
     },
 
     "to": {
@@ -844,7 +949,8 @@
         "de": "bis",
         "ru": "по",
         "pl": "do",
-        "ua": "до"
+        "ua": "до",
+        "bg": "по"
     },
 
     "forecast": {
@@ -852,7 +958,8 @@
         "de": "Vorhersage",
         "ru": "Прогноз",
         "pl": "Prognoza",
-        "ua": "Прогноз"
+        "ua": "Прогноз",
+        "bg": "Прогназа"
     },
 
     "sendDataTo": {
@@ -860,7 +967,8 @@
         "de": "Daten senden an",
         "ru": "Отправлять данные на",
         "pl": "Wyślij dane do",
-        "ua": "Надсилати дані на"
+        "ua": "Надсилати дані на",
+        "bg": "Изпращане на данни до"
     },
 
     "periodMinutes": {
@@ -868,7 +976,8 @@
         "de": "Zeitraum (Minuten)",
         "ru": "Период (минут)",
         "pl": "Okres (minuty)",
-        "ua": "Період (хвилин)  "
+        "ua": "Період (хвилин)",
+        "bg": "Период (минути)"
     },
 
     "field": {
@@ -876,7 +985,8 @@
         "de": "Feld",
         "ru": "Поле",
         "pl": "Pole",
-        "ua": "Поле"
+        "ua": "Поле",
+        "bg": "Поле"
     },
 
     "receiveDataFrom": {
@@ -884,7 +994,8 @@
         "de": "Daten empfangen von",
         "ru": "Получать данные с",
         "pl": "Odbierz dane z",
-        "ua": "Отримувати дані з"
+        "ua": "Отримувати дані з",
+        "bg": "Получаване на данни от"
     },
 
     "downloadSettingsBackupFile": {
@@ -892,7 +1003,8 @@
         "de": "Laden die Sicherungsdatei der Einstellungen herunter",
         "ru": "Скачать файл резервной копии настроек",
         "pl": "Pobierz plik kopii zapasowej ustawień",
-        "ua": "Завантажити файл резервної копії налаштувань"
+        "ua": "Завантажити файл резервної копії налаштувань",
+        "bg": "Изтеглете архивен файл с настройки"
     },
 
     "restoreSettingsFromBackupFile": {
@@ -900,7 +1012,8 @@
         "de": "Einstellungen aus einer Sicherungsdatei wiederherstellen",
         "ru": "Восстановить настройки из файла резервной копии",
         "pl": "Przywróć ustawienia z pliku kopii zapasowej",
-        "ua": "Відновити налаштування з файлу резервної копії"
+        "ua": "Відновити налаштування з файлу резервної копії",
+        "bg": "Възстановете настройките от архивен файл"
     },
 
     "download": {
@@ -908,7 +1021,8 @@
         "de": "Herunterladen",
         "ru": "Скачать",
         "pl": "Ściągnij",
-        "ua": "Завантажити"
+        "ua": "Завантажити",
+        "bg": "Изтегляне"
     },
 
     "restore": {
@@ -916,7 +1030,8 @@
         "de": "Wiederherstellen",
         "ru": "Восстановить",
         "pl": "Przywróć",
-        "ua": "Відновити"
+        "ua": "Відновити",
+        "bg": "Възстановяване"
     },
 
     "fileContents": {
@@ -924,7 +1039,8 @@
         "de": "Dateiinhalt",
         "ru": "Содержимое файла",
         "pl": "Zawartość pliku",
-        "ua": "Вміст файлу"
+        "ua": "Вміст файлу",
+        "bg": "Съдържание на файла"
     },
 
     "file": {
@@ -932,7 +1048,8 @@
         "de": "Datei",
         "ru": "файл",
         "pl": "plik",
-        "ua": "файл"
+        "ua": "файл",
+        "bg": "файл"
     },
 
     "resetToFactory": {
@@ -940,7 +1057,8 @@
         "de": "Auf Werkseinstellungen zurücksetzen",
         "ru": "Сброс на заводские настройки",
         "pl": "Przywróć ustawienia fabryczne",
-        "ua": "Скидання на заводські настройки"
+        "ua": "Скидання на заводські настройки",
+        "bg": "Възстановяване на фабричните настройки"
     },
 
     "bySunriseAndSunset": {
@@ -948,7 +1066,8 @@
         "de": "Bei Sonnenauf- und untergang",
         "ru": "По восходу и закату",
         "pl": "O wschodzie i zachodzie",
-        "ua": "По сходу та заходу"
+        "ua": "По сходу та заходу",
+        "bg": "По изгрев и залез"
     },
 
     "byLightSensor": {
@@ -956,7 +1075,8 @@
         "de": "Per Lichtsensor",
         "ru": "По датчику освещенности",
         "pl": "Przez czujnik światła",
-        "ua": "За датчиком освітленості"
+        "ua": "За датчиком освітленості",
+        "bg": "Чрез сензор за светлина"
     },
 
     "byTime": {
@@ -964,7 +1084,8 @@
         "de": "Zum Zeitpunkt",
         "ru": "По времени",
         "pl": "Z czasem",
-        "ua": "По часу"
+        "ua": "По часу",
+        "bg": "По време"
     },
 
     "constantBrightness": {
@@ -972,7 +1093,8 @@
         "de": "Konstante Helligkeit",
         "ru": "Неизменная яркость",
         "pl": "Stała jasność",
-        "ua": "Постійна яскравість"
+        "ua": "Постійна яскравість",
+        "bg": "Постоянна яркост"
     },
 
     "time": {
@@ -980,7 +1102,8 @@
         "de": "Zeit",
         "ru": "Время",
         "pl": "Czas",
-        "ua": "Час"
+        "ua": "Час",
+        "bg": "Време"
     },
 
     "date": {
@@ -988,7 +1111,8 @@
         "de": "Datum",
         "ru": "Дата",
         "pl": "Data",
-        "ua": "Дата"
+        "ua": "Дата",
+        "bg": "Дата"
     },
     
     "description": {
@@ -996,7 +1120,8 @@
         "de": "Beschreibung",
         "ru": "Описание",
         "pl": "Opis",
-        "ua": "Опис"
+        "ua": "Опис",
+        "bg": "Описание"
     },
 
     "doNotDisplay": {
@@ -1004,7 +1129,8 @@
         "de": "Nicht anzeigen",
         "ru": "Не отображать",
         "pl": "Nie wyświetlaj",
-        "ua": "Не відображати"
+        "ua": "Не відображати",
+        "bg": "Не показвайте"
     },
 
     "indoor": {
@@ -1012,7 +1138,8 @@
         "de": "Drinnen",
         "ru": "В доме",
         "pl": "W domu",
-        "ua": "В будинку"
+        "ua": "В будинку",
+        "bg": "В дома"
     },
 
     "outdoor": {
@@ -1020,7 +1147,8 @@
         "de": "Draussen",
         "ru": "На улице",
         "pl": "Na ulicy",
-        "ua": "На вулиці"
+        "ua": "На вулиці",
+        "bg": "На улицата"
     },
 
     "turnOffDisplayWhenIdle": {
@@ -1028,7 +1156,8 @@
         "de": "Bildschirm ausschalten nach (Minuten)",
         "ru": "Отключать дисплей через (минут)",
         "pl": "Wyłącz wyświetlacz po (minutach)",
-        "ua": "Вимикати дисплей через (хвилин)"
+        "ua": "Вимикати дисплей через (хвилин)",
+        "bg": "Изключване на дисплея след (минути)"
     },
 
     "turnOffDisplayAtNight": {
@@ -1036,7 +1165,8 @@
         "de": "Bildschirm ausschalten nachts",
         "ru": "Отключать дисплей ночью",
         "pl": "Wyłącz wyświetlacz na noc",
-        "ua": "Вимикати дисплей вночі"
+        "ua": "Вимикати дисплей вночі",
+        "bg": "Изключете дисплея през нощта"
     },
 
     "minutes": {
@@ -1044,7 +1174,8 @@
         "de": "Minuten",
         "ru": "минуты",
         "pl": "minuty",
-        "ua": "хвилини"
+        "ua": "хвилини",
+        "bg": "минути"
     },
 
     "neverTurnOff": {
@@ -1052,7 +1183,8 @@
         "de": "Niemals ausschalten",
         "ru": "Никогда не выключать",
         "pl": "Nigdy nie wyłączaj",
-        "ua": "Ніколи не вимикати"
+        "ua": "Ніколи не вимикати",
+        "bg": "Никога не изключвайте"
     },
 
     "turnOnOffNow": {
@@ -1060,7 +1192,8 @@
         "de": "Jetzt ein-/ausschalten",
         "ru": "Выключить/Включить сейчас",
         "pl": "Wyłącz/Włącz teraz",
-        "ua": "Вимкнути/Включити зараз"
+        "ua": "Вимкнути/Включити зараз",
+        "bg": "Деактивиране/Активиране сега"
     },
 
     "displayBrightness": {
@@ -1068,7 +1201,8 @@
         "de": "Bildschirmhelligkeit",
         "ru": "Яркость дисплея",
         "pl": "Jasność wyświetlacza",
-        "ua": "Яскравість дисплея"
+        "ua": "Яскравість дисплея",
+        "bg": "Яркост на дисплея"
     },
 
     "daytimeBrightness": {
@@ -1076,7 +1210,8 @@
         "de": "Tageshelligkeit",
         "ru": "Яркость днем",
         "pl": "Jasność w ciągu dnia",
-        "ua": "Яскравість вдень"
+        "ua": "Яскравість вдень",
+        "bg": "Яркост през деня"
     },
 
     "nightBrightness": {
@@ -1084,7 +1219,8 @@
         "de": "Nachthelligkeit",
         "ru": "Яркость ночью",
         "pl": "Jasność w nocy",
-        "ua": "Яскравість вночі"
+        "ua": "Яскравість вночі",
+        "bg": "Яркост през нощта"
     },
 
     "sensorType": {
@@ -1092,7 +1228,8 @@
         "de": "Sensorart",
         "ru": "Тип датчика",
         "pl": "Typ czujnika",
-        "ua": "Тип датчика"
+        "ua": "Тип датчика",
+        "bg": "Тип сензор"
     },
 
     "sensorSensitivity": {
@@ -1100,7 +1237,8 @@
         "de": "Sensorempfindlichkeit",
         "ru": "Чувствительность датчика",
         "pl": "Czułość czujnika",
-        "ua": "Чутливість датчика"
+        "ua": "Чутливість датчика",
+        "bg": "Чувствителност на сензора"
     },
 
     "dayMode": {
@@ -1108,7 +1246,8 @@
         "de": "Tagesmodus",
         "ru": "Дневной режим",
         "pl": "Tryb dzienny",
-        "ua": "Денний режим"
+        "ua": "Денний режим",
+        "bg": "Начален час на деня"
     },
 
     "nightMode": {
@@ -1116,7 +1255,8 @@
         "de": "Nachtsmodus",
         "ru": "Ночной режим",
         "pl": "Tryb nocny",
-        "ua": "Нічний режим"
+        "ua": "Нічний режим",
+        "bg": "Нощен начален час"
     },
 
     "brightness": {
@@ -1124,7 +1264,8 @@
         "de": "Helligkeit",
         "ru": "Яркость",
         "pl": "Jasność",
-        "ua": "Яскравість"
+        "ua": "Яскравість",
+        "bg": "Яркост"
     },
 
     "firmwareVersion": {
@@ -1132,7 +1273,8 @@
         "de": "Firmware Version",
         "ru": "Версия прошивки",
         "pl": "Wersja oprogramowania",
-        "ua": "Версія прошивки"
+        "ua": "Версія прошивки",
+        "bg": "Версия на фърмуера"
     },
 
     "runtime": {
@@ -1140,7 +1282,8 @@
         "de": "Laufzeit",
         "ru": "Продолжительность работы",
         "pl": "Czas pracy",
-        "ua": "Час виконання"
+        "ua": "Час виконання",
+        "bg": "Продължителност на работа"
     },
 
     "systemTimeAndDate": {
@@ -1148,7 +1291,8 @@
         "de": "Systemzeit und -datum",
         "ru": "Системное время и дата",
         "pl": "Czas i data systemowa",
-        "ua": "Системний час та дата"
+        "ua": "Системний час та дата",
+        "bg": "Системно време и дата"
     },
 
     "signalStrength": {
@@ -1156,7 +1300,8 @@
         "de": "Signalstärke",
         "ru": "Уровень сигнала",
         "pl": "Siła sygnału",
-        "ua": "Рівень сигналу"
+        "ua": "Рівень сигналу",
+        "bg": "Ниво на сигнала"
     },
 
     "macAddress": {
@@ -1164,7 +1309,8 @@
         "de": "MAC-Adresse",
         "ru": "MAC адрес",
         "pl": "MAC adres",
-        "ua": "MAC адреса"
+        "ua": "MAC адреса",
+        "bg": "MAC адрес"
     },
 
     "language": {
@@ -1172,7 +1318,8 @@
         "de": "Sprache",
         "ru": "Язык",
         "pl": "Język",
-        "ua": "Мова"
+        "ua": "Мова",
+        "bg": "Език"
     },
 
     "selectFirmwareFile": {
@@ -1180,7 +1327,8 @@
         "de": "Firmware-Datei auswählen",
         "ru": "Выберите файл прошивки",
         "pl": "Wybierz plik oprogramowania układowego",
-        "ua": "Виберіть файл прошивки"
+        "ua": "Виберіть файл прошивки",
+        "bg": "Изберете файл на фърмуера"
     },
 
     "upgrade": {
@@ -1188,7 +1336,8 @@
         "de": "Aktualisieren",
         "ru": "Обновить",
         "pl": "Odświeżać",
-        "ua": "Оновити"
+        "ua": "Оновити",
+        "bg": "Актуализация"
     },
 
     "upload": {
@@ -1196,7 +1345,8 @@
         "de": "Hochladen",
         "ru": "Загрузить",
         "pl": "Wgrywać",
-        "ua": "Завантажити"
+        "ua": "Завантажити",
+        "bg": "Качване"
     },
 
     "open": {
@@ -1204,7 +1354,8 @@
         "de": "Offen",
         "ru": "Открыть",
         "pl": "Otwarty",
-        "ua": "Відкрити"
+        "ua": "Відкрити",
+        "bg": "Отворете"
     },
 
     "rename": {
@@ -1212,7 +1363,8 @@
         "de": "Umbenennen",
         "ru": "Переименовать",
         "pl": "Przemianować",
-        "ua": "Перейменувати"
+        "ua": "Перейменувати",
+        "bg": "Преименуване"
     },
 
     "delete": {
@@ -1220,7 +1372,8 @@
         "de": "Löschen",
         "ru": "Удалить",
         "pl": "Usuwać",
-        "ua": "Видалити"
+        "ua": "Видалити",
+        "bg": "Изтриване"
     },
 
     "freeOf": {
@@ -1228,7 +1381,8 @@
         "de": "frei von",
         "ru": "свободно, из",
         "pl": "darmowe, z",
-        "ua": "вільно, з"
+        "ua": "вільно, з",
+        "bg": "свободен от"
     },
 
     "kb": {
@@ -1236,7 +1390,8 @@
         "de": "kB",
         "ru": "кБ",
         "pl": "kB",
-        "ua": "кБ"
+        "ua": "кБ",
+        "bg": "кБ"
     },
 
     "filename": {
@@ -1244,7 +1399,8 @@
         "de": "Dateinamen",
         "ru": "Имя файла",
         "pl": "Nazwa pliku",
-        "ua": "Ім'я файлу"
+        "ua": "Ім'я файлу",
+        "bg": "Име на файла"
     },
 
     "type": {
@@ -1252,7 +1408,8 @@
         "de": "Typ",
         "ru": "Тип",
         "pl": "Typ",
-        "ua": "Тип"
+        "ua": "Тип",
+        "bg": "Тип"
     },
 
     "fileFolder": {
@@ -1260,7 +1417,8 @@
         "de": "Ordner",
         "ru": "папка",
         "pl": "folder",
-        "ua": "папка"
+        "ua": "папка",
+        "bg": "папка"
     },
 
     "size": {
@@ -1268,7 +1426,8 @@
         "de": "Größe",
         "ru": "Размер",
         "pl": "Rozmiar",
-        "ua": "Розмір"
+        "ua": "Розмір",
+        "bg": "Размер"
     },
 
     "FileAlreadyExists": {
@@ -1276,7 +1435,8 @@
         "de": "XXX-Datei existiert bereits, bitte wählen Sie einen anderen Namen",
         "ru": "Файл XXX уже существует, придумайте другое название",
         "pl": "Plik XXX już istnieje, proszę wybrać inną nazwę",
-        "ua": "Файл XXX вже існує, придумайте іншу назву"
+        "ua": "Файл XXX вже існує, придумайте іншу назву",
+        "bg": "Файлът XXX вече съществува, помислете за друго име"
     },
 
     "confirmDeletionOfTheFile": {
@@ -1284,7 +1444,8 @@
         "de": "Bestätigen Sie das Löschen der XXX-Datei",
         "ru": "Подтвердите удаление файла XXX",
         "pl": "Potwierdź usunięcie pliku XXX",
-        "ua": "Підтвердьте видалення файлу XXX"
+        "ua": "Підтвердьте видалення файлу XXX",
+        "bg": "Потвърдете изтриването на XXX файла"
     },
 
     "requireUsernameToLogin": {
@@ -1292,7 +1453,8 @@
         "de": "Benötigen den Benutzernamen und Passwort, um sich anzumelden",
         "ru": "Требовать имя пользователя и пароль для входа",
         "pl": "Wymagaj nazwy użytkownika i hasła do logowania",
-        "ua": "Вимагати ім'я користувача та пароль для входу"
+        "ua": "Вимагати ім'я користувача та пароль для входу",
+        "bg": "Влезте с парола"
     },
 
     "impossibleToDisplayContents": {
@@ -1300,7 +1462,8 @@
         "de": "Es ist nicht möglich, den Inhalt dieses Dateityps anzuzeigen",
         "ru": "Невозможно отобразить содержимое файла этого типа",
         "pl": "Nie jest możliwe wyświetlenie zawartości tego typu pliku",
-        "ua": "Неможливо відобразити вміст цього типу"
+        "ua": "Неможливо відобразити вміст цього типу",
+        "bg": "Не е възможно да се покаже съдържанието на този тип файл"
     },
 
     "weatherMonitorBIM": {
@@ -1308,7 +1471,8 @@
         "de": "Wettermonitor BIM",
         "ru": "Монитор погоды BIM",
         "pl": "Monitor pogody BIM",
-        "ua": "Монітор погоди BIM"
+        "ua": "Монітор погоди BIM",
+        "bg": "BIM монитор за времето"
     },
 
     "login": {
@@ -1316,7 +1480,8 @@
         "de": "Anmeldung",
         "ru": "Вход",
         "pl": "Wejście",
-        "ua": "Вхід"
+        "ua": "Вхід",
+        "bg": "Вход"
     },
 
     "wrongLoginOrPassword": {
@@ -1324,7 +1489,8 @@
         "de": "Benutzername oder Passwort falsch",
         "ru": "Неверное имя пользователя или пароль",
         "pl": "Wprowadzona nazwa użytkownika lub hasło jest nieprawidłowe",
-        "ua": "Неправильне ім'я користувача або пароль"
+        "ua": "Неправильне ім'я користувача або пароль",
+        "bg": "Невалидно потребителско име или парола"
     },
 
     "sensorMetric": {
@@ -1332,7 +1498,8 @@
         "de": "Sensor-Metrik",
         "ru": "Метрика датчика",
         "pl": "Metryka czujnika",
-        "ua": "Метрика датчика"
+        "ua": "Метрика датчика",
+        "bg": "Метрика на сензора"
     },
 
     "sensorName": {
@@ -1340,7 +1507,8 @@
         "de": "Sensorname",
         "ru": "Название датчика",
         "pl": "Nazwa czujnika",
-        "ua": "Назва датчика"
+        "ua": "Назва датчика",
+        "bg": "Име на сензора"
     },
 
     "temperatureIn": {
@@ -1348,7 +1516,8 @@
         "de": "Temperatur im Haus",
         "ru": "Температура в доме",
         "pl": "Temperatura w domu",
-        "ua": "Температура в будинку"
+        "ua": "Температура в будинку",
+        "bg": "Температура в дома"
     },
     
     "temperatureOut": {
@@ -1356,7 +1525,8 @@
         "de": "Außentemperatur",
         "ru": "Температура на улице",
         "pl": "Temperatura zewnętrzna",
-        "ua": "Температура на вулиці"
+        "ua": "Температура на вулиці",
+        "bg": "Температура навън"
     },
 
     "humidityIn": {
@@ -1364,7 +1534,8 @@
         "de": "Luftfeuchtigkeit im Haus",
         "ru": "Влажность в доме",
         "pl": "Wilgotność w domu",
-        "ua": "Вологість у будинку"
+        "ua": "Вологість у будинку",
+        "bg": "Влажност в дома"
     },
     
     "humidityOut": {
@@ -1372,7 +1543,8 @@
         "de": "Außenluftfeuchtigkeit",
         "ru": "Влажность на улице",
         "pl": "Wilgotność na zewnątrz",
-        "ua": "Вологість на вулиці"
+        "ua": "Вологість на вулиці",
+        "bg": "Влажност навън"
     },
 
     "battery": {
@@ -1380,7 +1552,8 @@
         "de": "Batterie",
         "ru": "Батарея",
         "pl": "Bateria",
-        "ua": "Батарея"
+        "ua": "Батарея",
+        "bg": "Батерия"
     },
 
     "batterySymbol": {
@@ -1388,7 +1561,8 @@
         "de": "Batteriesymbol",
         "ru": "Символ батареи",
         "pl": "Symbol baterii",
-        "ua": "Символ батареї"
+        "ua": "Символ батареї",
+        "bg": "Символ на батерията"
     },
 
     "batteryVoltage": {
@@ -1396,7 +1570,8 @@
         "de": "Batteriespannung",
         "ru": "Напряжение батареи",
         "pl": "Napięcie baterii",
-        "ua": "Напруга батареї"
+        "ua": "Напруга батареї",
+        "bg": "Напрежение на батерията"
     },
 
     "batteryPercentage": {
@@ -1404,7 +1579,8 @@
         "de": "Batterieprozentsatz",
         "ru": "Процент батареи",
         "pl": "Procent baterii",
-        "ua": "Відсоток батареї"
+        "ua": "Відсоток батареї",
+        "bg": "Процент на батерията"
     },
 
     "batteryLevel": {
@@ -1412,7 +1588,8 @@
         "de": "Batterie Level",
         "ru": "Уровень батареи",
         "pl": "Poziom baterii",
-        "ua": "Рівень батареї"
+        "ua": "Рівень батареї",
+        "bg": "Ниво на батерията"
     },
 
     "dataExpirationTime": {
@@ -1420,7 +1597,8 @@
         "de": "Datenablaufzeit (Minuten)",
         "ru": "Срок годности данных (минут)",
         "pl": "Czas ważności danych (minuty)",
-        "ua": "Термін придатності даних (хвилин)"
+        "ua": "Термін придатності даних (хвилин)",
+        "bg": "Дата на изтичане на данните (минути)"
     },
 
     "additionalDescription": {
@@ -1428,7 +1606,8 @@
         "de": "Zusätzliche Beschreibung",
         "ru": "Дополнительное описание",
         "pl": "Dodatkowy opis",
-        "ua": "Додатковий опис"
+        "ua": "Додатковий опис",
+        "bg": "Допълнително описание"
     },
 
     "comfortLevel": {
@@ -1436,7 +1615,8 @@
         "de": "Komfortniveau",
         "ru": "Уровень комфорта",
         "pl": "Poziom komfortu",
-        "ua": "Рівень комфорту"
+        "ua": "Рівень комфорту",
+        "bg": "Ниво на комфорт"
     },
 
     "sourceOfPower": {
@@ -1444,7 +1624,8 @@
         "de": "Energiequelle",
         "ru": "Источник питания",
         "pl": "Źródło mocy",
-        "ua": "Джерело живлення"
+        "ua": "Джерело живлення",
+        "bg": "Захранване"
     },
 
     "powerSupplyType": {
@@ -1452,7 +1633,8 @@
         "de": "Art der Stromversorgung",
         "ru": "Тип источника питания",
         "pl": "Typ zasilacza",
-        "ua": "Тип джерела живлення"
+        "ua": "Тип джерела живлення",
+        "bg": "Тип захранване"
     },
 
     "mainsPowered": {
@@ -1460,7 +1642,8 @@
         "de": "Netzbetrieben",
         "ru": "Питание от сети",
         "pl": "Zasilanie sieciowe",
-        "ua": "Живлення від мережі"
+        "ua": "Живлення від мережі",
+        "bg": "Мрежово захранване"
     },
 
     "liIonBattery": {
@@ -1468,7 +1651,8 @@
         "de": "Lithium-Ionen-Akku (3.7V)",
         "ru": "Li-ion аккумулятор (3.7В)",
         "pl": "Akumulator Li-ion (3,7V)",
-        "ua": "Li-ion акумулятор (3.7В)"
+        "ua": "Li-ion акумулятор (3.7В)",
+        "bg": "Li-ion батерия (3.7В)"
     },
 
     "sleepTime": {
@@ -1476,7 +1660,8 @@
         "de": "Schlafzeit (Sekunden)",
         "ru": "Время ухода в сон (секунд)",
         "pl": "Czas uśpienia (sekundy)",
-        "ua": "Час догляду за сном (секунд)"
+        "ua": "Час догляду за сном (секунд)",
+        "bg": "Време за сън (секунди)"
     },
 
     "neverSleep": {
@@ -1484,7 +1669,8 @@
         "de": "Niemals schlafen",
         "ru": "Никогда не спать",
         "pl": "Nigdy spać",
-        "ua": "Ніколи не спати"
+        "ua": "Ніколи не спати",
+        "bg": "Никога не спи"
     },
 
     "parsingServer": {
@@ -1492,7 +1678,8 @@
         "de": "Parsing-Server",
         "ru": "Парсинг сервер",
         "pl": "Serwer analizujący",
-        "ua": "Парсинг сервер"
+        "ua": "Парсинг сервер",
+        "bg": "Парсинг сървър"
     },
 
     "networkError": {
@@ -1500,7 +1687,8 @@
         "de": "Netzwerkfehler. Keine Kommunikation mit der Haupteinheit",
         "ru": "Ошибка сети. Нет связи с головным устройством",
         "pl": "Błąd sieci. Brak komunikacji z jednostką główną",
-        "ua": "Помилка мережі. Немає зв'язку з головним пристроєм"
+        "ua": "Помилка мережі. Немає зв'язку з головним пристроєм",
+        "bg": "Мрежова грешка. Няма връзка с главното устройство"
     },
 
     "tempMin": {
@@ -1508,7 +1696,8 @@
         "de": "Minimale Temperatur",
         "ru": "Минимальная температура",
         "pl": "Minimalna temperatura",
-        "ua": "Мінімальна температура"
+        "ua": "Мінімальна температура",
+        "bg": "Минимална температура"
     },
 
     "tempMax": {
@@ -1516,7 +1705,8 @@
         "de": "Maximale Temperatur",
         "ru": "Максимальная температура",
         "pl": "Maksymalna temperatura",
-        "ua": "Максимальна температура"
+        "ua": "Максимальна температура",
+        "bg": "Максимална температура"
     },
 
     "humMin": {
@@ -1524,7 +1714,8 @@
         "de": "Minimale Luftfeuchtigkeit",
         "ru": "Минимальная влажность",
         "pl": "Minimalna wilgotność",
-        "ua": "Мінімальна вологість"
+        "ua": "Мінімальна вологість",
+        "bg": "Минимална влажност"
     },
 
     "humMax": {
@@ -1532,7 +1723,8 @@
         "de": "Maximale Luftfeuchtigkeit",
         "ru": "Максимальная влажность",
         "pl": "Maksymalna wilgotność",
-        "ua": "Максимальна вологість"
+        "ua": "Максимальна вологість",
+        "bg": "Максимална влажност"
     },
 
     "tempSource": {
@@ -1540,7 +1732,8 @@
         "de": "Temperaturquelle",
         "ru": "Источник температуры",
         "pl": "Źródło temperatury",
-        "ua": "Джерело температури"
+        "ua": "Джерело температури",
+        "bg": "Източник на температура"
     },
 
     "humSource": {
@@ -1548,7 +1741,8 @@
         "de": "Feuchtigkeitsquelle",
         "ru": "Источник влажности",
         "pl": "Źródło wilgoci",
-        "ua": "Джерело вологості"
+        "ua": "Джерело вологості",
+        "bg": "Източник на влажност"
     },
 
     "firmwareUpdateAppeared": {
@@ -1556,7 +1750,8 @@
         "de": "Ein Firmware-Update ist erschienen, Version XXX ist verfügbar:",
         "ru": "Обнаружено обновление прошивки, версия XXX доступна:",
         "pl": "Wykryto aktualizację oprogramowania układowego, dostępna wersja XXX:",
-        "ua": "Виявлено оновлення прошивки, версія XXX доступна:"
+        "ua": "Виявлено оновлення прошивки, версія XXX доступна:",
+        "bg": "Открита е актуализация на фърмуера, налична е версия XXX"
     },
 
     "clearSky": {
@@ -1564,7 +1759,8 @@
         "de": "Klarer Himmel",
         "ru": "Ясно",
         "pl": "Czyste Niebo",
-        "ua": "Ясно"
+        "ua": "Ясно",
+        "bg": "Ясно"
     },
 
     "mainlyClear": {
@@ -1572,7 +1768,8 @@
         "de": "Überwiegend klar",
         "ru": "Преимущественно ясно",
         "pl": "Głównie jasne",
-        "ua": "Переважно ясно"
+        "ua": "Переважно ясно",
+        "bg": "Предимно ясно"
     },
 
     "partlyCloudy": {
@@ -1580,7 +1777,8 @@
         "de": "Teilweise bewölkt",
         "ru": "Переменная облачность",
         "pl": "Częściowe zachmurzenie",
-        "ua": "Мінлива хмарність"
+        "ua": "Мінлива хмарність",
+        "bg": "Предимно облачно"
     },
 
     "overcast":	{
@@ -1588,7 +1786,8 @@
         "de": "Bedeckt",
         "ru": "Пасмурно",
         "pl": "Pochmurny",
-        "ua": "Хмарно"
+        "ua": "Хмарно",
+        "bg": "Облачно"
     },
 
     "fog": {
@@ -1596,7 +1795,8 @@
         "de": "Nebel",
         "ru": "Туман",
         "pl": "Mgła",
-        "ua": "Туман"
+        "ua": "Туман",
+        "bg": "Мъгла"
     },
 
     "deposRimeFog": {
@@ -1604,7 +1804,8 @@
         "de": "Ablagerung von Raureifnebel",
         "ru": "Туман с инеем",
         "pl": "Deponująca się mgła szronowa",
-        "ua": "Туман з інеєм"
+        "ua": "Туман з інеєм",
+        "bg": "Мъгла със скреж"
     },
 
     "drizzle": {
@@ -1612,7 +1813,8 @@
         "de": "Nieselregen",
         "ru": "Морось",
         "pl": "Mżawka",
-        "ua": "Мряка"
+        "ua": "Мряка",
+        "bg": "Дъжд"
     },
 
     "freezingDrizzle": {
@@ -1620,7 +1822,8 @@
         "de": "Gefrierender Nieselregen",
         "ru": "Изморозь",
         "pl": "Marznąca mżawka",
-        "ua": "Ізморозь"
+        "ua": "Ізморозь",
+        "bg": "Скреж"
     },
 
     "rain": {
@@ -1628,7 +1831,8 @@
         "de": "Regen",
         "ru": "Дождь",
         "pl": "Deszcz",
-        "ua": "Дощ"
+        "ua": "Дощ",
+        "bg": "Дъжд"
     },
 
     "freezingRain": {
@@ -1636,7 +1840,8 @@
         "de": "Gefrierender Regen",
         "ru": "Ледяной дождь",
         "pl": "Marznący deszcz",
-        "ua": "Крижаний дощ"
+        "ua": "Крижаний дощ",
+        "bg": "Леден дъжд"
     },
 
     "snowFall": {
@@ -1644,7 +1849,8 @@
         "de": "Schneefall",
         "ru": "Снегопад",
         "pl": "Opady śniegu",
-        "ua": "Снігопад"
+        "ua": "Снігопад",
+        "bg": "Снеговалеж"
     }, 
 
     "snowGrains": {
@@ -1652,7 +1858,8 @@
         "de": "Schneekörner",
         "ru": "Снежные зерна",
         "pl": "Ziarna śniegu",
-        "ua": "Снігові зерна"
+        "ua": "Снігові зерна",
+        "bg": "Скреж"
     },
 
     "rainShowers": {
@@ -1660,7 +1867,8 @@
         "de": "Regenschauer",
         "ru": "Ливень",
         "pl": "Przelotne opady deszczu",
-        "ua": "Злива"
+        "ua": "Злива",
+        "bg": "Ръмеж"
     },
 
     "snowShowers": {
@@ -1668,7 +1876,8 @@
         "de": "Schneeschauer",
         "ru": "Сильный снегопад",
         "pl": "Opady śniegu",
-        "ua": "Сильний снігопад"
+        "ua": "Сильний снігопад",
+        "bg": "Обилен снеговалеж"
     },
 
     "thunderstorm": {
@@ -1676,7 +1885,8 @@
         "de": "Gewitter",
         "ru": "Гроза",
         "pl": "Burza z piorunami",
-        "ua": "Гроза"
+        "ua": "Гроза",
+        "bg": "Буря"
     },
 
     "thunderstormWithHail": {
@@ -1684,6 +1894,7 @@
         "de": "Gewitter mit Hagel",
         "ru": "Гроза с градом",
         "pl": "Burza z gradem",
-        "ua": "Гроза з градом"
+        "ua": "Гроза з градом",
+        "bg": "Градушка"
     }
 }

@@ -3,6 +3,7 @@ import Languages from "../../Languages";
 import PageHeader from "../../fragments/PageHeader";
 import {ReactComponent as FlagEn} from "../../svg/en.svg";
 import {ReactComponent as FlagRu} from "../../svg/ru.svg";
+import {ReactComponent as FlagBg} from "../../svg/bg.svg";
 import Menu from "../../menu/Menu";
 import SaveRestart from "../SaveRestart";
 
@@ -51,6 +52,21 @@ class Language extends LanguageFn {
                                 </div>
                                 <div className="col-7 pt-1">
                                     <label htmlFor="ru">Русский</label>
+                                </div>
+                            </div>
+
+                            {/* Български */}
+                            <div className="row my-3">
+                                <div className="col-2 pt-1">
+                                    <input id="bg" className="form-check-input" name="lang" value="bg" type="radio"
+                                      checked={this.props.config.lang === "bg"} onChange={this.changedLang}
+                                    />
+                                </div>
+                                <div className="col-3">
+                                    <label htmlFor="bg" className="flag"><FlagBg /></label>
+                                </div>
+                                <div className="col-7 pt-1">
+                                    <label htmlFor="bg">Български</label>
                                 </div>
                             </div>
                         </div>
