@@ -1,12 +1,12 @@
 /**
- *  Weather Monitor BIM v5.2
+ *  Weather Monitor BIM v5.3
  *  https://github.com/himikat123/Weather-Monitor-BIM
-
- *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2023
-
+ *
+ *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2024
+ *
  *  Generic ESP8266 Module
  *  Flash Size: "4MB (FS:2MB OTA:~1019KB)"
-
+ *
  *  Arduino IDE v1.8.19
  *  ESP8266 board v3.1.2
  */
@@ -153,10 +153,16 @@ void loop() {
     }
     
     /**
-     * Weather update every 20 minutes
-     * if last update was with an error then after 5 minutes
+     * Weather update 
+     * every 20 minutes for open-meteo 
+     * or every 60 minutes for weatherbit. 
+     * If the last update was with an error, then after 5 minutes
      */
-    if((now() - weather.get_currentUpdated() > 1200 and weather.get_errorUpdate() == 0) or (weather.get_errorUpdate() and (now() - weather.get_errorUpdate() > 300))) {
+    uint32_t weatherUpd = config.weather_provider() == 0 ? 1200 : 3600;
+    if(
+      (now() - weather.get_currentUpdated() > weatherUpd && weather.get_errorUpdate() == 0) ||
+      (weather.get_errorUpdate() && (now() - weather.get_errorUpdate() > 300))
+    ) {
       Serial.println(SEPARATOR);
       Serial.println("Current weather update... ");
       weather.reset_errorUpdate();
