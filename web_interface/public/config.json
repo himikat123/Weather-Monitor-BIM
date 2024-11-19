@@ -15,12 +15,12 @@
 	},
 	"network": {
 		"ssid": [
-			"Vodafone-43DC",
+			"Vodafno",
 			"",
 			""
 		],
 		"pass": [
-			"X4bm4RfnNCJFahqt",
+			"",
 			"",
 			""
 		],
@@ -40,16 +40,16 @@
 	},
 	"weather": {
 		"appid": [
-			"0d95d60df98e84ec2b4070be53c4d580",
+			"",
 			""
 		],
-		"city": "Nuremberg",
+		"city": "nuremberg-2697",
 		"cityid": 0,
 		"lat": 0,
 		"lon": 0,
-		"provider": 0,
+		"provider": 2,
 		"citysearch": 0,
-		"parsingServer": "http://152.70.50.126/"
+		"parsingServer": ""
 	},
 	"lang": "ru",
 	"clock": {
@@ -165,8 +165,8 @@
 	"thingspeakReceive": {
 		"turnOn": 1,
 		"period": 5,
-		"channelID": "875056",
-		"rdkey": "L57VOS7PR67PDTWT",
+		"channelID": "",
+		"rdkey": "",
 		"expire": 20
 	},
 	"narodmonSend": {
