@@ -1,5 +1,5 @@
 /**
- *  Weather Monitor BIM v5.3
+ *  Weather Monitor BIM v5.4
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
  *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2024
@@ -109,7 +109,10 @@ void loop() {
         Serial.print("NTP synchronization... ");
         global.ntp_update = millis();
         if(network.isConnected()) timentp.get_time();
-        else Serial.println("No internet connection");
+        else {
+          global.ntp_update = 0;
+          Serial.println("No internet connection");
+        }
       }
     }
 
@@ -122,7 +125,10 @@ void loop() {
         Serial.println("Receive data from thingspeak.com... ");
         global.thingspeakReceive = millis();
         if(network.isConnected()) thingspeak.receive();
-        else Serial.println("No internet connection");
+        else {
+          global.thingspeakReceive = 0;
+          Serial.println("No internet connection");
+        }
       }
     }
 
@@ -135,7 +141,10 @@ void loop() {
         Serial.println("Send data to thingspeak.com... ");
         global.thingspeakSend = millis();
         if(network.isConnected()) thingspeak.send();
-        else Serial.println("No internet connection");
+        else {
+          global.thingspeakSend = 0;
+          Serial.println("No internet connection");
+        }
       }
     }
 
@@ -148,7 +157,10 @@ void loop() {
         Serial.println("Send data to narodmon... ");
         global.narodmonSend = millis();
         if(network.isConnected()) narodmon.send();
-        else Serial.println("No internet connection");
+        else {
+          global.narodmonSend = 0;
+          Serial.println("No internet connection");
+        }
       }
     }
     
