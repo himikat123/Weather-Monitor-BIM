@@ -14,7 +14,7 @@
 #define SEPARATOR "**********************************************************************"
 
 struct {
-  char fw[7] = "v5.3"; // Firmware version
+  char fw[7] = "v5.4"; // Firmware version
   bool clockSynchronized = false; // Is the time synchronized with the ntp server?
   bool clockSynchronize = false; // Should the display RTC be updated?
   bool net_connected = false; // Is the device connected to the network?
@@ -238,7 +238,7 @@ class Config {
           COPYNUM(conf["display"]["brightness"]["day"], _display_brightness_day);
           COPYNUM(conf["display"]["brightness"]["night"], _display_brightness_night);
           COPYNUM(conf["display"]["lightSensor"], _display_lightSensor);
-          COPYNUM(conf["display"]["lightSensor_sensitivity"], _display_lightSensor_sensitivity);
+          COPYNUM(conf["display"]["sensitivity"], _display_lightSensor_sensitivity);
           COPYNUM(conf["display"]["source"]["tempOut"]["sens"], _display_source_tempOut_sens);
           COPYNUM(conf["display"]["source"]["tempOut"]["thing"], _display_source_tempOut_thing);
           COPYNUM(conf["display"]["source"]["humOut"]["sens"], _display_source_humOut_sens);
