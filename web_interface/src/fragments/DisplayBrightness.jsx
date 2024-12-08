@@ -116,8 +116,9 @@ class DisplayBrightness extends Save {
                     />
 
                     <div className="float-end my-2">
-                        {text.get('ambientLight', lang)}: <span className="text-primary indication me-3">
-                            {senosrData} {text.get('lux', lang)}
+                        {text.get(this.props.config.display.lightSensor > 0 ? 'ambientLight' : 'voltage', lang)}
+                            : <span className="text-primary indication me-3">
+                            {senosrData} {text.get(this.props.config.display.lightSensor > 0 ? 'lux' : 'v', lang)}
                         </span>
                     </div>
 
