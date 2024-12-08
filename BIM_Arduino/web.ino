@@ -75,12 +75,14 @@ String web_getContentType(String filename) {
   else if(filename.endsWith(".html")) return "text/html";
   else if(filename.endsWith(".json")) return "text/json";
   else if(filename.endsWith(".jpg"))  return "image/jpeg";
+  else if(filename.endsWith(".css"))  return "text/css";
+  else if(filename.endsWith(".js"))   return "pplication/javascript";
   else if(filename.endsWith(".gz"))   return "application/x-gzip";
   return "text/plain";
 }
 
 bool web_handleFileRead(String path) {
-  if(!path.endsWith(".jpg")) {
+  if(!path.endsWith(".jpg") && !path.endsWith(".css") && !path.endsWith(".js")) {
     if(path != "/config.json") path = "/index.html";
   }
   
@@ -90,7 +92,8 @@ bool web_handleFileRead(String path) {
   if(LittleFS.exists(pathWithGz) || LittleFS.exists(path)) {
     if(LittleFS.exists(pathWithGz)) path += ".gz";
     File file = LittleFS.open(path, "r");
-    webServer.streamFile(file,contentType);
+    if(path.endsWith(".js.gz")) webServer.sendHeader("Cache-Control", "max-age=31536000");
+    webServer.streamFile(file, contentType);
     file.close();
     return true;
   }
