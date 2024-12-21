@@ -77,11 +77,11 @@
 И, напоследок, несколько фоток получившегося девайса
 
 <p align="center">
-    <img src="img/1.png" alt="weather monitor BIM">
-    <img src="img/2.png" alt="weather monitor BIM">
-    <img src="img/3.png" alt="weather monitor BIM">
-    <img src="img/4.png" alt="weather monitor BIM">
-    <img src="img/5.jpg" alt="weather monitor BIM">
+    <img src="img/1.jpg" alt="weather monitor BIM">
+    <img src="img/2.jpg" alt="weather monitor BIM">
+    <img src="img/3.jpg" alt="weather monitor BIM">
+    <img src="img/4.jpg" alt="weather monitor BIM">
+    <img src="img/5ru.jpg" alt="weather monitor BIM">
 </p>
 
 ## Нравится проект? Угости меня кофейком, или пивком.

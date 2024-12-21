@@ -77,11 +77,11 @@ Also when the device is already configured and connected to the network you can 
 And finally a few photos of the resulting device
 
 <p align="center">
-    <img src="img/1.png" alt="weather monitor BIM">
-    <img src="img/2.png" alt="weather monitor BIM">
-    <img src="img/3.png" alt="weather monitor BIM">
-    <img src="img/4.png" alt="weather monitor BIM">
-    <img src="img/5.jpg" alt="weather monitor BIM">
+    <img src="img/1.jpg" alt="weather monitor BIM">
+    <img src="img/2.jpg" alt="weather monitor BIM">
+    <img src="img/3.jpg" alt="weather monitor BIM">
+    <img src="img/4.jpg" alt="weather monitor BIM">
+    <img src="img/5en.jpg" alt="weather monitor BIM">
 </p>
 
 ## Do you like the project? Buy me a coffee or a beer.
