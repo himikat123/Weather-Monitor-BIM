@@ -1,5 +1,7 @@
 double web_code = 0;
 String web_filelist = "";
+size_t fsUsed = 0;
+size_t fsTotal = 0;
 
 /**
  * Get current date and time as a string
@@ -46,9 +48,10 @@ void web_listAllFilesInDir(String dir_path) {
   while(dir.next()) {
     if(dir.isFile()) {
       File file = dir.openFile("r");
-      web_filelist += "\t\t\t[\"";
-      web_filelist += dir_path + dir.fileName() + "\", ";
-      web_filelist += String(float(file.size()) / 1024.0) + "],\n";
+      if(dir.fileName() != "user.us") {
+        web_filelist += dir_path + dir.fileName() + ": ";
+        web_filelist += String(file.size()) + ",";
+      }
     }
     
     if(dir.isDirectory()) {
@@ -60,14 +63,20 @@ void web_listAllFilesInDir(String dir_path) {
 /**
  * Checks if the user is logged in
  */
-bool web_isLogged() {
-  if(webServer.hasHeader("Cookie")) {
-    String cookie = webServer.header("Cookie");
-    if(cookie.substring(cookie.indexOf("auth") + 5) == String(web_code)) return true;
-    else return false;
+bool web_isLogged(bool answer) {
+  bool logged = false;
+  if(!config.account_required()) logged = true;
+  else {
+    if(webServer.hasArg("code")) {
+      String auth = webServer.arg("code");
+      if(auth == String(web_code)) logged = true;
+      else logged = false;
+    }
+    else logged = false;
   }
-  
-  return false;
+
+  if(!logged && answer) webServer.send(200, "text/plain", "NOT LOGGED IN");
+  return logged;
 }
 
 String web_getContentType(String filename) {
@@ -83,7 +92,7 @@ String web_getContentType(String filename) {
 
 bool web_handleFileRead(String path) {
   if(!path.endsWith(".jpg") && !path.endsWith(".css") && !path.endsWith(".js")) {
-    if(path != "/config.json") path = "/index.html";
+    if(path != "/config.json" && path != "/defaultConfig.json") path = "/index.html";
   }
   
   String contentType = web_getContentType(path);
@@ -118,8 +127,7 @@ void web_handleFileUpload() {
     if(fsUploadFile) fsUploadFile.close();
   }
 
-  web_filelist = String();
-  web_listAllFilesInDir("/");
+  global.fsInfoUpdate = true;
 }
 
 /**
@@ -132,7 +140,7 @@ void webInterface_init(void) {
    * Save config data to config file
    */
   webServer.on("/esp/saveConfig", HTTP_POST, []() {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       if(webServer.hasArg("config")) {
         String conf = webServer.arg("config");
         if(conf.length())
@@ -141,7 +149,6 @@ void webInterface_init(void) {
       }
       else webServer.send(200, "text/plain", "ARG ERROR");
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
@@ -151,33 +158,26 @@ void webInterface_init(void) {
     String data = "{\n";
     
     // System
-    data += web_jsonStr("state", web_isLogged() ? "OK" : "LOGIN", 1, true);
+    data += web_jsonStr("state", web_isLogged(false) ? "OK" : "LOGIN", 1, true);
     data += web_jsonStr("fw", global.fw, 1, true);
-    data += web_jsonStr("runtime", lang.runtime(millis() / 1000), 1, true);
-    data += web_jsonInt("freeheap", ESP.getFreeHeap(), 1, true);
-    data += web_jsonStr("time", web_timeString(now()), 1, true);
+    data += web_jsonInt("runtime", round(millis() / 1000), 1, true);
+    data += web_jsonInt("heap", ESP.getFreeHeap(), 1, true);
+    data += web_jsonInt("time", now(), 1, true);
     
-    // Weekday
-    int wd = weekday();
-    data += "\t\"wd\": [\""; data += String(wd); data += "\", \"";
-    data += lang.weekdayShortName(wd); data += "\", \"";
-    if(++wd > 7) wd = 1;
-    data += lang.weekdayShortName(wd); data += "\", \"";
-    if(++wd > 7) wd = 1;
-    data += lang.weekdayShortName(wd); data += "\"],\n";
-    
-    // Units
-    data += "\t\"units\": {\n";
-    data += web_jsonStr("v", lang.v(), 2, true);
-    data += web_jsonStr("mm", lang.mm(), 2, true);
-    data += web_jsonStr("ms", lang.ms(), 2, false);
-    data += "\t},\n";
-    
+    // List of available networks  
+    data += "\t\"ssids\": [\n";
+    for(unsigned int i=0; i<global.nets; i++) {
+      data += "\t\t[\""; data += global.ssids[i]; 
+      data += "\", "; data += String(global.rssis[i]); 
+      data += (i < global.nets - 1) ? "],\n" : "]\n";
+    }
+    data += "\t],\n";
+
     // Network
     data += "\t\"network\": {\n";
     data += web_jsonStr("ssid", global.apMode ? config.accessPoint_ssid() : WiFi.SSID(), 2, true);
     data += web_jsonInt("ch", WiFi.channel(), 2, true);
-    data += web_jsonStr("sig", String(WiFi.RSSI()) + "dBm", 2, true);
+    data += web_jsonInt("sig", WiFi.RSSI(), 2, true);
     data += web_jsonStr("mac", WiFi.macAddress(), 2, true);
     data += web_jsonStr("ip", WiFi.localIP().toString(), 2, true);
     data += web_jsonStr("mask", WiFi.subnetMask().toString(), 2, true);
@@ -186,9 +186,6 @@ void webInterface_init(void) {
     data += web_jsonStr("dns2", WiFi.dnsIP().toString(), 2, false);
     data += "\t},\n";
 
-    // Comfort
-    data += web_jsonStr("comfort", lang.comfort(global.comfort), 1, true);
-    
     // BME280
     data += "\t\"bme280\": {\n";
     data += web_jsonFloat("temp", round(sensors.get_bme280_temp(0) * 10) / 10, 2, true);
@@ -239,128 +236,148 @@ void webInterface_init(void) {
     data += web_jsonFloat("temp", round(weather.get_currentTemp() * 10) / 10, 2, true);
     data += web_jsonFloat("hum", round(weather.get_currentHum() * 10) / 10, 2, true);
     data += web_jsonFloat("pres", round(weather.get_currentPres() * 10) / 10, 2, true);
-    data += web_jsonInt("icon", weather.get_currentIcon(), 2, true);
+    data += web_jsonInt("icon", weather.convertIcon(weather.get_currentIcon()), 2, true);
     data += web_jsonInt("isDay", weather.get_isDay(), 2, true);
     data += "\t\t\"wind\": {\n";
     data += web_jsonFloat("speed", round(weather.get_currentWindSpeed() * 10) / 10, 3, true);
     data += web_jsonFloat("dir", weather.get_currentWindDir(), 3, false);
     data += "\t\t},\n";
     data += web_jsonStr("descript", weather.get_description(), 2, true);
-    data += web_jsonStr("upd", weather.get_currentUpdated() == 0 ? "" : web_timeString(weather.get_currentUpdated()), 2, true);
-    data += "\t\t\"daily\": [\n";
+    data += web_jsonStr("time", String(weather.get_currentUpdated()), 2, true);
+    data += "\t\t\"daily\": {\n";
+    data += "\t\t\t\"tMax\": [";
     for(unsigned int i=0; i<3; i++) {
-      data += "\t\t\t{\n";
-      data += web_jsonFloat("tMax", weather.get_dailyDayTemp(i), 4, true);
-      data += web_jsonFloat("tMin", weather.get_dailyNightTemp(i), 4, true);
-      data += web_jsonFloat("wind", weather.get_dailyWindSpeed(i), 4, true);
-      data += web_jsonInt("icon", weather.get_dailyIcon(i), 4, false);
-      data += "\t\t\t},\n";
+      data += String(weather.get_dailyDayTemp(i));
+      data += (i < 2) ? ", " : "],\n";
     }
-    data.remove(data.length() - 2);
-    data += "\n\t\t]\n\t},\n";
-    
-    // List of available networks  
-    data += "\t\"ssids\": [\n";
-    for(unsigned int i=0; i<global.nets; i++) {
-      data += "\t\t[\""; data += global.ssids[i]; 
-      data += "\", "; data += String(global.rssis[i]); 
-      data += (i < global.nets - 1) ? "],\n" : "]\n";
+    data += "\t\t\t\"tMin\": [";
+    for(unsigned int i=0; i<3; i++) {
+      data += String(weather.get_dailyNightTemp(i));
+      data += (i < 2) ? ", " : "],\n";
     }
-    data += "\t],\n";
+    data += "\t\t\t\"wind\": [";
+    for(unsigned int i=0; i<3; i++) {
+      data += String(weather.get_dailyWindSpeed(i));
+      data += (i < 2) ? ", " : "],\n";
+    }
+    data += "\t\t\t\"icon\": [";
+    for(unsigned int i=0; i<3; i++) {
+      data += String(weather.convertIcon(weather.get_dailyIcon(i)));
+      data += (i < 2) ? ", " : "]";
+    }
+    data += "\n\t\t}\n\t},\n";
     
     // Thingspeak
     data += "\t\"thing\": {\n";
-    data += "\t\t\"fields\": [";
+    data += "\t\t\"data\": [";
     for(unsigned int i=0; i<8; i++) {
       data += String(thingspeak.get_field(i));
       data += (i < 7) ? ", " : "],\n";
     }
-    data += web_jsonInt("expired", (now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60) ? -1 : 0, 2, false);
+    data += web_jsonInt("time", thingspeak.get_updated(), 2, false);
+    data += "\t},\n";
+
+    // File system
+    if(global.fsInfoUpdate) {
+      FSInfo fsInfo;
+      LittleFS.info(fsInfo);
+      web_filelist = String();
+      web_listAllFilesInDir("/");
+        fsTotal = fsInfo.totalBytes;
+        fsUsed = fsTotal - fsInfo.usedBytes;
+        global.fsInfoUpdate = false;
+    }
+    data += "\t\"fs\": {\n";
+    data += "\t\t\"list\": \"";
+    data += web_filelist;
+    data += "\",\n";
+    data += web_jsonFloat("total", fsTotal, 2, true);
+    data += web_jsonFloat("free", fsUsed, 2, false);
     data += "\t}\n}";
-  
     webServer.send(200, "text/json", data);
     data = String();
   });
 
   /**
-   * Send files list
+   * Restore default config
    */
-  webServer.on("/files.json", HTTP_GET, [] () {
-    String data = "{\n";
-    if(!web_isLogged()) data = "{}";
-    else {
-      data += "\t\"fs\": {\n";
-      data += "\t\t\"list\": [\n";
-      data += web_filelist;
-      data.remove(data.length() - 2);
-      data += "\n\t\t],\n";
-  
-      FSInfo fsInfo;
-      LittleFS.info(fsInfo);
-      data += web_jsonFloat("total", fsInfo.totalBytes / 1024, 2, true);
-      data += web_jsonFloat("free", (fsInfo.totalBytes - fsInfo.usedBytes) / 1024, 2, false);
-      data += "\t}\n}";
+  webServer.on("/esp/defaultConfig", HTTP_POST, [] () {
+    if(web_isLogged(true)) {
+      if(webServer.hasArg("config") && webServer.arg("config") == "default") {
+        char ibuffer[64];
+        if(LittleFS.exists("/config.json") == true) LittleFS.remove("/config.json");
+        File def = LittleFS.open("/defaultConfig.json", "r");
+        File cfg = LittleFS.open("/config.json", "w");
+        if(def and cfg) {
+          while(def.available()) {
+            byte i = def.readBytes(ibuffer, 64);
+            cfg.write((uint8_t *)ibuffer, i);
+          }
+          webServer.send(200, "text/plain", "OK");
+        }
+        cfg.close();
+        def.close();
+        global.fsInfoUpdate = true;
+        webServer.send(200, "text/plain", "error");
+      }
+      else webServer.send(200, "text/plain", "bad args");
     }
-
-    webServer.send(200, "text/json", data);
-    data = String();
   });
 
   /**
    * Restart ESP8266
    */
-   webServer.on("/esp/restart", HTTP_GET, [] () {
-     if(web_isLogged()) {
+  webServer.on("/esp/restart", HTTP_GET, [] () {
+     if(web_isLogged(true)) {
       webServer.send(200, "text/plain", "OK");
       ESP.restart();
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
-   * Turn display on and off
+   * Change language
    */
-  webServer.on("/esp/dispToggle", HTTP_GET, [] () {
-    if(web_isLogged()) {
-    //global.display_but_pressed = true;
-      webServer.send(200, "text/plain", "OK");
+  webServer.on("/esp/changelang", HTTP_GET, [] () {
+    if(web_isLogged(true)) {
+      if(webServer.hasArg("lang")) {
+        config.set_lang(webServer.arg("lang"));
+        webServer.send(200, "text/plain", "OK");
+      }
+      else webServer.send(200, "text/plain", "error");
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Brightness adjust
    */
   webServer.on("/esp/bright", HTTP_GET, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       if(webServer.hasArg("bright")) {
         config.set_bright((webServer.arg("bright")).toInt());
         webServer.send(200, "text/plain", "OK");
       }
       else webServer.send(200, "text/plain", "ERROR");
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Ambient light sensor sensitivity adjust
    */
   webServer.on("/esp/sensitivity", HTTP_GET, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       if(webServer.hasArg("bright")) {
         config.set_sensitivity((webServer.arg("bright")).toInt());
         webServer.send(200, "text/plain", "OK");
       }
       else webServer.send(200, "text/plain", "ERROR");
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Initialize clock syncronization with NTP server
    */
   webServer.on("/esp/syncClock", HTTP_GET, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       if(webServer.hasArg("ntp")) {
         global.clockSynchronized = false;
         webServer.send(200, "text/plain", "OK");
@@ -375,58 +392,52 @@ void webInterface_init(void) {
         webServer.send(200, "text/plain", web_timeString(now()));
       }
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Send information about the clock synchronization process
    */
   webServer.on("/esp/syncdialog", HTTP_GET, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       if(!global.clockSynchronized) webServer.send(200, "text/plain", ".");
       else webServer.send(200, "text/plain", web_timeString(now()));
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Change password
    */
   webServer.on("/esp/changePass", HTTP_POST, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       String oldPass = (webServer.hasArg("oldPass")) ? webServer.arg("oldPass") : "";
       String newPass = (webServer.hasArg("newPass")) ? webServer.arg("newPass") : "";
       String res = "-";
       res = (oldPass == config.account_pass()) ? config.savePassword(newPass) ? "ERROR Write file" : "OK" : "ERROR";
       webServer.send(200, "text/plain", res);
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
   });
 
   /**
    * Delete a file
    */
   webServer.on("/esp/delete", HTTP_POST, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       String path = "/" + webServer.arg("file");
       if(!LittleFS.exists(path)) webServer.send(404, "text/plain", "FileNotFound");
       else {
         LittleFS.remove(path);
         webServer.send(200, "text/plain", "OK");
         path = String();
+        global.fsInfoUpdate = true;
       }
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
-
-    web_filelist = String();
-    web_listAllFilesInDir("/");
   });
 
   /**
    * Rename a file
    */
   webServer.on("/esp/rename", HTTP_POST, [] () {
-    if(web_isLogged()) {
+    if(web_isLogged(true)) {
       String alt = "/" + webServer.arg("old");
       String neu = "/" + webServer.arg("new");
       if(!LittleFS.exists(alt)) webServer.send(404, "text/plain", "FileNotFound");
@@ -435,19 +446,16 @@ void webInterface_init(void) {
         webServer.send(200, "text/plain", "OK");
         alt = String();
         neu = String();
+        global.fsInfoUpdate = true;
       }
     }
-    else webServer.send(200, "text/plain", "NOT LOGGED");
-
-    web_filelist = String();
-    web_listAllFilesInDir("/");
   });
 
   /**
    * Login
    * Username and password validation 
    */
-  webServer.on("/esp/login", HTTP_GET, [] () {
+  webServer.on("/esp/login", HTTP_POST, [] () {
     String login = webServer.hasArg("name") ? webServer.arg("name") : "";
     String pass = webServer.hasArg("pass") ? webServer.arg("pass") : "";
     bool loged = false;
@@ -456,10 +464,8 @@ void webInterface_init(void) {
       loged = true;
       web_code = second() * 66000000 + millis() % 1000000;
     }
-    
-    webServer.sendHeader("Cache-Control", "no-cache");
-    webServer.sendHeader("Set-Cookie", "auth=" + String(web_code) + "; Path=/; Max-Age=7200");
-    webServer.send(200, "text/plain", loged ? "OK" : "error");
+
+    webServer.send(200, "text/plain", loged ? ("OK:" + String(web_code)) : "error:1");
   });
 
   /**
@@ -469,40 +475,12 @@ void webInterface_init(void) {
     webServer.send(200, "text/plain", "");
   }, web_handleFileUpload);
 
-  /**
-   * Update firmware
-   */
-  webServer.on("/esp/fwUpdate", HTTP_POST, [] () {
-    if(Update.hasError()) Serial.println("Firmware update failed!");
-    else Serial.println("Firmware update successful!");
-    delay(1000);
-    ESP.reset();
-  }, [] () {
-    HTTPUpload& upload = webServer.upload();
-    if(upload.status == UPLOAD_FILE_START) {
-      Serial.setDebugOutput(true);
-      Serial.printf("Update: %s\n", upload.filename.c_str());
-      uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000)&0xFFFFF000;
-      if(!Update.begin(maxSketchSpace)) Update.printError(Serial);
-    }
-    else if(upload.status == UPLOAD_FILE_WRITE) {
-      if(Update.write(upload.buf, upload.currentSize) != upload.currentSize) Update.printError(Serial);
-    } 
-    else if(upload.status == UPLOAD_FILE_END) {
-      if(Update.end(true)) Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
-      else Update.printError(Serial);
-      Serial.setDebugOutput(false);
-    }
-    yield();
-  });
-  
   webServer.onNotFound([] () {
     if(!web_handleFileRead(webServer.uri())) webServer.send(404,"text/plain", "FileNotFound");
   });
   
-  const char * headerkeys[] = {"User-Agent", "Cookie"};
-  size_t headerkeyssize = sizeof(headerkeys) / sizeof(char*);
-  webServer.collectHeaders(headerkeys, headerkeyssize);
+  //const char * headerkeys[] = {"User-Agent", "Cookie"};
+  //size_t headerkeyssize = sizeof(headerkeys) / sizeof(char*);
+  //webServer.collectHeaders(headerkeys, headerkeyssize);
   webServer.begin();
-  web_listAllFilesInDir("/");
 }

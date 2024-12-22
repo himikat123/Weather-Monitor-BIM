@@ -1,5 +1,5 @@
 /**
- *  Weather Monitor BIM v5.4
+ *  Weather Monitor BIM v5.5
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
  *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2024
@@ -90,16 +90,16 @@ void loop() {
   // Enter access point mode if button is pressed
   if(digitalRead(SETTINGS_BUTTON_PIN) == 0) network.runAccessPoint();
 
+  /**
+   * Network connection if not connected
+   */
+  if(!network.isConnected()) {
+    global.net_connected = false;
+    network.connect();
+  }
+  else global.net_connected = true;
+
   if(!global.apMode) {
-    /**
-     * Network connection if not connected
-     */
-    if(!network.isConnected()) {
-      global.net_connected = false;
-      network.connect();
-    }
-    else global.net_connected = true;
-    
     /**
      * Time synchronization with NTP server
      */

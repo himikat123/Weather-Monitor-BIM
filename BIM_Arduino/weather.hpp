@@ -1,6 +1,6 @@
 class Weather {
-  #define OPEN_METEO 0
   #define WEATHERBIT 1
+  #define OPEN_METEO 2
   #define DAYS 3
 
   public:
@@ -17,6 +17,7 @@ class Weather {
     String get_description();
     unsigned int get_currentUpdated();
     unsigned int get_errorUpdate();
+    unsigned int convertIcon(int code);
     void reset_errorUpdate();
 
     float get_dailyDayTemp(unsigned int num);
@@ -96,6 +97,24 @@ unsigned int Weather::_openMeteoIcon(int code) {
         case 71: case 73: case 75: case 77: case 85: case 86: return 13;
         case 95: case 96: case 99: return 11;
         default: return 1;
+    }
+}
+
+/**
+ * Weather icon code conversion
+ */
+unsigned int Weather::convertIcon(int code) {
+    switch(code) {
+        case 1: return 1; break;
+        case 2: return 2; break;
+        case 3: return 2; break;
+        case 4: return 3; break;
+        case 9: return 4; break;
+        case 10: return 5; break;
+        case 11: return 6; break;
+        case 13: return 7; break;
+        case 50: return 8; break;
+        default: return 0; break;
     }
 }
 

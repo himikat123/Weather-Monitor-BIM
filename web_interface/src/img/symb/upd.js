@@ -1,5 +1,0 @@
-import React from "react";
-
-export default function Symb_upd() { 
-    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAflBMVEUAAAAAAACwsLGHiInj5OU/P0AxMjPT09TNzs+pqaugoaORkZGLi4x9fn99fX53eXosLS0UFRcNDQ4AAAD///8GBgZgYWMiIiP19vfo6eri4+OGh4h0dnhxcXLu7++9v8Cpqauio6WXmJuTk5RlZWZTVFRKSkwnJykcHB4UFBWQNWPNAAAAE3RSTlPy5fLy8vLy8vLy8vLy8vLy8vLyXaVzQQAAAGlJREFUCNdVykcSwkAAA0GtDSZHjdeZHP//QVx7o28qjUK+znNpU0hBjoBLuNvSCxp7qLlJR9pzbft7otCOh3uPIgtlVE5KJv9jS+fkSaYDvNPRMpV6GKpPbLhIdkdytRWk/Wo+W45N+AH/XAnbhhEkQwAAAABJRU5ErkJggg==';
-}

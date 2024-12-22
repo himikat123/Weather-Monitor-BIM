@@ -14,12 +14,12 @@
 #define SEPARATOR "**********************************************************************"
 
 struct {
-  char fw[7] = "v5.4"; // Firmware version
+  char fw[7] = "v5.5"; // Firmware version
   bool clockSynchronized = false; // Is the time synchronized with the ntp server?
   bool clockSynchronize = false; // Should the display RTC be updated?
+  bool fsInfoUpdate = true; // FS info update flag
   bool net_connected = false; // Is the device connected to the network?
   unsigned int disp_autoOff = 0; // Display auto off interval counter
-  //bool reduc = false; // Reduced brightness before display turns off
   char ssids[30][33]; // List of available networks
   unsigned int rssis[30]; // List of signal strengths of available networks
   unsigned int nets = 0; // Number of available networks
@@ -73,12 +73,11 @@ class Config {
   
   // Weather
   char _weather_appid[PROVIDERS][33] = { "", "" }; // [0]->nothing, [1]->KEY weatherbit.io
-  float _weather_lon = 0.0; // Longitude
-  float _weather_lat = 0.0; // Latitude
-  unsigned int _weather_provider = 0; // Weather forecast provider: 0-open-meteo.com, 1-weatherbit.io
-  char _weather_parsingServer[128] = ""; // Parsing server web address
   char _weather_city[41] = ""; // City name
   unsigned int _weather_cityid = 0; // City ID
+  float _weather_lat = 0.0; // Latitude
+  float _weather_lon = 0.0; // Longitude
+  unsigned int _weather_provider = 0; // Weather forecast provider: 1-weatherbit.io, 2-open-meteo.com
   unsigned int _weather_citysearch = 0; // The way to recognize a city: 0-by name, 1-by ID, 2-by coordinates
 
   // Language
@@ -110,8 +109,8 @@ class Config {
   unsigned int _display_source_humIn_sens = 0; // Indoor humidity data source: 0-Forecast, 1-Thingspeak, 2-BME280, 3-SHT21, 4-DHT22
   unsigned int _display_source_humIn_thing = 0; // Thingspeak field number for the outdoor humidity: 0...7
   unsigned int _display_source_volt_sens = 0; // Voltage data source: 0-Nothing, 1-Thingspeak
-  unsigned int _display_source_volt_volt = 0; // Sensor type for the voltage: 0-Battery voltage, 1-Battery percentage
   unsigned int _display_source_volt_thing = 0; // Thingspeak field number for the voltage: 0...7
+  unsigned int _display_source_volt_thingType = 0; // Sensor type for the voltage: 0-Battery voltage, 1-Battery percentage
   unsigned int _display_source_bat_sens = 0; // Battery level data source: 0-Nothing, 1-Thingspeak
   unsigned int _display_source_bat_thing = 0; // Thingspeak field number for the battery level: 0...7
   unsigned int _display_source_descr = 0; // Additional description data source: 0-Nothing, 1-Comfort level
@@ -132,8 +131,7 @@ class Config {
   float _analog_voltage_corr = 0.0; // Analog ambient light sensor voltage correction
 
   // Thingspeak send
-  bool _thingspeakSend_turnOn = false; // Enable/disable sending data to Thingspeak
-  unsigned int _thingspeakSend_period = 5; // Period for sending data to Thingspeak (minutes): 1...999
+  unsigned int _thingspeakSend_period = 5; // Period for sending data to Thingspeak (minutes): 0...999
   char _thingspeakSend_channelID[11] = ""; // Channel ID for sending data to Thingspeak
   char _thingspeakSend_wrkey[17] = ""; // Write API Key for sending data to Thingspeak
   char _thingspeakSend_rdkey[17] = ""; // Read API Key for sending data to Thingspeak
@@ -141,15 +139,13 @@ class Config {
   unsigned int _thingspeakSend_types[THNG_FIELDS] = {0, 0, 0, 0, 0, 0, 0, 0}; // Sensor data types to send to Thingspeak
 
   // Thingspeak receive
-  bool _thingspeakReceive_turnOn = false; // Enable/disable receiving data from Thingspeak
-  unsigned int _thingspeakReceive_period = 5; // Period for receiving data from Thingspeak (minutes): 1...999
+  unsigned int _thingspeakReceive_period = 5; // Period for receiving data from Thingspeak (minutes): 0...999
   char _thingspeakReceive_channelID[11] = ""; // Channel ID for receiving data from Thingspeak
   char _thingspeakReceive_rdkey[17] = ""; // Read API Key for receiving data from Thingspeak
   unsigned int _thingspeakReceive_expire = 10; // Thingspeak data expire (minutes): 1...999
 
   // Narodmon send
-  bool _narodmonSend_turnOn = false; // Enable/disable sending data to Narodmon
-  unsigned int _narodmonSend_period = 5; // Period for sending data to Narodmon (minutes): 1...999
+  unsigned int _narodmonSend_period = 5; // Period for sending data to Narodmon (minutes): 0...999
   char _narodmonSend_lon[11] = ""; // Longitude for Narodmon
   char _narodmonSend_lat[11] = ""; // Latitude for Narodmon
   char _narodmonSend_name[17] = "BIM"; // Sensor name
@@ -158,8 +154,8 @@ class Config {
   unsigned int _narodmonSend_types[NAROD_FIELDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // Sensor data types to send to Narodmon
 
   // Account
-  char _account_name[33] = "admin"; // Web interface username
-  char _account_pass[33] = "1111"; // Web interface password
+  char _account_name[33] = ""; // Web interface username
+  char _account_pass[65] = ""; // Web interface password
   bool _account_required = false; // Require username and password to access the web interface
 
   
@@ -219,7 +215,6 @@ class Config {
           COPYNUM(conf["weather"]["lat"], _weather_lat);
           COPYNUM(conf["weather"]["provider"], _weather_provider);
           COPYNUM(conf["weather"]["citysearch"], _weather_citysearch);
-          COPYSTR(conf["weather"]["parsingServer"], _weather_parsingServer);
         
           // Language
           COPYSTR(conf["lang"], _lang);
@@ -250,8 +245,8 @@ class Config {
           COPYNUM(conf["display"]["source"]["humIn"]["sens"], _display_source_humIn_sens);
           COPYNUM(conf["display"]["source"]["humIn"]["thing"], _display_source_humIn_thing);
           COPYNUM(conf["display"]["source"]["volt"]["sens"], _display_source_volt_sens);
-          COPYNUM(conf["display"]["source"]["volt"]["volt"], _display_source_volt_volt);
           COPYNUM(conf["display"]["source"]["volt"]["thing"], _display_source_volt_thing);
+          COPYNUM(conf["display"]["source"]["volt"]["thingType"], _display_source_volt_thingType);
           COPYNUM(conf["display"]["source"]["bat"]["sens"], _display_source_bat_sens);
           COPYNUM(conf["display"]["source"]["bat"]["thing"], _display_source_bat_thing);
           COPYNUM(conf["display"]["source"]["descr"], _display_source_descr);
@@ -272,7 +267,6 @@ class Config {
           COPYNUM(conf["sensors"]["analog"]["v"], _analog_voltage_corr);
 
           // Thingspeak send
-          COPYBOOL(conf["thingspeakSend"]["turnOn"], _thingspeakSend_turnOn);
           COPYNUM(conf["thingspeakSend"]["period"], _thingspeakSend_period);
           COPYSTR(conf["thingspeakSend"]["channelID"], _thingspeakSend_channelID);
           COPYSTR(conf["thingspeakSend"]["wrkey"], _thingspeakSend_wrkey);
@@ -281,15 +275,14 @@ class Config {
             COPYNUM(conf["thingspeakSend"]["fields"][i], _thingspeakSend_fields[i]);
             COPYNUM(conf["thingspeakSend"]["types"][i], _thingspeakSend_types[i]);
           }
+
           // Thingspeak receive
-          COPYBOOL(conf["thingspeakReceive"]["turnOn"], _thingspeakReceive_turnOn);
           COPYNUM(conf["thingspeakReceive"]["period"], _thingspeakReceive_period);
           COPYSTR(conf["thingspeakReceive"]["channelID"], _thingspeakReceive_channelID);
           COPYSTR(conf["thingspeakReceive"]["rdkey"], _thingspeakReceive_rdkey);
           COPYNUM(conf["thingspeakReceive"]["expire"], _thingspeakReceive_expire);
 
           // Narodmon send
-          COPYBOOL(conf["narodmonSend"]["turnOn"], _narodmonSend_turnOn);
           COPYNUM(conf["narodmonSend"]["period"], _narodmonSend_period);
           COPYSTR(conf["narodmonSend"]["lon"], _narodmonSend_lon);
           COPYSTR(conf["narodmonSend"]["lat"], _narodmonSend_lat);
@@ -328,7 +321,7 @@ class Config {
     if(file) {
       while(file.available()) {
         String json = file.readString();
-        DynamicJsonDocument conf(256);
+        DynamicJsonDocument conf(1024);
         DeserializationError error = deserializeJson(conf, json);
         if(!error) {
           strlcpy(_account_pass, conf["pass"] | _account_pass, sizeof(_account_pass));
@@ -457,17 +450,13 @@ class Config {
   }
 
   unsigned int weather_provider() {
-    if(_weather_provider > 1) return 0;
+    if(_weather_provider > 2) return 0;
     return _weather_provider;
   }
 
   unsigned int weather_citysearch() {
     if(_weather_citysearch > 2) return 0;
     return _weather_citysearch;
-  }
-
-  String weather_parsingServer() {
-    return String(_weather_parsingServer);
   }
 
   String lang() {
@@ -586,14 +575,14 @@ class Config {
     return _display_source_volt_sens; 
   }
 
-  unsigned int display_source_volt_volt() {
-    if(_display_source_volt_volt > 1) return 0;
-    return _display_source_volt_volt; 
-  }
-
   unsigned int display_source_volt_thing() {
     if(_display_source_volt_thing >= THNG_FIELDS) return 0;
     return _display_source_volt_thing;
+  }
+
+  unsigned int display_source_volt_thingType() {
+    if(_display_source_volt_thingType > 1) return 0;
+    return _display_source_volt_thingType; 
   }
 
   unsigned int display_source_bat_sens() {
@@ -664,7 +653,7 @@ class Config {
   }
 
   bool thingspeakSend_turnOn() {
-    return _thingspeakSend_turnOn;
+    return _thingspeakSend_period > 0;
   }
 
   unsigned int thingspeakSend_period() {
@@ -697,7 +686,7 @@ class Config {
   }
 
   bool thingspeakReceive_turnOn() {
-    return _thingspeakReceive_turnOn;
+    return _thingspeakReceive_period > 0;
   }
 
   unsigned int thingspeakReceive_period() {
@@ -719,7 +708,7 @@ class Config {
   }
 
   bool narodmonSend_turnOn() {
-    return _narodmonSend_turnOn;
+    return _narodmonSend_period > 0;
   }
 
   unsigned int narodmonSend_period() {
@@ -820,5 +809,9 @@ class Config {
 
   void set_sensitivity(int sensitivity) {
     if(sensitivity >= 1 and sensitivity <= 100) _display_lightSensor_sensitivity = sensitivity;
+  }
+
+  void set_lang(String lng) {
+    lng.toCharArray(_lang, 3);
   }
 };
