@@ -259,7 +259,7 @@ void Display::_showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, u
   char buf[10] = "";
   if(sensors.checkTemp(temp)) sprintf(buf, "%d°C", temp);
   else sprintf(buf, "--°C");
-  _printText(x, y, font == FONT3 ? 70 : 56, font == FONT3 ? 26 : 20, buf, font, font == FONT3 ? CENTER : RIGHT, color);
+  _printText(x, y, font == FONT3 ? 70 : 56, font == FONT3 ? 26 : 20, buf, font, CENTER, color);
 }
 
 void Display::_showTemperatureInside(int temp) {
@@ -458,7 +458,7 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
     if(icon == 1 || icon == 2 || icon == 4 || icon == 9 || icon == 10 || icon == 11 || icon == 13 || icon == 50) validIcon = true;
     if(validIcon) sprintf(buf, "/img/icons/small/%02d.jpg", icon);
     else sprintf(buf, "/img/icons/small/loading.jpg");
-    _showImg(x + 7, 183, buf);
+    _showImg(x + 5, 183, buf);
     _prevDailyIcon[num] = icon;
   }
 
@@ -469,13 +469,13 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
 
   int tMax = round(tempMax);
   if(_prevTempDailyMax[num] != tMax) {
-    _showTemperature(tMax, x + 41, 183, FONT2, TEMPERATURE_COLOR);
+    _showTemperature(tMax, x + 49, 183, FONT2, TEMPERATURE_COLOR);
     _prevTempDailyMax[num] = tMax;
   }
 
   int tMin = round(tempMin);
   if(_prevTempDailyMin[num] != tMin) {
-    _showTemperature(tMin, x + 41, 203, FONT2, TEMP_MIN_COLOR);
+    _showTemperature(tMin, x + 49, 203, FONT2, TEMP_MIN_COLOR);
     _prevTempDailyMin[num] = tMin;
   }
 
