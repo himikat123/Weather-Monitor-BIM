@@ -7,9 +7,9 @@ class Weather {
     void update();
     bool checkWind(float wind);
     
-    float get_currentTemp();
-    float get_currentHum();
-    float get_currentPres();
+    float get_currentTemp(float corr);
+    float get_currentHum(float corr);
+    float get_currentPres(float corr);
     float get_currentWindSpeed();
     int get_currentWindDir();
     unsigned int get_currentIcon();
@@ -284,16 +284,16 @@ void Weather::reset_errorUpdate() {
 /**
  * Getters 
  */
-float Weather::get_currentTemp() {
-  return _currentTemp;
+float Weather::get_currentTemp(float corr) {
+  return _currentTemp + corr;
 }
 
-float Weather::get_currentHum() {
-  return _currentHum;
+float Weather::get_currentHum(float corr) {
+  return _currentHum + corr;
 }
 
-float Weather::get_currentPres() {
-  return _currentPres;
+float Weather::get_currentPres(float corr) {
+  return _currentPres + corr;
 }
 
 float Weather::get_currentWindSpeed() {

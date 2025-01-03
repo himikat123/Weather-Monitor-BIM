@@ -50,14 +50,14 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     
     case 1: { // Weather
       // Temperature
-      if(config.narodmonSend_types(fieldNum) == 0 and sensors.checkTemp(weather.get_currentTemp()))
-        fields = field + String(weather.get_currentTemp());
+      if(config.narodmonSend_types(fieldNum) == 0 and sensors.checkTemp(weather.get_currentTemp(config.weather_temp_corr)))
+        fields = field + String(weather.get_currentTemp(config.weather_temp_corr));
       // Humidity
-      if(config.narodmonSend_types(fieldNum) == 1 and sensors.checkHum(weather.get_currentHum()))
-        fields = field + String(weather.get_currentHum());
+      if(config.narodmonSend_types(fieldNum) == 1 and sensors.checkHum(weather.get_currentHum(config.weather_hum_corr)))
+        fields = field + String(weather.get_currentHum(config.weather_hum_corr));
       // Pressure
-      if(config.narodmonSend_types(fieldNum) == 2 and sensors.checkPres(weather.get_currentPres())) 
-        fields = field + String(weather.get_currentPres());
+      if(config.narodmonSend_types(fieldNum) == 2 and sensors.checkPres(weather.get_currentPres(config.weather_pres_corr))) 
+        fields = field + String(weather.get_currentPres(config.weather_pres_corr));
     }; break;
     
     case 2: { // BME280
