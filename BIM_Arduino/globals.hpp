@@ -47,12 +47,12 @@ class Config {
   // Comfort
   unsigned int _comfort_temp_source = 0; // Comfort temperature source: 0-Forecast, 1-Thingspeak, 2-BME280, 3-BMP180, 4-SHT21, 5-DHT22, 6-DS18B20
   unsigned int _comfort_temp_thing = 0; // Comfort temperature thingspeak field number: 0...7
-  int _comfort_temp_min = 23; // Minimum comfort temperature: -50...100
-  int _comfort_temp_max = 25; // Maximum comfort temperature: -50...100
+  float _comfort_temp_min = 23; // Minimum comfort temperature: -50...100
+  float _comfort_temp_max = 25; // Maximum comfort temperature: -50...100
   unsigned int _comfort_hum_source = 0; // Comfort humidity source: 0-Forecast, 1-Thingspeak, 2-BME280, 3-SHT21, 4-DHT22
   unsigned int _comfort_hum_thing = 0; // Comfort humidity thingspeak field number: 0...7
-  int _comfort_hum_min = 40; // Minimum comfort humidity: 0...100
-  int _comfort_hum_max = 60; // Maximum comfort humidity: 0...100
+  float _comfort_hum_min = 40; // Minimum comfort humidity: 0...100
+  float _comfort_hum_max = 60; // Maximum comfort humidity: 0...100
     
   //WiFi network
   char _network_ssid[NETWORKS][33] = { "", "", "" }; // SSID list
@@ -765,7 +765,7 @@ class Config {
   }
 
   unsigned int comfort_temp_source() {
-    if(_comfort_temp_source > 6) return 0;
+    if(_comfort_temp_source > 7) return 0;
     return _comfort_temp_source;
   }
   
@@ -774,18 +774,18 @@ class Config {
     return _comfort_temp_thing;
   }
   
-  int comfort_temp_min() {
-    if(_comfort_temp_min < -50 or _comfort_temp_min > 100) return 23;
+  float comfort_temp_min() {
+    if(_comfort_temp_min < -50.0 or _comfort_temp_min > 100.0) return 23.0;
     return _comfort_temp_min;
   }
   
-  int comfort_temp_max() {
-    if(_comfort_temp_max < -50 or _comfort_temp_max > 100) return 25;
+  float comfort_temp_max() {
+    if(_comfort_temp_max < -50.0 or _comfort_temp_max > 100.0) return 25.0;
     return _comfort_temp_max;
   }
   
   unsigned int comfort_hum_source() {
-    if(_comfort_hum_source > 4) return 0;
+    if(_comfort_hum_source > 5) return 0;
     return _comfort_hum_source;
   }
   
@@ -794,13 +794,13 @@ class Config {
     return _comfort_hum_thing;
   }
   
-  int comfort_hum_min() {
-    if(_comfort_hum_min < 0 or _comfort_hum_min > 100) return 40;
+  float comfort_hum_min() {
+    if(_comfort_hum_min < 0.0 or _comfort_hum_min > 100.0) return 40.0;
     return _comfort_hum_min;
   }
   
-  int comfort_hum_max() {
-    if(_comfort_hum_max < 0 or _comfort_hum_max > 100) return 60;
+  float comfort_hum_max() {
+    if(_comfort_hum_max < 0.0 or _comfort_hum_max > 100.0) return 60.0;
     return _comfort_hum_max;
   }
   
