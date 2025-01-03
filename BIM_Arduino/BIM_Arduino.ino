@@ -1,8 +1,8 @@
 /**
- *  Weather Monitor BIM v5.5
+ *  Weather Monitor BIM v5.6
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
- *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2024
+ *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2025
  *
  *  Generic ESP8266 Module
  *  Flash Size: "4MB (FS:2MB OTA:~1019KB)"
@@ -221,7 +221,7 @@ void comfortCalculate() {
   
   switch(config.comfort_temp_source()) {
     case 0: temp = config.comfort_temp_min(); break;                                   // temperature sensor excluded
-    case 1: temp = round(weather.get_currentTemp()); break;                            // temperature from weather forecast
+    case 1: temp = round(weather.get_currentTemp(config.weather_temp_corr)); break;    // temperature from weather forecast
     case 2: {                                                                          // temperature from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         temp = round(thingspeak.get_field(config.comfort_temp_thing()));
@@ -235,15 +235,15 @@ void comfortCalculate() {
   }
   
   switch(config.comfort_hum_source()) {
-    case 0: hum = config.comfort_hum_min(); break;                                // humidity sensor excluded
-    case 1: hum = round(weather.get_currentHum()); break;                         // humidity from weather forecast
-    case 2: {                                                                     // humidity from thingspeak
+    case 0: hum = config.comfort_hum_min(); break;                                     // humidity sensor excluded
+    case 1: hum = round(weather.get_currentHum(config.weather_hum_corr)); break;       // humidity from weather forecast
+    case 2: {                                                                          // humidity from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         hum = round(thingspeak.get_field(config.comfort_hum_thing()));
     }; break;
-    case 3: hum = round(sensors.get_bme280_hum(config.bme280_hum_corr())); break; // humidity from BME280
-    case 4: hum = round(sensors.get_sht21_hum(config.sht21_hum_corr())); break;   // humidity from SHT21
-    case 5: hum = round(sensors.get_dht22_hum(config.dht22_hum_corr())); break;   // humidity from DHT22
+    case 3: hum = round(sensors.get_bme280_hum(config.bme280_hum_corr())); break;      // humidity from BME280
+    case 4: hum = round(sensors.get_sht21_hum(config.sht21_hum_corr())); break;        // humidity from SHT21
+    case 5: hum = round(sensors.get_dht22_hum(config.dht22_hum_corr())); break;        // humidity from DHT22
     default: temp = 40400; break;
   }
   
