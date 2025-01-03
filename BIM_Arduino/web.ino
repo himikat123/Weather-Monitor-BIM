@@ -85,7 +85,7 @@ String web_getContentType(String filename) {
   else if(filename.endsWith(".json")) return "text/json";
   else if(filename.endsWith(".jpg"))  return "image/jpeg";
   else if(filename.endsWith(".css"))  return "text/css";
-  else if(filename.endsWith(".js"))   return "pplication/javascript";
+  else if(filename.endsWith(".js"))   return "application/javascript";
   else if(filename.endsWith(".gz"))   return "application/x-gzip";
   return "text/plain";
 }
@@ -101,7 +101,7 @@ bool web_handleFileRead(String path) {
   if(LittleFS.exists(pathWithGz) || LittleFS.exists(path)) {
     if(LittleFS.exists(pathWithGz)) path += ".gz";
     File file = LittleFS.open(path, "r");
-    if(path.endsWith(".js.gz")) webServer.sendHeader("Cache-Control", "max-age=31536000");
+    if(path.endsWith(".css.gz") || path.endsWith(".js.gz")) webServer.sendHeader("Cache-Control", "max-age=31536000");
     webServer.streamFile(file, contentType);
     file.close();
     return true;
@@ -233,9 +233,9 @@ void webInterface_init(void) {
     
     // Weather
     data += "\t\"weather\": {\n";
-    data += web_jsonFloat("temp", round(weather.get_currentTemp() * 10) / 10, 2, true);
-    data += web_jsonFloat("hum", round(weather.get_currentHum() * 10) / 10, 2, true);
-    data += web_jsonFloat("pres", round(weather.get_currentPres() * 10) / 10, 2, true);
+    data += web_jsonFloat("temp", round(weather.get_currentTemp(0) * 10) / 10, 2, true);
+    data += web_jsonFloat("hum", round(weather.get_currentHum(0) * 10) / 10, 2, true);
+    data += web_jsonFloat("pres", round(weather.get_currentPres(0) * 10) / 10, 2, true);
     data += web_jsonInt("icon", weather.convertIcon(weather.get_currentIcon()), 2, true);
     data += web_jsonInt("isDay", weather.get_isDay(), 2, true);
     data += "\t\t\"wind\": {\n";

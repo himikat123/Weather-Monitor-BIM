@@ -161,12 +161,12 @@ class Lang {
           return "Comfortable";
         }; break;
         case 2: {
-          if(config.lang() == "ru") return "Слишком жарко";
+          if(config.lang() == "ru") return "Жарко";
           if(config.lang() == "bg") return "Горещо";
           return "Too hot";
         }; break;
         case 3: {
-          if(config.lang() == "ru") return "Слишком холодно";
+          if(config.lang() == "ru") return "Холодно";
           if(config.lang() == "bg") return "Студено";
           return "Too cold";
         }; break;
