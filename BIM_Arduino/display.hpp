@@ -504,7 +504,7 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
 int Display::_getTemp(unsigned int sens, unsigned int thing) {
   float temp = 40400.0;
   switch(sens) {
-    case 1: temp = weather.get_currentTemp(config.weather_temp_corr); break;    // temperature from weather forecast
+    case 1: temp = weather.get_currentTemp(config.weather_temp_corr()); break;    // temperature from weather forecast
     case 2:                                                                     // temperature from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         temp = thingspeak.get_field(thing);
@@ -528,7 +528,7 @@ int Display::_getTemp(unsigned int sens, unsigned int thing) {
 int Display::_getHum(unsigned int sens, unsigned int thing) {
   float hum = 40400.0;
   switch(sens) {
-    case 1: hum = weather.get_currentHum(config.weather_hum_corr); break;       // humudity from weather forecast
+    case 1: hum = weather.get_currentHum(config.weather_hum_corr()); break;       // humudity from weather forecast
     case 2:                                                                     // humidity from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         hum = thingspeak.get_field(thing);
@@ -548,7 +548,7 @@ int Display::_getHum(unsigned int sens, unsigned int thing) {
 int Display::_getPres(void) {
   float pres = 40400.0;
   switch(config.display_source_presOut_sens()) {
-    case 1: pres = weather.get_currentPres(config.weather_pres_corr); break;    // pressure outside from weather forecast
+    case 1: pres = weather.get_currentPres(config.weather_pres_corr()); break;    // pressure outside from weather forecast
     case 2:                                                                     // presure outside from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         pres = thingspeak.get_field(config.display_source_presOut_thing());

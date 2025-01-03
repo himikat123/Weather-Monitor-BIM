@@ -126,14 +126,17 @@ String Thingspeak::_fieldPrepare(unsigned int fieldNum) {
 
     case 1: { // Weather
       // Temperature
-      if(config.thingspeakSend_types(fieldNum) == 0 and sensors.checkTemp(weather.get_currentTemp(config.weather_temp_corr)))
-        fields = field + String(weather.get_currentTemp(config.weather_temp_corr));
+      if(config.thingspeakSend_types(fieldNum) == 0 and 
+        sensors.checkTemp(weather.get_currentTemp(config.weather_temp_corr())))
+          fields = field + String(weather.get_currentTemp(config.weather_temp_corr()));
       // Humidity
-      if(config.thingspeakSend_types(fieldNum) == 1 and sensors.checkHum(weather.get_currentHum(config.weather_hum_corr)))
-        fields = field + String(weather.get_currentHum(config.weather_hum_corr));
+      if(config.thingspeakSend_types(fieldNum) == 1 and 
+        sensors.checkHum(weather.get_currentHum(config.weather_hum_corr())))
+          fields = field + String(weather.get_currentHum(config.weather_hum_corr()));
       // Pressure
-      if(config.thingspeakSend_types(fieldNum) == 2 and sensors.checkPres(weather.get_currentPres(config.weather_pres_corr))) 
-        fields = field + String(weather.get_currentPres(config.weather_pres_corr));
+      if(config.thingspeakSend_types(fieldNum) == 2 and 
+        sensors.checkPres(weather.get_currentPres(config.weather_pres_corr()))) 
+          fields = field + String(weather.get_currentPres(config.weather_pres_corr()));
     }; break;
     
     case 2: { // BME280
