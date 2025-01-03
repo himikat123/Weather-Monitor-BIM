@@ -1,8 +1,8 @@
 /**
- *  Weather Monitor BIM v5.5
+ *  Weather Monitor BIM v5.6
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
- *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2024
+ *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2025
  *
  *  Generic ESP8266 Module
  *  Flash Size: "4MB (FS:2MB OTA:~1019KB)"
@@ -216,69 +216,73 @@ void clockPointsToggle() {
  * Calculate comfort level 
  */
 void comfortCalculate() {
-  int temp = 40400;
-  int hum = 40400;
+  float temp = 40400.0;
+  float hum = 40400.0;
+  int tempLevel = 1;
+  int humLevel = 1;
+  bool heater = false;
+  bool cooler = false;
+  bool humidifier = false;
+  bool dehumidifier = false;
   
   switch(config.comfort_temp_source()) {
-    case 0: temp = config.comfort_temp_min(); break;                                   // temperature sensor excluded
-    case 1: temp = round(weather.get_currentTemp()); break;                            // temperature from weather forecast
-    case 2: {                                                                          // temperature from thingspeak
+    case 1: temp = weather.get_currentTemp(config.weather_temp_corr()); break;  // temperature from weather forecast
+    case 2: {                                                                   // temperature from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
-        temp = round(thingspeak.get_field(config.comfort_temp_thing()));
+        temp = thingspeak.get_field(config.comfort_temp_thing());
     }; break;
-    case 3: temp = round(sensors.get_bme280_temp(config.bme280_temp_corr())); break;   // temperature from BME280
-    case 4: temp = round(sensors.get_bmp180_temp(config.bmp180_temp_corr())); break;   // temperature from BMP180
-    case 5: temp = round(sensors.get_sht21_temp(config.sht21_temp_corr())); break;     // temperature from SHT21
-    case 6: temp = round(sensors.get_dht22_temp(config.dht22_temp_corr())); break;     // temperature from DHT22
-    case 7: temp = round(sensors.get_ds18b20_temp(config.ds18b20_temp_corr())); break; // temperature from DS18B20
-    default: temp = 40400; break;
+    case 3: temp = sensors.get_bme280_temp(config.bme280_temp_corr()); break;   // temperature from BME280
+    case 4: temp = sensors.get_bmp180_temp(config.bmp180_temp_corr()); break;   // temperature from BMP180
+    case 5: temp = sensors.get_sht21_temp(config.sht21_temp_corr()); break;     // temperature from SHT21
+    case 6: temp = sensors.get_dht22_temp(config.dht22_temp_corr()); break;     // temperature from DHT22
+    case 7: temp = sensors.get_ds18b20_temp(config.ds18b20_temp_corr()); break; // temperature from DS18B20
+    default: ; break;
   }
   
   switch(config.comfort_hum_source()) {
-    case 0: hum = config.comfort_hum_min(); break;                                // humidity sensor excluded
-    case 1: hum = round(weather.get_currentHum()); break;                         // humidity from weather forecast
-    case 2: {                                                                     // humidity from thingspeak
+    case 1: hum = weather.get_currentHum(config.weather_hum_corr()); break;     // humidity from weather forecast
+    case 2: {                                                                   // humidity from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
-        hum = round(thingspeak.get_field(config.comfort_hum_thing()));
+        hum = thingspeak.get_field(config.comfort_hum_thing());
     }; break;
-    case 3: hum = round(sensors.get_bme280_hum(config.bme280_hum_corr())); break; // humidity from BME280
-    case 4: hum = round(sensors.get_sht21_hum(config.sht21_hum_corr())); break;   // humidity from SHT21
-    case 5: hum = round(sensors.get_dht22_hum(config.dht22_hum_corr())); break;   // humidity from DHT22
-    default: temp = 40400; break;
+    case 3: hum = sensors.get_bme280_hum(config.bme280_hum_corr()); break;      // humidity from BME280
+    case 4: hum = sensors.get_sht21_hum(config.sht21_hum_corr()); break;        // humidity from SHT21
+    case 5: hum = sensors.get_dht22_hum(config.dht22_hum_corr()); break;        // humidity from DHT22
+    default: ; break;
   }
-  
-  if(sensors.checkTemp(temp) and sensors.checkHum(hum)) {
-    if(temp >= config.comfort_temp_min() and temp <= config.comfort_temp_max() and hum >= config.comfort_hum_min() and hum <= config.comfort_hum_max()) {
-      global.comfort = 1;
-    }
-    if(temp > config.comfort_temp_max() and hum >= config.comfort_hum_min() and hum <= config.comfort_hum_max()) {
-      global.comfort = 2;
-    }
-    if(temp < config.comfort_temp_min() and hum >= config.comfort_hum_min() and hum <= config.comfort_hum_max()) {
-      global.comfort = 3;
-    }
-    if(temp >= config.comfort_temp_min() and temp <= config.comfort_temp_max() and hum < config.comfort_hum_min()) {
-      global.comfort = 4;
-    }
-    if(temp >= config.comfort_temp_min() and temp <= config.comfort_temp_max() and hum > config.comfort_hum_max()) {
-      global.comfort = 5;
-    }
-    if(temp > config.comfort_temp_max() and hum > config.comfort_hum_max()) {
-      global.comfort = 6;
-    }
-    if(temp > config.comfort_temp_max() and hum < config.comfort_hum_min()) {
-      global.comfort = 7;
-    }
-    if(temp < config.comfort_temp_min() and hum > config.comfort_hum_max()) {
-      global.comfort = 8;
-    }
-    if(temp < config.comfort_temp_min() and hum < config.comfort_hum_min()) {
-      global.comfort = 9;
-    }
+
+  if(sensors.checkTemp(temp)) {
+    if(temp < config.comfort_temp_min()) heater = true;
+    if(temp > config.comfort_temp_min()) heater = false;
+    if(temp > config.comfort_temp_max()) cooler = true;
+    if(temp < config.comfort_temp_max()) cooler = false;
+    if(!heater and !cooler) tempLevel = 0;
+    if(heater and !cooler) tempLevel = 2;
+    if(!heater and cooler) tempLevel = 1;
   }
-  else {
-    global.comfort = 0;
+  else tempLevel = -1;
+
+  if(sensors.checkHum(hum)) {
+    if(hum < config.comfort_hum_min()) humidifier = true;
+    if(hum > config.comfort_hum_min()) humidifier = false;
+    if(hum > config.comfort_hum_max()) dehumidifier = true;
+    if(hum < config.comfort_hum_max()) dehumidifier = false;
+    if(!humidifier and !dehumidifier) humLevel = 0;
+    if(humidifier and !dehumidifier) humLevel = 2;
+    if(!humidifier and dehumidifier) humLevel = 1;
   }
+  else humLevel = -1;
+
+  global.comfort = 1;
+  if(tempLevel == -1 && humLevel == -1) global.comfort = 0;
+  if(tempLevel == 1 && humLevel < 1) global.comfort = 2;
+  if(tempLevel == 2 && humLevel < 1) global.comfort = 3;
+  if(tempLevel < 1 && humLevel == 1) global.comfort = 5;
+  if(tempLevel < 1 && humLevel == 2) global.comfort = 4;
+  if(tempLevel == 1 && humLevel == 1) global.comfort = 6;
+  if(tempLevel == 1 && humLevel == 2) global.comfort = 7;
+  if(tempLevel == 2 && humLevel == 1) global.comfort = 8;
+  if(tempLevel == 2 && humLevel == 2) global.comfort = 9;
 }
 
 /**

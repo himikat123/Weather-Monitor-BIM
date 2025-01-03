@@ -37,11 +37,16 @@
 		"lat": 0,
 		"lon": 0,
 		"provider": 2,
-		"citysearch": 2
+		"citysearch": 2,
+		"corr": {
+			"t": 0,
+			"h": 0,
+			"p": 0
+		}
 	},
 	"lang": "en",
 	"clock": {
-		"format": 0,
+		"format": 2,
 		"ntp": "time.nist.gov",
 		"utc": 0,
 		"dlst": 0,

@@ -133,7 +133,7 @@ void Display::refresh(unsigned int bright) {
     _prevBright = bright;
   }
 
-  _showTime(hour(), minute());
+  _showTime(config.clock_format() > 1 ? hour() : hourFormat12(), minute());
   clockPoints();
   int wd = weekday();
   _showWeekday(lang.weekdayShortName(wd));
@@ -194,7 +194,9 @@ void Display::_showTime(uint8_t hr, uint8_t mn) {
     char buf[20] = "";
     if(hr >= 0 && hr < 24) {
       sprintf(buf, "/img/digits/%d.jpg", hr / 10);
-      if(hr < 10) tft.fillRect(0, 0, 32, 78, BG_COLOR);
+      if(config.clock_format() % 2 == 0 && hr < 10) {
+        tft.fillRect(0, 0, 32, 78, BG_COLOR);
+      }
       else _showImg(0, 0, buf);
       sprintf(buf, "/img/digits/%d.jpg", hr % 10);
       _showImg(33, 0, buf);
@@ -438,8 +440,12 @@ void Display::_showWindDirection(int windDirection) {
 
 void Display::_showUpdTime(unsigned int dateTime) {
   if(_prevUpdTime != dateTime) {
+    unsigned int hr = config.clock_format() > 1 ? hour(dateTime) : hourFormat12(dateTime);
     char buf[20] = "";
-    if(dateTime) sprintf(buf, "%02d.%02d.%d %02d:%02d:%02d", day(dateTime), month(dateTime), year(dateTime), hour(dateTime), minute(dateTime), second(dateTime));
+    if(dateTime) {
+      if(config.clock_format() % 2 == 0) sprintf(buf, "%02d.%02d.%d %d:%02d:%02d", day(dateTime), month(dateTime), year(dateTime), hr, minute(dateTime), second(dateTime));
+      else sprintf(buf, "%02d.%02d.%d %02d:%02d:%02d", day(dateTime), month(dateTime), year(dateTime), hr, minute(dateTime), second(dateTime));
+    }
     else sprintf(buf, "--%s");
     _printText(186, 148, 133, 16, buf, FONT1, RIGHT, TEXT_COLOR);
     tft.drawCircle(177, 153, 5, TEXT_COLOR);
@@ -498,7 +504,7 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
 int Display::_getTemp(unsigned int sens, unsigned int thing) {
   float temp = 40400.0;
   switch(sens) {
-    case 1: temp = weather.get_currentTemp(); break;                            // temperature from weather forecast
+    case 1: temp = weather.get_currentTemp(config.weather_temp_corr()); break;    // temperature from weather forecast
     case 2:                                                                     // temperature from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         temp = thingspeak.get_field(thing);
@@ -522,14 +528,14 @@ int Display::_getTemp(unsigned int sens, unsigned int thing) {
 int Display::_getHum(unsigned int sens, unsigned int thing) {
   float hum = 40400.0;
   switch(sens) {
-    case 1: hum = weather.get_currentHum(); break;                         // humudity from weather forecast
-    case 2:                                                                // humidity from thingspeak
+    case 1: hum = weather.get_currentHum(config.weather_hum_corr()); break;       // humudity from weather forecast
+    case 2:                                                                     // humidity from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         hum = thingspeak.get_field(thing);
       break;
-    case 3: hum = sensors.get_bme280_hum(config.bme280_hum_corr()); break; // humidity from BME280
-    case 4: hum = sensors.get_sht21_hum(config.sht21_hum_corr()); break;   // humidity from SHT21
-    case 5: hum = sensors.get_dht22_hum(config.dht22_hum_corr()); break;   // humidity from DHT22
+    case 3: hum = sensors.get_bme280_hum(config.bme280_hum_corr()); break;      // humidity from BME280
+    case 4: hum = sensors.get_sht21_hum(config.sht21_hum_corr()); break;        // humidity from SHT21
+    case 5: hum = sensors.get_dht22_hum(config.dht22_hum_corr()); break;        // humidity from DHT22
     default: ; break;
   }
   return round(hum);
@@ -542,13 +548,13 @@ int Display::_getHum(unsigned int sens, unsigned int thing) {
 int Display::_getPres(void) {
   float pres = 40400.0;
   switch(config.display_source_presOut_sens()) {
-    case 1: pres = weather.get_currentPres(); break;                          // pressure outside from weather forecast
-    case 2:                                                                   // presure outside from thingspeak
+    case 1: pres = weather.get_currentPres(config.weather_pres_corr()); break;    // pressure outside from weather forecast
+    case 2:                                                                     // presure outside from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         pres = thingspeak.get_field(config.display_source_presOut_thing());
       break;
-    case 3: pres = sensors.get_bme280_pres(config.bme280_pres_corr()); break; // pressure outside from BME280
-    case 4: pres = sensors.get_bmp180_pres(config.bmp180_pres_corr()); break; // pressure outside from BMP180
+    case 3: pres = sensors.get_bme280_pres(config.bme280_pres_corr()); break;   // pressure outside from BME280
+    case 4: pres = sensors.get_bmp180_pres(config.bmp180_pres_corr()); break;   // pressure outside from BMP180
     default: ; break;
   }
   return round(pres);
