@@ -277,8 +277,8 @@ void comfortCalculate() {
   if(tempLevel == -1 && humLevel == -1) global.comfort = 0;
   if(tempLevel == 1 && humLevel < 1) global.comfort = 2;
   if(tempLevel == 2 && humLevel < 1) global.comfort = 3;
-  if(tempLevel < 1 && humLevel == 1) global.comfort = 4;
-  if(tempLevel < 1 && humLevel == 2) global.comfort = 5;
+  if(tempLevel < 1 && humLevel == 1) global.comfort = 5;
+  if(tempLevel < 1 && humLevel == 2) global.comfort = 4;
   if(tempLevel == 1 && humLevel == 1) global.comfort = 6;
   if(tempLevel == 1 && humLevel == 2) global.comfort = 7;
   if(tempLevel == 2 && humLevel == 1) global.comfort = 8;
