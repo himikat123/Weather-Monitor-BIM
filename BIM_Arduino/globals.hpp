@@ -14,7 +14,7 @@
 #define SEPARATOR "**********************************************************************"
 
 struct {
-  char fw[7] = "v5.6"; // Firmware version
+  char fw[7] = "v5.7"; // Firmware version
   bool clockSynchronized = false; // Is the time synchronized with the ntp server?
   bool clockSynchronize = false; // Should the display RTC be updated?
   bool fsInfoUpdate = true; // FS info update flag

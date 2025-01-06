@@ -1,5 +1,5 @@
 /**
- *  Weather Monitor BIM v5.6
+ *  Weather Monitor BIM v5.7
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
  *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2025
