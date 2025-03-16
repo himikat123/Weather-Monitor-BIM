@@ -35,6 +35,7 @@ class Display {
   public:
     void init(void);
     void refresh(unsigned int bright);
+    void refresh(void);
     void clockPoints(void);
     void brightness(unsigned int bright);
 
@@ -59,7 +60,7 @@ class Display {
     void _showPressure(int16_t pres);
     void _showWindSpeed(int8_t windSpeed);
     void _showWindDirection(int windDirection);
-    void _showUpdTime(unsigned int dateTime);
+    void _showIPaddress();
     void _showForecast(uint16_t x, uint8_t num, int icon, float tempMax, float tempMin, float wind, String wd);
 
     int _getTemp(unsigned int sens, unsigned int thing);
@@ -79,7 +80,7 @@ class Display {
     String _prevDescr = "";
     int _prevWindSpeed = -404;
     int _prevWindDirection = -1;
-    unsigned int _prevUpdTime = 0;
+    String _prevIPaddress = "";
     String _prevDailyWeekday[3] = {"", "", ""};
     int _prevDailyIcon[3] = {404, 404, 404};
     int _prevTempDailyMax[3] = {-40400, -40400, -40400};
@@ -152,13 +153,20 @@ void Display::refresh(unsigned int bright) {
   _showPressure(_getPres());
   _showWindSpeed(weather.get_currentWindSpeed());
   _showWindDirection(weather.get_currentWindDir());
-  _showUpdTime(weather.get_currentUpdated());
+  _showIPaddress();
   
   _showForecast(0, 0, weather.get_dailyIcon(0), weather.get_dailyDayTemp(0), weather.get_dailyNightTemp(0), weather.get_dailyWindSpeed(0), lang.weekdayShortName(wd));
   if(++wd > 7) wd = 1;
   _showForecast(106, 1, weather.get_dailyIcon(1), weather.get_dailyDayTemp(1), weather.get_dailyNightTemp(1), weather.get_dailyWindSpeed(1), lang.weekdayShortName(wd));
   if(++wd > 7) wd = 1;
   _showForecast(212, 2, weather.get_dailyIcon(2), weather.get_dailyDayTemp(2), weather.get_dailyNightTemp(2), weather.get_dailyWindSpeed(2), lang.weekdayShortName(wd));
+}
+
+/**
+ * Display refresh
+ */
+void Display::refresh() {
+  refresh(_prevBright);
 }
 
 /**
@@ -438,21 +446,11 @@ void Display::_showWindDirection(int windDirection) {
   }
 }
 
-void Display::_showUpdTime(unsigned int dateTime) {
-  if(_prevUpdTime != dateTime) {
-    unsigned int hr = config.clock_format() > 1 ? hour(dateTime) : hourFormat12(dateTime);
-    char buf[20] = "";
-    if(dateTime) {
-      if(config.clock_format() % 2 == 0) sprintf(buf, "%02d.%02d.%d %d:%02d:%02d", day(dateTime), month(dateTime), year(dateTime), hr, minute(dateTime), second(dateTime));
-      else sprintf(buf, "%02d.%02d.%d %02d:%02d:%02d", day(dateTime), month(dateTime), year(dateTime), hr, minute(dateTime), second(dateTime));
-    }
-    else sprintf(buf, "--%s");
-    _printText(186, 148, 133, 16, buf, FONT1, RIGHT, TEXT_COLOR);
-    tft.drawCircle(177, 153, 5, TEXT_COLOR);
-    tft.drawFastHLine(176, 148, 4, BG_COLOR);
-    tft.drawFastHLine(172, 148, 3, TEXT_COLOR);
-    tft.drawFastVLine(175, 149, 3, TEXT_COLOR);
-    _prevUpdTime = dateTime;
+void Display::_showIPaddress() {
+  String IPaddress = global.apMode ? config.accessPoint_ip() : WiFi.localIP().toString();
+  if(_prevIPaddress != IPaddress) {
+    _printText(186, 148, 133, 16, IPaddress, FONT1, RIGHT, TEXT_COLOR);
+    _prevIPaddress = IPaddress;
   }
 }
 

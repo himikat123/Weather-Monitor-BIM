@@ -179,7 +179,7 @@ void webInterface_init(void) {
     data += web_jsonInt("ch", WiFi.channel(), 2, true);
     data += web_jsonInt("sig", WiFi.RSSI(), 2, true);
     data += web_jsonStr("mac", WiFi.macAddress(), 2, true);
-    data += web_jsonStr("ip", WiFi.localIP().toString(), 2, true);
+    data += web_jsonStr("ip", global.apMode ? config.accessPoint_ip() : WiFi.localIP().toString(), 2, true);
     data += web_jsonStr("mask", WiFi.subnetMask().toString(), 2, true);
     data += web_jsonStr("gw", WiFi.gatewayIP().toString(), 2, true);
     data += web_jsonStr("dns1", WiFi.dnsIP().toString(), 2, true);
