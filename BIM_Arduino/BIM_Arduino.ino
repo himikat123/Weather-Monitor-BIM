@@ -1,5 +1,5 @@
 /**
- *  Weather Monitor BIM v5.7
+ *  Weather Monitor BIM v5.8
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
  *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2025
@@ -59,7 +59,7 @@ void setup() {
   Serial.println("");
   Serial.println(SEPARATOR);
   Serial.println(SEPARATOR);
-  Serial.println("*   Weather Monitor BIM " + String(global.fw) + "   © himikat123@gmail.com   2016-2023    *");
+  Serial.println("*   Weather Monitor BIM " + String(global.fw) + "   © himikat123@gmail.com   2016-2025    *");
   Serial.println(SEPARATOR);
   Serial.println();
 
@@ -95,7 +95,7 @@ void loop() {
    */
   if(!network.isConnected()) {
     global.net_connected = false;
-    network.connect();
+    if(!global.apMode) network.connect();
   }
   else global.net_connected = true;
 

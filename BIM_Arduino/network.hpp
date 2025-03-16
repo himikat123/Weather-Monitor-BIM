@@ -21,7 +21,7 @@ bool Network::isConnected(void) {
  * Connect to WiFi network
  */
 void Network::connect(void) {
-  Serial.println(SEPARATOR);
+    Serial.println(SEPARATOR);
     Serial.println("Connecting to WiFi...");
     Serial.println("Known networks:");
     for(unsigned int i=0; i<NETWORKS; i++) {
@@ -53,8 +53,12 @@ void Network::connect(void) {
             }
             else {
                 Serial.println("No known networks found");
-                Serial.println("trying to connect to network 1 in case it's a hidden network");
-                _connecting(0); 
+                Serial.println("Trying to connect to network 1 in case it's a hidden network");
+                _connecting(0);
+                if(!global.networkConnected) {
+                  Serial.println("Connection failed, run Access Point");
+                  runAccessPoint();
+                } 
             }
         }
         if(WiFi.status() == WL_CONNECTED) {
@@ -91,8 +95,12 @@ void Network::_connecting(uint8_t num) {
         delay(500);
         Serial.print(".");
         if(++attempts > 50) break;
+        display.refresh();
     }
-    if(WiFi.status() == WL_CONNECTED) Serial.println(" connected");
+    if(WiFi.status() == WL_CONNECTED) {
+      Serial.println(" connected");
+      global.networkConnected = true;
+    }
     else Serial.println(" failed");
 }
 
