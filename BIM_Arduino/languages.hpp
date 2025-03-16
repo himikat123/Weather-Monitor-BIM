@@ -1,314 +1,86 @@
 class Lang {
-  private:
-    String _day() {
-      if(config.lang() == "ru") return "день";
-      if(config.lang() == "bg") return "ден";
-      return "day";
-    }
+    private:
+        /* English, German, Russian, Polish, Ukrainian, Bulgarian */
+        String _weekdayShortName[7][6] = {
+            {"Su", "So", "Вс", "Nd", "Нд", "Не"},
+            {"Mo", "Mo", "Пн", "Pn", "Пн", "По"},
+            {"Tu", "Di", "Вт", "Wt", "Вт", "Вт"},
+            {"We", "Mi", "Ср", "Śr", "Ср", "Ср"},
+            {"Th", "Do", "Чт", "Cz", "Чт", "Че"},
+            {"Fr", "Fr", "Пт", "Pi", "Пт", "Пе"},
+            {"Sa", "Sa", "Сб", "So", "Сб", "Съ"}
+        };
+
+        String _comfort[9][6] = {
+            {"Comfortable", "Gemütlich", "Комфортно", "Przyjemny", "Комфортно", "Комфортно"},
+            {"Too hot", "Zu heiß", "Жарко", "Gorąco", "Жарко", "Горещо"},
+            {"Too cold", "Zu kalt", "Холодно", "Zimno", "Холодно", "Студено"},
+            {"Too humid", "Zu feucht", "Слишком влажно", "Zbyt wilgotno", "Занадто волого", "Твърде влажно"},
+            {"Too dry", "Zu trocken", "Слишком сухо", "Zbyt sucho", "Занадто сухо", "Твърде сухо"},
+            {"Hot and humid", "Heiß und feucht", "Жарко и влажно", "Gorąco i wilgotno", "Жарко та волого", "Горещо и влажно"},
+            {"Hot and dry", "Heiß und trocken", "Жарко и сухо", "Gorąco i sucho", "Жарко та сухо", "Горещо и сухо"},
+            {"Cold and humid", "Kalt und feucht", "Холодно и влажно", "Zimno i wilgotno", "Холодно та волого", "Студено и влажно"},
+            {"Cold and dry", "Kalt und trocken", "Холодно и сухо", "Zimno i sucho", "Холодно та сухо", "Студено и сухо"}
+        };
+
+        String _weatherDescription[16][6] = {
+            {"Clear sky", "Klarer Himmel", "Ясно", "Czyste Niebo", "Ясно", "Ясно"},
+            {"Mainly clear", "Überwiegend klar", "Преимущественно ясно", "Głównie jasne", "Переважно ясно", "Предимно ясно"},
+            {"Partly cloudy", "Teilweise bewölkt", "Переменная облачность", "Częściowe zachmurzenie", "Мінлива хмарність", "Предимно облачно"},
+            {"Overcast", "Bedeckt", "Пасмурно", "Pochmurny", "Хмарно", "Облачно"},
+            {"Fog", "Nebel", "Туман", "Mgła", "Туман", "Мъгла"},
+            {"Depositing rime fog", "Ablagerung von Raureifnebel", "Туман с инеем", "Deponująca się mgła szronowa", "Туман з інеєм", "Мъгла със скреж"},
+            {"Drizzle", "Nieselregen", "Морось", "Mżawka", "Мряка", "Дъжд"},
+            {"Freezing drizzle", "Gefrierender Nieselregen", "Изморозь", "Marznąca mżawka", "Ізморозь", "Скреж"},
+            {"Rain", "Regen", "Дождь", "Deszcz", "Дощ", "Дъжд"},
+            {"Freezing rain", "Gefrierender Regen", "Ледяной дождь", "Marznący deszcz", "Крижаний дощ", "Леден дъжд"},
+            {"Snowfall", "Schneefall", "Снегопад", "Opady śniegu", "Снігопад", "Снеговалеж"},
+            {"Snow grains", "Schneekörner", "Снежные зерна", "Ziarna śniegu", "Снігові зерна", "Скреж"},
+            {"Rain showers", "Regenschauer", "Ливень", "Przelotne opady deszczu", "Злива", "Ръмеж"},
+            {"Snow showers", "Schneeschauer", "Сильный снегопад", "Opady śniegu", "Сильний снігопад", "Обилен снеговалеж"},
+            {"Thunderstorm", "Gewitter", "Гроза", "Burza z piorunami", "Гроза", "Буря"},
+            {"Thunderstorm with hail", "Gewitter mit Hagel", "Гроза с градом", "Burza z gradem", "Гроза з градом", "Буря с градушка"}
+        };
+
+        String _mm[6] = {"mm", "mm", "мм", "mm", "мм", "мм"};
+        String _ms[6] = {"m/s", "m/s", "м/с", "m/s", "м/с", "м/с"};
+        String _v[6] = {"V", "V", " В", "V", " В", " В"};
     
-    String _days2() {
-      if(config.lang() == "ru") return "дня";
-      if(config.lang() == "bg") return "дни";
-      return "days";  
-    }
-    
-    String _days5() {
-      if(config.lang() == "ru") return "дней";
-      if(config.lang() == "bg") return "дни";
-      return "days";  
-    }
+        uint8_t _lang() {
+            if(config.lang() == "de") return 1;
+            if(config.lang() == "ru") return 2;
+            if(config.lang() == "pl") return 3;
+            if(config.lang() == "ua") return 4;
+            if(config.lang() == "bg") return 5;
+            return 0;
+        }
 
-    String _hour() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "час";
-      return "hour";  
-    }
-    
-    String _hours2() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "часа";
-      return "hours";  
-    }
-    
-    String _hours5() {
-      if(config.lang() == "ru") return "часов";
-      if(config.lang() == "bg") return "часа";
-      return "hours";  
-    }
 
-    String _minute() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "минута";
-      return "minute";
-    }
+    public:
+        String weekdayShortName(uint8_t num) {
+            if(num < 1 || num > 7) return "???";
+            return _weekdayShortName[num - 1][_lang()];
+        }
 
-    String _minutes2() {
-      if(config.lang() == "ru") return "минуты";
-      if(config.lang() == "bg") return "минути";
-      return "minutes";  
-    }
+        String mm() {
+            return _mm[_lang()];
+        }
 
-    String _minutes5() {
-      if(config.lang() == "ru") return "минут";
-      if(config.lang() == "bg") return "минути";
-      return "minutes";  
-    }
+        String ms() {
+            return _ms[_lang()];
+        }
 
-    String _lessThanAMinute() {
-      if(config.lang() == "ru") return "Меньше минуты";
-      if(config.lang() == "bg") return "По-малко от минута";
-      return "Less than a minute";  
-    }
+        String v() {
+            return _v[_lang()];
+        }
 
-    String _and() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "и";
-      return "and";  
-    }
+        String comfort(unsigned int level) {
+            if(level < 1 || level > 9) return "";
+            return _comfort[level - 1][_lang()];
+        }
 
-  public:
-    String mo() {
-      if(config.lang() == "ru") return "Пн";
-      if(config.lang() == "bg") return "По";
-      return "Mo";  
-    }
-
-    String tu() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "Вт";
-      else return "Tu";  
-    }
-
-    String we() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "Ср";
-      return "We";  
-    }
-
-    String th() {
-      if(config.lang() == "ru") return "Чт";
-      if(config.lang() == "bg") return "Че";
-      return "Th";  
-    }
-
-    String fr() {
-      if(config.lang() == "ru") return "Пт";
-      if(config.lang() == "bg") return "Пе";
-      return "Fr";  
-    }
-
-    String sa() {
-      if(config.lang() == "ru") return "Сб";
-      if(config.lang() == "bg") return "Съ";
-      return "Sa";  
-    }
-
-    String su() {
-      if(config.lang() == "ru") return "Вс";
-      if(config.lang() == "bg") return "Не";
-      return "Su";  
-    }
-    
-    String mm() { // millimeters
-      if(config.lang() == "ru" or config.lang() == "bg") return "мм";
-      return "mm";  
-    }
-
-    String ms() { // meters per second
-      if(config.lang() == "ru" or config.lang() == "bg") return "м/с";
-      return "m/s";  
-    }
-
-    String v() { // volt
-      if(config.lang() == "ru" or config.lang() == "bg") return "В";
-      return "V";
-    }
-
-    unsigned int plural(int num) {
-      if(num > 10 && num < 20) return 0;
-      if(num % 10 == 1) return 1;
-      if(num % 10 > 1 && num % 10 < 5) return 2;
-      return 0;
-    }
-    
-    String runtime(unsigned long mil) {
-      String buf = "";
-
-      if(mil < 60) buf = _lessThanAMinute();
-      else if(mil < 3600) {
-        buf = String(minute(mil)) + " ";
-        buf += (plural(minute(mil)) == 1) ? _minute() : (plural(minute(mil)) == 2) ? _minutes2() : _minutes5();
-      }
-      else if(mil < 86400) {
-        buf = String(hour(mil)) + " "; 
-        buf += ((plural(hour(mil)) == 1) ? _hour() : (plural(hour(mil)) == 2) ? _hours2() : _hours5()) + " ";
-        buf += _and() + " ";  
-        buf += String(minute(mil)) + " ";
-        buf += (plural(minute(mil)) == 1) ? _minute() : (plural(minute(mil)) == 2) ? _minutes2() : _minutes5();
-      }
-      else {
-        int days = lround(mil / 86400);
-        buf = String(days) + " ";
-        buf += ((plural(days) == 1) ? _day() : (plural(days) == 2) ? _days2() : _days5()) + ", ";
-        buf += String(hour(mil)) + " ";
-        buf += ((plural(hour(mil)) == 1) ? _hour() : (plural(hour(mil)) == 2) ? _hours2() : _hours5()) + " ";
-        buf += _and() + " ";
-        buf += String(minute(mil)) + " ";
-        buf += (plural(minute(mil)) == 1) ? _minute() : (plural(minute(mil)) == 2) ? _minutes2() : _minutes5();
-      }
-      
-      return buf;
-    }
-
-    String comfort(unsigned int level) {
-      switch(level) {
-        case 1: {
-          if(config.lang() == "ru" or config.lang() == "bg") return "Комфортно";
-          return "Comfortable";
-        }; break;
-        case 2: {
-          if(config.lang() == "ru") return "Жарко";
-          if(config.lang() == "bg") return "Горещо";
-          return "Too hot";
-        }; break;
-        case 3: {
-          if(config.lang() == "ru") return "Холодно";
-          if(config.lang() == "bg") return "Студено";
-          return "Too cold";
-        }; break;
-        case 4: {
-          if(config.lang() == "ru") return "Слишком сухо";
-          if(config.lang() == "bg") return "Твърде сухо";
-          return "Too dry";
-        }; break;
-        case 5: {
-          if(config.lang() == "ru") return "Слишком влажно";
-          if(config.lang() == "bg") return "Твърде влажно";
-          return "Too humid";
-        }; break;
-        case 6: {
-          if(config.lang() == "ru") return "Жарко и влажно";
-          if(config.lang() == "bg") return "Горещо и влажно";
-          return "Hot and humid";
-        }; break;
-        case 7: {
-          if(config.lang() == "ru") return "Жарко и сухо";
-          if(config.lang() == "bg") return "Горещо и сухо";
-          return "Hot and dry";
-        }; break;
-        case 8: {
-          if(config.lang() == "ru") return "Холодно и влажно";
-          if(config.lang() == "bg") return "Студено и влажно";
-          return "Cold and humid";
-        }; break;
-        case 9: {
-          if(config.lang() == "ru") return "Холодно и сухо";
-          if(config.lang() == "bg") return "Студено и сухо";
-          return "Cold and dry";
-        }; break;
-        default: return "---"; break;
-      }
-    }
-
-    String weekdayShortName(unsigned int day) {
-      switch(day) {
-        case 1: return su();
-        case 2: return mo();
-        case 3: return tu();
-        case 4: return we();
-        case 5: return th();
-        case 6: return fr();
-        case 7: return sa();
-        default: return su(); break;
-      }
-    }
-
-    String clearSky() {
-      if(config.lang() == "ru" or config.lang() == "bg") return "Ясно";
-      return "Clear sky";
-    }
-        
-    String mainlyClear() {
-      if(config.lang() == "ru") return "Преимущественно ясно";
-      if(config.lang() == "bg") return "Предимно ясно";
-      return "Mainly clear";
-    }
-
-    String partlyCloudy() {
-      if(config.lang() == "ru") return "Переменная облачность";
-      if(config.lang() == "bg") return "Предимно облачно";
-      return "Partly cloudy";
-    }
-
-    String overcast() {
-      if(config.lang() == "ru") return "Пасмурно";
-      if(config.lang() == "bg") return "Облачно";
-      return "Overcast";
-    }
-
-    String fog() {
-      if(config.lang() == "ru") return "Туман";
-      if(config.lang() == "bg") return "Мъгла";
-      return "Fog";
-    }
-
-    String deposRimeFog() {
-      if(config.lang() == "ru") return "Туман с инеем";
-      if(config.lang() == "bg") return "Мъгла със скреж";
-      return "Depositing rime fog";
-    }
-
-    String drizzle() {
-      if(config.lang() == "ru") return "Морось";
-      if(config.lang() == "bg") return "Дъжд";
-      return "Drizzle";
-    }
-
-    String freezingDrizzle() {
-      if(config.lang() == "ru") return "Изморозь";
-      if(config.lang() == "bg") return "Скреж";
-      return "Freezing drizzle";
-    }
-
-    String rain() {
-      if(config.lang() == "ru") return "Дождь";
-      if(config.lang() == "bg") return "Дъжд";
-      return "Rain";
-    }
-
-    String freezingRain() {
-      if(config.lang() == "ru") return "Ледяной дождь";
-      if(config.lang() == "bg") return "Леден дъжд";
-      return "Freezing rain";
-    }
-
-    String snowFall() {
-      if(config.lang() == "ru") return "Снегопад";
-      if(config.lang() == "bg") return "Снеговалеж";
-      return "Snowfall";
-    }
-
-    String snowGrains() {
-      if(config.lang() == "ru") return "Снежные зерна";
-      if(config.lang() == "bg") return "Скреж";
-      return "Snow grains";
-    }
-
-    String rainShowers() {
-      if(config.lang() == "ru") return "Ливень";
-      if(config.lang() == "bg") return "Ръмеж";
-      return "Rain showers";
-    }
-
-    String snowShowers() {
-      if(config.lang() == "ru") return "Сильный снегопад";
-      if(config.lang() == "bg") return "Обилен снеговалеж";
-      return "Snow showers";
-    }
-
-    String thunderstorm() {
-      if(config.lang() == "ru") return "Гроза";
-      if(config.lang() == "bg") return "Буря";
-      return "Thunderstorm";
-    }
-
-    String thunderstormWithHail() {
-      if(config.lang() == "ru") return "Гроза с градом";
-      if(config.lang() == "bg") return "Буря с градушка";
-      return "Thunderstorm with hail";
-    }
+        String weatherDescription(unsigned int level) {
+            if(level > 15) return "???";
+            return _weatherDescription[level][_lang()];
+        }
 };
