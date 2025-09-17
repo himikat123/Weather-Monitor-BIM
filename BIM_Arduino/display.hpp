@@ -267,8 +267,9 @@ void Display::_showAntenna() {
 
 void Display::_showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color) {
   char buf[10] = "";
-  if(sensors.checkTemp(temp)) sprintf(buf, "%d°C", temp);
-  else sprintf(buf, "--°C");
+  char units = config.units_temp() ? 'F' : 'C';
+  if(sensors.checkTemp(temp)) sprintf(buf, "%d°%c", config.units_temp() ? round(sensors.fahrenheit(temp)) : temp, units);
+  else sprintf(buf, "--°%c", units);
   _printText(x, y, font == FONT3 ? 70 : 56, font == FONT3 ? 26 : 20, buf, font, CENTER, color);
 }
 
