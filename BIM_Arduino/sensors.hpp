@@ -29,6 +29,9 @@ class Sensors {
     bool checkTemp(float temp);
     bool checkHum(float hum);
     bool checkPres(float pres);
+    bool checkAbsHum(float ah);
+    bool checkDewPoint(float dp, float temp);
+
     bool checkLight(float light);
     bool checkVolt(float volt);
     bool checkBatVolt(float volt);
@@ -48,6 +51,12 @@ class Sensors {
     float get_max44009_light(float corr);
     float get_bh1750_light(float corr);
     float get_analog_voltage(float corr);
+    float get_bat_voltage();
+    uint8_t get_bat_percent();
+    uint8_t get_bat_level();
+
+    float fahrenheit(float temp);
+    float mmHg(float pres);
     
   private:
     bool _bme280_det = false;
@@ -58,6 +67,7 @@ class Sensors {
     bool _max44009_det = false;
     bool _bh1750_det = false;
     
+    float _adc = 0.0;
     float _bme280_temp = 40400.0;
     float _bme280_hum = 40400.0;
     float _bme280_pres = 40400.0;
@@ -155,6 +165,20 @@ bool Sensors::checkPres(float pres) {
 }
 
 /**
+ * Check if Absolute Humidity is within normal range
+ */
+bool Sensors::checkAbsHum(float ah) {
+  return (ah >= 0.0 and ah <= 60.0);
+}
+
+/**
+ * Check if Dew Point is within normal range
+ */
+bool Sensors::checkDewPoint(float dp, float temp) {
+  return (dp >= -60.0 and dp <= 60.0 and dp <= temp);
+}
+
+/**
  * Check if ambient light is within the normal range
  */
 bool Sensors::checkLight(float light) {
@@ -242,6 +266,27 @@ float Sensors::get_bh1750_light(float corr) {
 
 float Sensors::get_analog_voltage(float corr) {
   return _analog_voltage + corr;
+}
+
+float Sensors::get_bat_voltage() {
+  return _adc / (300.0 - config.batK);
+}
+
+uint8_t Sensors::get_bat_percent() {
+  const float umin = 3.75, umax = 3.9;
+  uint8_t percent = (get_bat_voltage() - umin) * 100.0 / (umax - umin); 
+  if(percent < 0) percent = 0;
+  if(percent > 100) percent = 100;
+
+  return percent;
+}
+
+uint8_t Sensors::get_bat_level() {
+  uint8_t level = round(get_bat_percent / 25);
+  if(level < 1) level = 1;
+  if(level > 4) level = 4;
+
+  return level;
 }
 
 /**
@@ -413,6 +458,49 @@ void Sensors::_BH1750Read(void) {
  * Read data from analog ambient light sensor
  */
 void Sensors::_AnalogRead(void) {
-  float adc = float(analogRead(A0));
+  _adc = float(analogRead(A0));
   _analog_voltage = adc / 1241.0;
+}
+
+/*
+ * Calculate absolute humidity
+ */
+float Sensors::absoluteHum(float temp, float hum) {
+    float abs = 40400.0;
+    if(checkTemp(temp) and checkHum(hum)) {
+      float sat = 6.112 * exp((17.67 * temp) / (temp + 243.5));
+      float vap = sat * (hum / 100.0);
+      abs = (2.1674 * vap / (273.15 + temp)) * 100;
+    }
+
+    return abs;
+}
+
+/*
+ * Calculate dew point
+ */
+float Sensors::dewPoint(float temp, float hum) {
+    float dp = 40400.0;
+    const float a = 17.67, b = 243.5;
+
+    if(checkTemp(temp) and checkHum(hum)) {
+      float alpha = log(hum / 100.0) + (a * temp) / (b + temp);
+      dp = (b * alpha) / (a - alpha);
+    }
+
+    return dp;
+}
+
+/*
+ * Сonvert Celsius to Fahrenheit
+ */
+float Sensors::fahrenheit(float temp) {
+    return temp * 9 / 5 + 32;
+}
+
+/*
+ * Convert hPa to mmHg
+ */
+float Sensors::mmHg(float pres) {
+    return pres * 0.75;
 }

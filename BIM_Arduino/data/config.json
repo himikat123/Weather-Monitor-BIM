@@ -14,8 +14,8 @@
 		}
 	},
 	"network": {
-		"ssid": ["","",""],
-		"pass": ["","",""],
+		"ssid": ["", "", ""],
+		"pass": ["", "", ""],
 		"ip": "",
 		"mask": "",
 		"gw": "",
@@ -27,11 +27,11 @@
 		"ssid": "Weather monitor BIM",
 		"pass": "1234567890",
 		"chnl": 1,
-		"ip": "192.168.4.1",
+		"ip": "192.168.1.4",
 		"mask": "255.255.255.0"
 	},
 	"weather": {
-		"appid": ["",""],
+		"appid": ["", ""],
 		"city": "",
 		"cityid": 0,
 		"lat": 0,
@@ -45,6 +45,12 @@
 		}
 	},
 	"lang": "en",
+	"sleep": 0,
+	"batK": 128,
+	"units": {
+        "temp": 0,
+        "pres": 1
+    },
 	"clock": {
 		"format": 2,
 		"ntp": "time.nist.gov",
@@ -94,9 +100,7 @@
 			},
 			"descr": 1
 		},
-		"model": [
-			2
-		]
+		"model": [2]
 	},
 	"sensors": {
 		"bme280": {
@@ -134,8 +138,8 @@
 		"channelID": "",
 		"wrkey": "",
 		"rdkey": "",
-		"fields": [0,0,0,0,0,0,0,0],
-		"types": [0,0,0,0,0,0,0,0]
+		"fields": [0, 0, 0, 0, 0, 0, 0, 0],
+		"types": [0, 0, 0, 0, 0, 0, 0, 0]
 	},
 	"thingspeakReceive": {
 		"period": 0,
@@ -148,9 +152,9 @@
 		"lat": "",
 		"lon": "",
 		"name": "bim",
-		"sensors": [0,0,0,0,0,0,0,0,0,0,0,0],
-		"types": [0,0,0,0,0,0,0,0,0,0,0,0],
-		"metrics": ["A","B","C","D","E","F","G","H","I","J","K","L"]
+		"sensors": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"types": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"metrics": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 	},
 	"account": {
 		"name": "admin",

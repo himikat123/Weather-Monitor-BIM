@@ -87,6 +87,14 @@ class Config {
   // Language
   char _lang[3] = "en";
 
+  // Sleep
+	uint16_t _sleep = 0;
+	uint8_t _batK = 128;
+
+  // Units
+  uint8_t _units_temp = 0;
+  uint8_t  _units_pres = 0;
+
   // Clock
   unsigned int _clock_format = 0; // Clock format: 0-12 hour wo leading zero, 1-12 hour with leading zero, 2-24 hour wo leading zero, 3-24 hour with leading zero 
   char _clock_ntp[65] = "time.nist.gov"; // NTP server address
@@ -112,10 +120,10 @@ class Config {
   unsigned int _display_source_tempIn_thing = 0; // Thingspeak field number for the intdoor temperature: 0...7
   unsigned int _display_source_humIn_sens = 0; // Indoor humidity data source: 0-Forecast, 1-Thingspeak, 2-BME280, 3-SHT21, 4-DHT22
   unsigned int _display_source_humIn_thing = 0; // Thingspeak field number for the outdoor humidity: 0...7
-  unsigned int _display_source_volt_sens = 0; // Voltage data source: 0-Nothing, 1-Thingspeak
+  unsigned int _display_source_volt_sens = 0; // Voltage data source: 0-Nothing, 1-Built-In Battery, 2-Thingspeak
   unsigned int _display_source_volt_thing = 0; // Thingspeak field number for the voltage: 0...7
   unsigned int _display_source_volt_thingType = 0; // Sensor type for the voltage: 0-Battery voltage, 1-Battery percentage
-  unsigned int _display_source_bat_sens = 0; // Battery level data source: 0-Nothing, 1-Thingspeak
+  unsigned int _display_source_bat_sens = 0; // Battery level data source: 0-Nothing, 1-Built-In Battery, 2-Thingspeak
   unsigned int _display_source_bat_thing = 0; // Thingspeak field number for the battery level: 0...7
   unsigned int _display_source_descr = 0; // Additional description data source: 0-Nothing, 1-Comfort level
   
@@ -225,6 +233,14 @@ class Config {
         
           // Language
           COPYSTR(conf["lang"], _lang);
+
+          // Sleep
+          COPYNUM(conf["sleep"], _sleep);
+	        COPYNUM(conf["batK"], _batK);
+
+          // Units
+          COPYNUM(conf["units"]["temp"], _units_temp);
+          COPYNUM(conf["units"]["pres"], _units_pres);
 
           // Clock
           COPYNUM(conf["clock"]["format"], _clock_format);
@@ -483,6 +499,26 @@ class Config {
     return String(_lang);
   }
 
+  uint16_t sleep() {
+    if(_sleep >= 0 and _sleep <= 999) return _sleep;
+    return 0;
+  }
+
+	uint8_t batK() {
+    if(_batK >= 10 and _batK >= 250) return _batK;
+    return 128;
+  }
+
+  uint8_t units_temp() {
+    if(_units_temp == 1) return 1;
+    return 0;
+  }
+
+  uint8_t units_pres() {
+    if(_units_pres == 0) return 0;
+    return 1;
+  }
+
   unsigned int clock_format() {
     if(_clock_format > 3) return 0;
     return _clock_format;
@@ -695,13 +731,13 @@ class Config {
 
   unsigned int thingspeakSend_fields(unsigned int num) {
     if(num >= THNG_FIELDS) return 0;
-    if(_thingspeakSend_fields[num] > 11) return 0;
+    if(_thingspeakSend_fields[num] > 10) return 0;
     return _thingspeakSend_fields[num];
   }
 
   unsigned int thingspeakSend_types(unsigned int num) {
     if(num >= THNG_FIELDS) return 0;
-    if(_thingspeakSend_types[num] > 2) return 0;
+    if(_thingspeakSend_types[num] > 4) return 0;
     return _thingspeakSend_types[num];
   }
 
@@ -750,7 +786,7 @@ class Config {
 
   unsigned int narodmonSend_sensors(unsigned int num) {
     if(num >= NAROD_FIELDS) return 0;
-    if(_narodmonSend_sensors[num] > 12) return 0;
+    if(_narodmonSend_sensors[num] > 10) return 0;
     return _narodmonSend_sensors[num];
   }
 
@@ -761,7 +797,7 @@ class Config {
 
   unsigned int narodmonSend_types(unsigned int num) {
     if(num >= NAROD_FIELDS) return 0;
-    if(_narodmonSend_types[num] > 2) return 0;
+    if(_narodmonSend_types[num] > 4) return 0;
     return _narodmonSend_types[num];
   }
 
