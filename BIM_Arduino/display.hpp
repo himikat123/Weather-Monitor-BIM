@@ -57,7 +57,7 @@ class Display {
     void _showVoltageOrPercentage(void);
     void _showWeatherIcon(unsigned int icon, bool isDay);
     void _showDescription(String description);
-    void _showPressure(int16_t pres);
+    void _showPressure(float pres);
     void _showWindSpeed(int8_t windSpeed);
     void _showWindDirection(int windDirection);
     void _showIPaddress();
@@ -65,7 +65,7 @@ class Display {
 
     int _getTemp(unsigned int sens, unsigned int thing);
     int _getHum(unsigned int sens, unsigned int thing);
-    int _getPres(void);
+    float _getPres(void);
 
     bool _prevClockPoints = false;
     int _prevTime = -1;
@@ -410,13 +410,14 @@ void Display::_showDescription(String description) {
   }
 }
 
-void Display::_showPressure(int16_t pres) {
-  if(_prevPresOut != pres) {
+void Display::_showPressure(float pres) {
+  int16_t pr = (int16_t)round(pres);
+  if(_prevPresOut != pr) {
     char buf[8] = "";
-    if(!sensors.checkPres(pres)) sprintf(buf, "--%s", lang.mm());
-    else sprintf(buf, "%d%s", (int)round(pres * 0.75), lang.mm());
+    if(!sensors.checkPres(pres)) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
+    else sprintf(buf, "%d%s", config.units_pres() ? (int)round(sensors.fahrenheit(pres)) : pr, config.units_pres() ? lang.mm() : lang.hpa());
     _printText(250, 119, 70, 20, buf, FONT2, CENTER, PRESSURE_COLOR);
-    _prevPresOut = pres;
+    _prevPresOut = pr;
   }
 }
 
@@ -544,10 +545,10 @@ int Display::_getHum(unsigned int sens, unsigned int thing) {
  * Get pressure according to settings
  * @return pressure
  */
-int Display::_getPres(void) {
+float Display::_getPres(void) {
   float pres = 40400.0;
   switch(config.display_source_presOut_sens()) {
-    case 1: pres = weather.get_currentPres(config.weather_pres_corr()); break;    // pressure outside from weather forecast
+    case 1: pres = weather.get_currentPres(config.weather_pres_corr()); break;  // pressure outside from weather forecast
     case 2:                                                                     // presure outside from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         pres = thingspeak.get_field(config.display_source_presOut_thing());
@@ -556,7 +557,7 @@ int Display::_getPres(void) {
     case 4: pres = sensors.get_bmp180_pres(config.bmp180_pres_corr()); break;   // pressure outside from BMP180
     default: ; break;
   }
-  return round(pres);
+  return pres;
 }
 
 /**
