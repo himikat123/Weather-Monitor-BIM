@@ -45,7 +45,7 @@ void Narodmon::send() {
 String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String mac) {
   String fields = "";
   String field = "\n#" + metrics + "_" + mac + "#";
-  unsugned int type = config.thingspeakSend_types(fieldNum);
+  unsigned int type = config.thingspeakSend_types(fieldNum);
 
   switch(config.narodmonSend_sensors(fieldNum)) {
     case 0: ; break; // --
@@ -105,32 +105,33 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
       if(type == 3 and sensors.checkDewPoint(dp, t)) fields = field + String(dp);
     }; break;
     
-    case 6: // DS18B20
+    case 6: { // DS18B20
       float t = sensors.get_ds18b20_temp(config.ds18b20_temp_corr());
       if(sensors.checkTemp(t)) fields = field + String(t);
-      break;
+    };  break;
     
-    case 7: // MAX44009
+    case 7: { // MAX44009
       float l = sensors.get_max44009_light(config.max44009_light_corr());
-      if(sensors.lig(l)) fields = field + String(l);
-      break;
+      if(sensors.checkLight(l)) fields = field + String(l);
+    };  break;
     
-    case 8: // BH1750
+    case 8: { // BH1750
       float l = sensors.get_bh1750_light(config.bh1750_light_corr());
-      if(sensors.light(l)) fields = field + String(l);
-      break;
+      if(sensors.checkLight(l)) fields = field + String(l);
+    };  break;
 
-    case 9: // Runtime
+    case 9: { // Runtime
       fields = field + String(millis() / 1000);
-      break;
+    };  break;
 
-    case 10: // Battery
+    case 10: { // Battery
       float v = sensors.get_bat_voltage();
       float p = sensors.get_bat_percent();
       float l = sensors.get_bat_level();
       if(type == 0 and sensors.checkBatVolt(v)) fields = field + String(v);
       if(type == 1 and sensors.checkBatPercent(p)) fields = field + String(p);
       if(type == 2 and sensors.checkBatLvl(l)) fields = field + String(l);
+    };  break;
     
     default: ; break; 
   }

@@ -31,7 +31,6 @@ class Sensors {
     bool checkPres(float pres);
     bool checkAbsHum(float ah);
     bool checkDewPoint(float dp, float temp);
-
     bool checkLight(float light);
     bool checkVolt(float volt);
     bool checkBatVolt(float volt);
@@ -57,6 +56,8 @@ class Sensors {
 
     float fahrenheit(float temp);
     float mmHg(float pres);
+    float absoluteHum(float temp, float hum);
+    float dewPoint(float temp, float hum);
     
   private:
     bool _bme280_det = false;
@@ -269,7 +270,7 @@ float Sensors::get_analog_voltage(float corr) {
 }
 
 float Sensors::get_bat_voltage() {
-  return _adc / (300.0 - config.batK);
+  return _adc / (300.0 - config.batK());
 }
 
 uint8_t Sensors::get_bat_percent() {
@@ -282,7 +283,7 @@ uint8_t Sensors::get_bat_percent() {
 }
 
 uint8_t Sensors::get_bat_level() {
-  uint8_t level = round(get_bat_percent / 25);
+  uint8_t level = round(get_bat_percent() / 25);
   if(level < 1) level = 1;
   if(level > 4) level = 4;
 
@@ -459,7 +460,7 @@ void Sensors::_BH1750Read(void) {
  */
 void Sensors::_AnalogRead(void) {
   _adc = float(analogRead(A0));
-  _analog_voltage = adc / 1241.0;
+  _analog_voltage = _adc / 1241.0;
 }
 
 /*
