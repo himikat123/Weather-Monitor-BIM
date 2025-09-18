@@ -28,7 +28,8 @@ class Sensors {
     
     bool checkTemp(float temp);
     bool checkHum(float hum);
-    bool checkPres(float pres);
+    bool checkPresHPA(float pres);
+    bool checkPresMM(float pres);
     bool checkAbsHum(float ah);
     bool checkDewPoint(float dp, float temp);
     bool checkLight(float light);
@@ -55,7 +56,8 @@ class Sensors {
     uint8_t get_bat_level();
 
     float fahrenheit(float temp);
-    float mmHg(float pres);
+    float hPaToMM(float p);
+    float mmToHPA(float p);
     float absoluteHum(float temp, float hum);
     float dewPoint(float temp, float hum);
     
@@ -161,8 +163,11 @@ bool Sensors::checkHum(float hum) {
 /**
  * Check if pressure is within the normal range
  */
-bool Sensors::checkPres(float pres) {
-  return (pres >= 400.0 and pres <= 1200.0);
+bool Sensors::checkPresHPA(float pres) {
+  return (pres >= 870.0 and pres <= 1085.0); 
+}
+bool Sensors::checkPresMM(float pres) {
+  return (pres >= 650 and pres <= 815); 
 }
 
 /**
@@ -502,6 +507,13 @@ float Sensors::fahrenheit(float temp) {
 /*
  * Convert hPa to mmHg
  */
-float Sensors::mmHg(float pres) {
-    return pres * 0.75;
+float Sensors::hPaToMM(float p) {
+    return p / 1.33322;
+}
+
+/*
+ * Convert mmHg to hPa
+ */
+float Sensors::mmToHPA(float p) {
+    return p * 1.33322;
 }

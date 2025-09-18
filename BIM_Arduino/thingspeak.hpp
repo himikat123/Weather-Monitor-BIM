@@ -134,7 +134,7 @@ String Thingspeak::_fieldPrepare(unsigned int fieldNum) {
       float dp = sensors.dewPoint(t, h);
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
       if(type == 1 and sensors.checkHum(h)) fields = field + String(h);
-      if(type == 2 and sensors.checkPres(p)) fields = field + String(p);
+      if(type == 2 and sensors.checkPresHPA(p)) fields = field + String(p);
       if(type == 3 and sensors.checkAbsHum(ah)) fields = field + String(ah);
       if(type == 4 and sensors.checkDewPoint(dp, t)) fields = field + String(dp);
     }; break;
@@ -147,7 +147,7 @@ String Thingspeak::_fieldPrepare(unsigned int fieldNum) {
       float dp = sensors.dewPoint(t, h);
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
       if(type == 1 and sensors.checkHum(h)) fields = field + String(h);
-      if(type == 2 and sensors.checkHum(p)) fields = field + String(p);
+      if(type == 2 and sensors.checkPresHPA(p)) fields = field + String(p);
       if(type == 3 and sensors.checkAbsHum(ah)) fields = field + String(ah);
       if(type == 4 and sensors.checkDewPoint(dp, t)) fields = field + String(dp);
     }; break;
@@ -156,7 +156,7 @@ String Thingspeak::_fieldPrepare(unsigned int fieldNum) {
       float t = sensors.get_bmp180_temp(config.bmp180_temp_corr());
       float p = sensors.get_bmp180_pres(config.bmp180_pres_corr());
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
-      if(type == 1 and sensors.checkHum(p)) fields = field + String(p);
+      if(type == 1 and sensors.checkPresHPA(p)) fields = field + String(p);
     }; break;
     
     case 4: { // SHT21

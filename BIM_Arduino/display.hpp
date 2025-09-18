@@ -495,9 +495,19 @@ void Display::_showDescription(String description) {
 void Display::_showPressure(float pres) {
   int16_t pr = (int16_t)round(pres);
   if(_prevPresOut != pr) {
-    char buf[8] = "";
-    if(!sensors.checkPres(pres)) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
-    else sprintf(buf, "%d%s", config.units_pres() ? (int)round(sensors.fahrenheit(pres)) : pr, config.units_pres() ? lang.mm() : lang.hpa());
+    char buf[11] = "";
+    float p = sensors.checkPresHPA(pres) 
+      ? config.units_pres()
+        ? pres
+        : sensors.hPaToMM(pres) 
+      : sensors.checkPresMM(pres)
+        ? config.units_pres()
+          ? sensors.mmToHPA(pres)
+          : pres
+        : -1;
+    pr = (int16_t)round(p);
+    if(pr < 0) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
+    else sprintf(buf, "%d%s", pr, config.units_pres() ? lang.mm() : lang.hpa());
     _printText(250, 120, 70, config.units_pres() ? 18 : 21, buf, config.units_pres() ? FONT_18 : FONT_21, CENTER, PRESSURE_COLOR);
     _prevPresOut = pr;
   }
