@@ -85,15 +85,15 @@ class Config {
   float _weather_pres_corr = 0; // Weather pressure correction
 
   // Language
-  char _lang[3] = "en";
+  char _lang[3] = "en"; // en, de, ru, pl, ua, bg, es
 
   // Sleep
-	uint16_t _sleep = 0;
-	uint8_t _batK = 128;
+	uint16_t _sleep = 0; // Time in minutes before going to sleep 0-999. 0-never sleep
+	uint8_t _batK = 128; // Battery voltage correction factor 10-250
 
   // Units
-  uint8_t _units_temp = 0;
-  uint8_t  _units_pres = 0;
+  uint8_t _units_temp = 0; // 0-Celsius, 1-Fahrenheit
+  uint8_t  _units_pres = 0; // 0-mmHg, 1-hPa
 
   // Clock
   unsigned int _clock_format = 0; // Clock format: 0-12 hour wo leading zero, 1-12 hour with leading zero, 2-24 hour wo leading zero, 3-24 hour with leading zero 
