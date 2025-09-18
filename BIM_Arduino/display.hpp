@@ -56,7 +56,10 @@ class Display {
     void _showComfort(unsigned int comfort);
     void _printText(uint16_t x, uint16_t y, uint16_t width, uint16_t height, String text, uint8_t font, uint8_t align, uint16_t color);
     void _showBatteryLevel(void);
-    void _showVoltageOrPercentage(void);
+    void _showVoltageOrPercentage(float v, int prc);
+    void _showAbsoluteHumidity(float temp, float hum);
+    void _showDewPoint(float temp, float hum);
+    void _showVoltagePercentageDateAbsHumDewPoint(void);
     void _showWeatherIcon(unsigned int icon, bool isDay);
     void _showDescription(String description);
     void _showPressure(float pres);
@@ -142,7 +145,7 @@ void Display::refresh(unsigned int bright) {
   int wd = weekday();
   _showWeekday(lang.weekdayShortName(wd));
   _showBatteryLevel();
-  _showVoltageOrPercentage();
+  _showVoltagePercentageDateAbsHumDewPoint();
   _showAntenna();
   
   _showComfort(global.comfort);
@@ -359,34 +362,109 @@ void Display::_showBatteryLevel() {
   }
 }
 
-void Display::_showVoltageOrPercentage() {
-  float volt = 40400.0;
-  int percent = 40400;
+void Display::_showVoltageOrPercentage(float v, int prc) {
   char buf[10] = "";
 
-  if(config.display_source_volt_sens() == 1) { // Thingspeak
+  if(config.display_source_volt_thingType() == 0) { // Voltage
+    if(_prevVolt != v) {
+      if(!sensors.checkBatVolt(v)) sprintf(buf, "--%s", lang.v());
+      else sprintf(buf, "%.2f%s", v, lang.v());
+      _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
+      _prevVolt = v;
+    }
+  }
+
+  else if(config.display_source_volt_thingType() == 1) { // Percentage
+    if(_prevPercent != prc) {
+      if(!sensors.checkBatPercent(prc)) sprintf(buf, "--%%");
+      else sprintf(buf, "%d%%", prc);
+      _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
+      _prevPercent = prc;
+    }
+  }
+}
+
+void Display::_showAbsoluteHumidity(float temp, float hum) {
+  char buf[10] = "";
+  float ah = sensors.absoluteHum(temp, hum);
+  if(_prevVolt != ah) {
+    if(!sensors.checkAbsHum(ah)) sprintf(buf, "--%s", lang.gpm());
+    else sprintf(buf, "%.1f%s", ah, lang.gpm());
+    _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
+    _prevVolt = ah;
+  }
+}
+
+void Display::_showDewPoint(float temp, float hum) {
+  char buf[10] = "";
+  float dp = sensors.dewPoint(temp, hum);
+  if(_prevVolt != dp) {
+    if(!sensors.checkDewPoint(dp, temp)) sprintf(buf, "--°%c", config.units_temp() ? 'F' : 'C');
+    else sprintf(buf, "%.1f°%c", config.units_temp() ? sensors.fahrenheit(dp) : dp, config.units_temp() ? 'F' : 'C');
+    _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
+    _prevVolt = dp;
+  }
+}
+
+void Display::_showVoltagePercentageDateAbsHumDewPoint() {
+  float volt = 40400.0;
+  int percent = 40400;
+
+  if(config.display_source_volt_sens() == 1) { // Built-in battery
+    volt = sensors.get_bat_voltage();
+    percent = sensors.get_bat_percent();
+    _showVoltageOrPercentage(volt, percent);
+  }
+
+  if(config.display_source_volt_sens() == 2) { // Thingspeak
     if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60) {
       volt = thingspeak.get_field(config.display_source_volt_thing());
       percent = round(volt);
     }
+    _showVoltageOrPercentage(volt, percent);
+  }
 
-    if(config.display_source_volt_thingType() == 0) { // Voltage
-      if(_prevVolt != volt) {
-        if(!sensors.checkBatVolt(volt)) sprintf(buf, "--%s", lang.v());
-        else sprintf(buf, "%.2f%s", volt, lang.v());
-        _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
-        _prevVolt = volt;
-      }
+  if(config.display_source_volt_sens() == 3) { // Date
+    char buf[10] = "";
+    if(_prevPercent != day()) {
+      if(config.lang() == "en") sprintf(buf, "%s %d, %d", lang.monthShortName(month()), day(), year());
+      else if(config.lang() == "de") sprintf(buf, "%d. %s %d", day(), lang.monthShortName(month()), year());
+      else sprintf(buf, "%d %s %d", day(), lang.monthShortName(month()), year());
+      _printText(198, 10, 58, 16, buf, FONT_14, LEFT, BATTERY_COLOR);
+      _prevPercent = day();
     }
+  }
 
-    else if(config.display_source_volt_thingType() == 1) { // Percentage
-      if(_prevPercent != percent) {
-        if(!sensors.checkBatPercent(percent)) sprintf(buf, "--%%");
-        else sprintf(buf, "%d%%", percent);
-        _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
-        _prevPercent = percent;
-      }
-    }
+  if(config.display_source_volt_sens() == 4) { // BME280 Absolute humidity
+    _showAbsoluteHumidity(sensors.get_bme280_temp(config.bme280_temp_corr()), sensors.get_bme280_hum(config.bme280_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 5) { // BME280 Dew point
+    _showDewPoint(sensors.get_bme280_temp(config.bme280_temp_corr()), sensors.get_bme280_hum(config.bme280_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 6) { // DHT22 Absolute humidity
+    _showAbsoluteHumidity(sensors.get_dht22_temp(config.dht22_temp_corr()), sensors.get_dht22_hum(config.dht22_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 7) { // DHT22 Dew point
+    _showDewPoint(sensors.get_dht22_temp(config.dht22_temp_corr()), sensors.get_dht22_hum(config.dht22_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 8) { // SHT21 Absolute humidity
+    _showAbsoluteHumidity(sensors.get_sht21_temp(config.sht21_temp_corr()), sensors.get_sht21_hum(config.sht21_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 9) { // SHT21 Dew point
+    _showDewPoint(sensors.get_sht21_temp(config.sht21_temp_corr()), sensors.get_sht21_hum(config.sht21_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 10) { // Forecast Absolute humidity
+    _showAbsoluteHumidity(weather.get_currentTemp(config.weather_temp_corr()), weather.get_currentHum(config.weather_hum_corr()));
+  }
+
+  if(config.display_source_volt_sens() == 11) { // Forecast Dew point
+    _showDewPoint(weather.get_currentTemp(config.weather_temp_corr()), weather.get_currentHum(config.weather_hum_corr()));
   }
 }
 
@@ -420,7 +498,7 @@ void Display::_showPressure(float pres) {
     char buf[8] = "";
     if(!sensors.checkPres(pres)) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
     else sprintf(buf, "%d%s", config.units_pres() ? (int)round(sensors.fahrenheit(pres)) : pr, config.units_pres() ? lang.mm() : lang.hpa());
-    _printText(250, 120, 70, config.units_pres ? 18 : 21, buf, config.units_pres ? FONT_18 : FONT_21, CENTER, PRESSURE_COLOR);
+    _printText(250, 120, 70, config.units_pres() ? 18 : 21, buf, config.units_pres() ? FONT_18 : FONT_21, CENTER, PRESSURE_COLOR);
     _prevPresOut = pr;
   }
 }
