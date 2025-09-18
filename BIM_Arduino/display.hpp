@@ -13,12 +13,14 @@ class Display {
   #define CENTER 1
   #define RIGHT 2
 
-  #define FONT1 0
-  #define FONT2 1
-  #define FONT3 2
-  #define FONT1_FILE "/fonts/Ubuntu-14"
-  #define FONT2_FILE "/fonts/Ubuntu-21"
-  #define FONT3_FILE "/fonts/Ubuntu-29"
+  #define FONT_14 0
+  #define FONT_18 1
+  #define FONT_21 2
+  #define FONT_29 3
+  #define FONT_14_FILE "/fonts/Ubuntu-14"
+  #define FONT_18_FILE "/fonts/Ubuntu-18"
+  #define FONT_21_FILE "/fonts/Ubuntu-21"
+  #define FONT_29_FILE "/fonts/Ubuntu-29"
 
   #define BG_COLOR          ILI9341_BLACK
   #define FRAME_COLOR       ILI9341_BLUE
@@ -101,9 +103,10 @@ class Display {
  */
 void Display::init(void) {
   bool font_missing = false;
-  if(LittleFS.exists(String(FONT1_FILE) + ".vlw") == false) font_missing = true;
-  if(LittleFS.exists(String(FONT2_FILE) + ".vlw") == false) font_missing = true;
-  if(LittleFS.exists(String(FONT3_FILE) + ".vlw") == false) font_missing = true;
+  if(LittleFS.exists(String(FONT_14_FILE) + ".vlw") == false) font_missing = true;
+  if(LittleFS.exists(String(FONT_18_FILE) + ".vlw") == false) font_missing = true;
+  if(LittleFS.exists(String(FONT_21_FILE) + ".vlw") == false) font_missing = true;
+  if(LittleFS.exists(String(FONT_29_FILE) + ".vlw") == false) font_missing = true;
   if(font_missing) {
     Serial.println("Font missing in LittleFS, did you upload it?");
     while(1) yield();
@@ -221,7 +224,7 @@ void Display::_showTime(uint8_t hr, uint8_t mn) {
 
 void Display::_showWeekday(String wd) {
   if(_prevWeekday != wd) {
-    _printText(146, 6, 40, 20, wd, FONT2, LEFT, CLOCK_COLOR);
+    _printText(146, 6, 40, 20, wd, FONT_21, LEFT, CLOCK_COLOR);
     _prevWeekday = wd;
   }
 }
@@ -270,19 +273,19 @@ void Display::_showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, u
   char units = config.units_temp() ? 'F' : 'C';
   if(sensors.checkTemp(temp)) sprintf(buf, "%d°%c", config.units_temp() ? round(sensors.fahrenheit(temp)) : temp, units);
   else sprintf(buf, "--°%c", units);
-  _printText(x, y, font == FONT3 ? 70 : 56, font == FONT3 ? 26 : 20, buf, font, CENTER, color);
+  _printText(x, y, font == FONT_29 ? 70 : 56, font == FONT_29 ? 26 : 20, buf, font, CENTER, color);
 }
 
 void Display::_showTemperatureInside(int temp) {
   if(_prevTempIn != temp) {
-    _showTemperature(temp, 173, 53, FONT3, TEMPERATURE_COLOR);
+    _showTemperature(temp, 173, 53, FONT_29, TEMPERATURE_COLOR);
     _prevTempIn = temp;
   }
 }
 
 void Display::_showTemperatureOutside(int temp) {
   if(_prevTempOut != temp) {
-    _showTemperature(temp, 71, 113, FONT3, TEMPERATURE_COLOR);
+    _showTemperature(temp, 71, 113, FONT_29, TEMPERATURE_COLOR);
     if(temp < 0) _showImg(62, 104, "/img/symb/temp-.jpg");
     else _showImg(62, 104, "/img/symb/temp+.jpg");
     _prevTempOut = temp;
@@ -293,7 +296,7 @@ void Display::_showHumidity(int hum, uint16_t x, uint16_t y) {
   char buf[5] = "";
   if(sensors.checkHum(hum)) sprintf(buf, "%d%%", hum);
   else sprintf(buf, "--%%");
-  _printText(x, y, 58, 20, buf, FONT2, CENTER, HUMIDITY_COLOR);
+  _printText(x, y, 58, 20, buf, FONT_21, CENTER, HUMIDITY_COLOR);
 }
 
 void Display::_showHumidityInside(int hum) {
@@ -313,7 +316,7 @@ void Display::_showHumidityOutside(int hum) {
 void Display::_showComfort(unsigned int comfort) {
   if(_prevComfort != comfort) {
     if(config.display_source_descr() == 1) {
-      _printText(145, 28, 175, 16, lang.comfort(global.comfort), FONT1, CENTER, TEXT_COLOR);
+      _printText(145, 28, 175, 16, lang.comfort(global.comfort), FONT_14, CENTER, TEXT_COLOR);
     }
     _prevComfort = comfort;
   }
@@ -321,9 +324,10 @@ void Display::_showComfort(unsigned int comfort) {
 
 void Display::_printText(uint16_t x, uint16_t y, uint16_t width, uint16_t height, String text, uint8_t font, uint8_t align, uint16_t color) {
   tft.fillRect(x, y, width, height, BG_COLOR);
-  if(font == FONT1) tft.loadFont(FONT1_FILE, LittleFS);
-  if(font == FONT2) tft.loadFont(FONT2_FILE, LittleFS);
-  if(font == FONT3) tft.loadFont(FONT3_FILE, LittleFS);
+  if(font == FONT_14) tft.loadFont(FONT_14_FILE, LittleFS);
+  if(font == FONT_18) tft.loadFont(FONT_18_FILE, LittleFS);
+  if(font == FONT_21) tft.loadFont(FONT_21_FILE, LittleFS);
+  if(font == FONT_29) tft.loadFont(FONT_29_FILE, LittleFS);
   tft.setTextColor(color, BG_COLOR);
   uint16_t w = tft.textWidth(text);
   if(align == CENTER) x += (width / 2) - (w / 2);
@@ -370,7 +374,7 @@ void Display::_showVoltageOrPercentage() {
       if(_prevVolt != volt) {
         if(!sensors.checkBatVolt(volt)) sprintf(buf, "--%s", lang.v());
         else sprintf(buf, "%.2f%s", volt, lang.v());
-        _printText(198, 10, 58, 16, buf, FONT1, RIGHT, BATTERY_COLOR);
+        _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
         _prevVolt = volt;
       }
     }
@@ -379,7 +383,7 @@ void Display::_showVoltageOrPercentage() {
       if(_prevPercent != percent) {
         if(!sensors.checkBatPercent(percent)) sprintf(buf, "--%%");
         else sprintf(buf, "%d%%", percent);
-        _printText(198, 10, 58, 16, buf, FONT1, RIGHT, BATTERY_COLOR);
+        _printText(198, 10, 58, 16, buf, FONT_14, RIGHT, BATTERY_COLOR);
         _prevPercent = percent;
       }
     }
@@ -405,7 +409,7 @@ void Display::_showDescription(String description) {
     tft.loadFont("/fonts/Ubuntu-21", LittleFS);
     uint16_t w = tft.textWidth(description);
     tft.unloadFont();
-    _printText(0, 84, 319, 20, description, w > 316 ? FONT1 : FONT2, CENTER, TEXT_COLOR);
+    _printText(0, 84, 319, 20, description, w > 316 ? FONT_14 : FONT_21, CENTER, TEXT_COLOR);
     _prevDescr = description;
   }
 }
@@ -416,7 +420,7 @@ void Display::_showPressure(float pres) {
     char buf[8] = "";
     if(!sensors.checkPres(pres)) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
     else sprintf(buf, "%d%s", config.units_pres() ? (int)round(sensors.fahrenheit(pres)) : pr, config.units_pres() ? lang.mm() : lang.hpa());
-    _printText(250, 119, 70, 20, buf, FONT2, CENTER, PRESSURE_COLOR);
+    _printText(250, 120, 70, config.units_pres ? 18 : 21, buf, config.units_pres ? FONT_18 : FONT_21, CENTER, PRESSURE_COLOR);
     _prevPresOut = pr;
   }
 }
@@ -426,7 +430,7 @@ void Display::_showWindSpeed(int8_t windSpeed) {
     char buf[8] = "";
     if(!weather.checkWind(windSpeed)) sprintf(buf, "--%s", lang.ms());
     else sprintf(buf, "%d%s", windSpeed, lang.ms());
-    _printText(93, 146, 40, 16, buf, FONT1, LEFT, TEXT_COLOR);
+    _printText(93, 146, 40, 16, buf, FONT_14, LEFT, TEXT_COLOR);
     _prevWindSpeed = windSpeed;
   }
 }
@@ -451,7 +455,7 @@ void Display::_showWindDirection(int windDirection) {
 void Display::_showIPaddress() {
   String IPaddress = global.apMode ? config.accessPoint_ip() : WiFi.localIP().toString();
   if(_prevIPaddress != IPaddress) {
-    _printText(186, 148, 133, 16, IPaddress, FONT1, RIGHT, TEXT_COLOR);
+    _printText(186, 148, 133, 16, IPaddress, FONT_14, RIGHT, TEXT_COLOR);
     _prevIPaddress = IPaddress;
   }
 }
@@ -469,19 +473,19 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
   }
 
   if(_prevDailyWeekday[num] != wd) {
-    _printText(x + 33, 168, 40, 16, wd, FONT1, CENTER, TEXT_COLOR);
+    _printText(x + 33, 168, 40, 16, wd, FONT_14, CENTER, TEXT_COLOR);
     _prevDailyWeekday[num] = wd;
   }
 
   int tMax = round(tempMax);
   if(_prevTempDailyMax[num] != tMax) {
-    _showTemperature(tMax, x + 49, 183, FONT2, TEMPERATURE_COLOR);
+    _showTemperature(tMax, x + 49, 183, FONT_21, TEMPERATURE_COLOR);
     _prevTempDailyMax[num] = tMax;
   }
 
   int tMin = round(tempMin);
   if(_prevTempDailyMin[num] != tMin) {
-    _showTemperature(tMin, x + 49, 203, FONT2, TEMP_MIN_COLOR);
+    _showTemperature(tMin, x + 49, 203, FONT_21, TEMP_MIN_COLOR);
     _prevTempDailyMin[num] = tMin;
   }
 
@@ -490,7 +494,7 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
     char buf[8] = "";
     if(!weather.checkWind(wnd)) sprintf(buf, "--%s", lang.ms());
     else sprintf(buf, "%d%s", wnd, lang.ms());
-    _printText(x + 31, 224, 44, 15, buf, FONT1, CENTER, TEXT_COLOR);
+    _printText(x + 31, 224, 44, 15, buf, FONT_14, CENTER, TEXT_COLOR);
     _prevWindSpeedDaily[num] = wnd;
   }
 }
