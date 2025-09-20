@@ -1,5 +1,5 @@
 /**
- *  Weather Monitor BIM v5.8
+ *  Weather Monitor BIM v6.0
  *  https://github.com/himikat123/Weather-Monitor-BIM
  *
  *  © himikat123@gmail.com, Nürnberg, Deutschland, 2016-2025
@@ -31,7 +31,7 @@ Ticker clockPoints;
 /* External Libraries */
 #include <ArduinoJson.h> // v6.19.3 https://github.com/bblanchon/ArduinoJson
 #include <TimeLib.h> // v1.6.0 https://playground.arduino.cc/Code/Time/
-#include <ESP8266TrueRandom.h>
+#include <ESP8266TrueRandom.h> // v1.0 https://github.com/marvinroger/ESP8266TrueRandom
 
 /* Own classes */
 #include "globals.hpp"
