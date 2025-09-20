@@ -51,9 +51,9 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     case 0: ; break; // --
 
     case 1: { // Weather
-      float t = weather.get_currentTemp(config.weather_temp_corr());
+      float t = weather.get_currentTemp(sensors.tempCorrVal(config.weather_temp_corr()));
       float h = weather.get_currentHum(config.weather_hum_corr());
-      float p = weather.get_currentPres(config.weather_pres_corr());
+      float p = weather.get_currentPres(sensors.presCorrVal(config.weather_pres_corr()));
       float ah = sensors.absoluteHum(t, h);
       float dp = sensors.dewPoint(t, h);
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
@@ -64,9 +64,9 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     }; break;
     
     case 2: { // BME280
-      float t = sensors.get_bme280_temp(config.bme280_temp_corr());
+      float t = sensors.get_bme280_temp(sensors.tempCorrVal(config.bme280_temp_corr()));
       float h = sensors.get_bme280_hum(config.bme280_hum_corr());
-      float p = sensors.get_bme280_pres(config.bme280_pres_corr());
+      float p = sensors.get_bme280_pres(sensors.presCorrVal(config.bme280_pres_corr()));
       float ah = sensors.absoluteHum(t, h);
       float dp = sensors.dewPoint(t, h);
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
@@ -77,14 +77,14 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     }; break;
     
     case 3: { // BMP180
-      float t = sensors.get_bmp180_temp(config.bmp180_temp_corr());
-      float p = sensors.get_bmp180_pres(config.bmp180_pres_corr());
+      float t = sensors.get_bmp180_temp(sensors.tempCorrVal(config.bmp180_temp_corr()));
+      float p = sensors.get_bmp180_pres(sensors.presCorrVal(config.bmp180_pres_corr()));
       if(type == 0 and sensors.checkTemp(t)) fields = field + String(t);
       if(type == 1 and sensors.checkPresHPA(p)) fields = field + String(p);
     }; break;
     
     case 4: { // SHT21
-      float t = sensors.get_sht21_temp(config.sht21_temp_corr());
+      float t = sensors.get_sht21_temp(sensors.tempCorrVal(config.sht21_temp_corr()));
       float h = sensors.get_sht21_hum(config.sht21_hum_corr());
       float ah = sensors.absoluteHum(t, h);
       float dp = sensors.dewPoint(t, h);
@@ -95,7 +95,7 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     }; break;
     
     case 5: { // DHT22
-      float t = sensors.get_dht22_temp(config.dht22_temp_corr());
+      float t = sensors.get_dht22_temp(sensors.tempCorrVal(config.dht22_temp_corr()));
       float h = sensors.get_dht22_hum(config.dht22_hum_corr());
       float ah = sensors.absoluteHum(t, h);
       float dp = sensors.dewPoint(t, h);
@@ -106,7 +106,7 @@ String Narodmon::_fieldsPrepare(unsigned int fieldNum, String metrics, String ma
     }; break;
     
     case 6: { // DS18B20
-      float t = sensors.get_ds18b20_temp(config.ds18b20_temp_corr());
+      float t = sensors.get_ds18b20_temp(sensors.tempCorrVal(config.ds18b20_temp_corr()));
       if(sensors.checkTemp(t)) fields = field + String(t);
     };  break;
     

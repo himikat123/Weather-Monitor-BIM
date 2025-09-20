@@ -47,9 +47,9 @@ class Display {
     void _showWeekday(String wd);
     void _showAntenna(void);
     void _drawSkeleton(void);
-    void _showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color);
-    void _showTemperatureInside(int temp);
-    void _showTemperatureOutside(int temp);
+    void _showTemperature(float temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color);
+    void _showTemperatureInside(float temp);
+    void _showTemperatureOutside(float temp);
     void _showHumidity(int hum, uint16_t x, uint16_t y);
     void _showHumidityInside(int hum);
     void _showHumidityOutside(int hum);
@@ -68,7 +68,7 @@ class Display {
     void _showIPaddress();
     void _showForecast(uint16_t x, uint8_t num, int icon, float tempMax, float tempMin, float wind, String wd);
 
-    int _getTemp(unsigned int sens, unsigned int thing);
+    float _getTemp(unsigned int sens, unsigned int thing);
     int _getHum(unsigned int sens, unsigned int thing);
     float _getPres(void);
 
@@ -271,27 +271,29 @@ void Display::_showAntenna() {
   }
 }
 
-void Display::_showTemperature(int temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color) {
+void Display::_showTemperature(float temp, uint16_t x, uint16_t y, uint8_t font, uint16_t color) {
   char buf[10] = "";
   char units = config.units_temp() ? 'F' : 'C';
-  if(sensors.checkTemp(temp)) sprintf(buf, "%d°%c", config.units_temp() ? round(sensors.fahrenheit(temp)) : temp, units);
+  if(sensors.checkTemp(temp)) sprintf(buf, "%d°%c", round(temp), units);
   else sprintf(buf, "--°%c", units);
   _printText(x, y, font == FONT_29 ? 70 : 56, font == FONT_29 ? 26 : 20, buf, font, CENTER, color);
 }
 
-void Display::_showTemperatureInside(int temp) {
-  if(_prevTempIn != temp) {
+void Display::_showTemperatureInside(float temp) {
+  int16_t t = (int16_t)round(temp);
+  if(_prevTempIn != t) {
     _showTemperature(temp, 173, 53, FONT_29, TEMPERATURE_COLOR);
-    _prevTempIn = temp;
+    _prevTempIn = t;
   }
 }
 
-void Display::_showTemperatureOutside(int temp) {
-  if(_prevTempOut != temp) {
+void Display::_showTemperatureOutside(float temp) {
+  int16_t t = (int16_t)round(temp);
+  if(_prevTempOut != t) {
     _showTemperature(temp, 71, 113, FONT_29, TEMPERATURE_COLOR);
-    if(temp < 0) _showImg(62, 104, "/img/symb/temp-.jpg");
+    if(t < 0) _showImg(62, 104, "/img/symb/temp-.jpg");
     else _showImg(62, 104, "/img/symb/temp+.jpg");
-    _prevTempOut = temp;
+    _prevTempOut = t;
   }
 }
 
@@ -496,18 +498,8 @@ void Display::_showPressure(float pres) {
   int16_t pr = (int16_t)round(pres);
   if(_prevPresOut != pr) {
     char buf[11] = "";
-    float p = sensors.checkPresHPA(pres) 
-      ? config.units_pres()
-        ? pres
-        : sensors.hPaToMM(pres) 
-      : sensors.checkPresMM(pres)
-        ? config.units_pres()
-          ? sensors.mmToHPA(pres)
-          : pres
-        : -1;
-    pr = (int16_t)round(p);
-    if(pr < 0) sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
-    else sprintf(buf, "%d%s", pr, config.units_pres() ? lang.mm() : lang.hpa());
+    if(sensors.checkPresHPA(pres) or sensors.checkPresMM(pres)) sprintf(buf, "%d%s", pr, config.units_pres() ? lang.mm() : lang.hpa());
+    else sprintf(buf, "--%s", config.units_pres() ? lang.mm() : lang.hpa());
     _printText(250, 120, 70, config.units_pres() ? 18 : 21, buf, config.units_pres() ? FONT_18 : FONT_21, CENTER, PRESSURE_COLOR);
     _prevPresOut = pr;
   }
@@ -593,22 +585,24 @@ void Display::_showForecast(uint16_t x, uint8_t num, int icon, float tempMax, fl
  * @param thing thinspeak field number
  * @return temperature
  */
-int Display::_getTemp(unsigned int sens, unsigned int thing) {
+float Display::_getTemp(unsigned int sens, unsigned int thing) {
   float temp = 40400.0;
+
   switch(sens) {
-    case 1: temp = weather.get_currentTemp(config.weather_temp_corr()); break;    // temperature from weather forecast
-    case 2:                                                                     // temperature from thingspeak
-      if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
+    case 1: temp = sensors.tempLocal(weather.get_currentTemp(0.0), config.weather_temp_corr()); break;  // temperature from weather forecast
+    case 2:
+      if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)                     // temperature from thingspeak
         temp = thingspeak.get_field(thing);
       break;
-    case 3: temp = sensors.get_bme280_temp(config.bme280_temp_corr()); break;   // temperature from BME280
-    case 4: temp = sensors.get_bmp180_temp(config.bmp180_temp_corr()); break;   // temperature from BMP180
-    case 5: temp = sensors.get_sht21_temp(config.sht21_temp_corr()); break;     // temperature from SHT21
-    case 6: temp = sensors.get_dht22_temp(config.dht22_temp_corr()); break;     // temperature from DHT22
-    case 7: temp = sensors.get_ds18b20_temp(config.ds18b20_temp_corr()); break; // temperature from DS18B20
+    case 3: temp = sensors.tempLocal(sensors.get_bme280_temp(0.0), config.bme280_temp_corr()); break;   // temperature from BME280
+    case 4: temp = sensors.tempLocal(sensors.get_bmp180_temp(0.0), config.bmp180_temp_corr()); break;   // temperature from BMP180
+    case 5: temp = sensors.tempLocal(sensors.get_sht21_temp(0.0), config.sht21_temp_corr()); break;     // temperature from SHT21
+    case 6: temp = sensors.tempLocal(sensors.get_dht22_temp(0.0), config.dht22_temp_corr()); break;     // temperature from DHT22
+    case 7: temp = sensors.tempLocal(sensors.get_ds18b20_temp(0.0), config.ds18b20_temp_corr()); break; // temperature from DS18B20
     default: ; break;
   }
-  return round(temp);
+
+  return temp;
 }
 
 /**
@@ -619,15 +613,16 @@ int Display::_getTemp(unsigned int sens, unsigned int thing) {
  */
 int Display::_getHum(unsigned int sens, unsigned int thing) {
   float hum = 40400.0;
+
   switch(sens) {
-    case 1: hum = weather.get_currentHum(config.weather_hum_corr()); break;       // humudity from weather forecast
-    case 2:                                                                     // humidity from thingspeak
+    case 1: hum = weather.get_currentHum(config.weather_hum_corr()); break; // humudity from weather forecast
+    case 2:                                                                 // humidity from thingspeak
       if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
         hum = thingspeak.get_field(thing);
       break;
-    case 3: hum = sensors.get_bme280_hum(config.bme280_hum_corr()); break;      // humidity from BME280
-    case 4: hum = sensors.get_sht21_hum(config.sht21_hum_corr()); break;        // humidity from SHT21
-    case 5: hum = sensors.get_dht22_hum(config.dht22_hum_corr()); break;        // humidity from DHT22
+    case 3: hum = sensors.get_bme280_hum(config.bme280_hum_corr()); break;  // humidity from BME280
+    case 4: hum = sensors.get_sht21_hum(config.sht21_hum_corr()); break;    // humidity from SHT21
+    case 5: hum = sensors.get_dht22_hum(config.dht22_hum_corr()); break;    // humidity from DHT22
     default: ; break;
   }
   return round(hum);
@@ -639,16 +634,27 @@ int Display::_getHum(unsigned int sens, unsigned int thing) {
  */
 float Display::_getPres(void) {
   float pres = 40400.0;
+
   switch(config.display_source_presOut_sens()) {
-    case 1: pres = weather.get_currentPres(config.weather_pres_corr()); break;  // pressure outside from weather forecast
-    case 2:                                                                     // presure outside from thingspeak
-      if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)
+    case 1: pres = sensors.presLocal(weather.get_currentPres(0.0), config.weather_pres_corr()); break; // pressure from weather forecast
+    case 2:
+      if(now() - thingspeak.get_updated() < config.thingspeakReceive_expire() * 60)                    // pressure from thingspeak
         pres = thingspeak.get_field(config.display_source_presOut_thing());
       break;
-    case 3: pres = sensors.get_bme280_pres(config.bme280_pres_corr()); break;   // pressure outside from BME280
-    case 4: pres = sensors.get_bmp180_pres(config.bmp180_pres_corr()); break;   // pressure outside from BMP180
+    case 3: pres = sensors.presLocal(sensors.get_bme280_pres(0.0), config.bme280_pres_corr()); break;  // pressure from BME280
+    case 4: pres = sensors.presLocal(sensors.get_bmp180_pres(0.0), config.bmp180_pres_corr()); break;  // pressure from BMP180
     default: ; break;
   }
+
+  if(config.display_source_presOut_sens() == 2) {
+    if(sensors.checkPresHPA(pres)) { 
+      if(config.units_pres() == 0) pres = sensors.hPaToMM(pres);
+    }
+    else if(sensors.checkPresMM(pres)) {
+      if(config.units_pres() == 1) pres = sensors.mmToHPA(pres);
+    }
+  }
+
   return pres;
 }
 

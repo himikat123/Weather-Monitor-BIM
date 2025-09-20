@@ -56,8 +56,13 @@ class Sensors {
     uint8_t get_bat_level();
 
     float fahrenheit(float temp);
+    float celsius(float temp);
+    float tempCorrVal(float t);
+    float tempLocal(float temp, float corr);
     float hPaToMM(float p);
     float mmToHPA(float p);
+    float presCorrVal(float p);
+    float presLocal(float pres, float corr);
     float absoluteHum(float temp, float hum);
     float dewPoint(float temp, float hum);
     
@@ -472,48 +477,87 @@ void Sensors::_AnalogRead(void) {
  * Calculate absolute humidity
  */
 float Sensors::absoluteHum(float temp, float hum) {
-    float abs = 40400.0;
-    if(checkTemp(temp) and checkHum(hum)) {
-      float sat = 6.112 * exp((17.67 * temp) / (temp + 243.5));
-      float vap = sat * (hum / 100.0);
-      abs = (2.1674 * vap / (273.15 + temp)) * 100;
-    }
+  float abs = 40400.0;
+  if(checkTemp(temp) and checkHum(hum)) {
+    float sat = 6.112 * exp((17.67 * temp) / (temp + 243.5));
+    float vap = sat * (hum / 100.0);
+    abs = (2.1674 * vap / (273.15 + temp)) * 100;
+  }
 
-    return abs;
+  return abs;
 }
 
 /*
  * Calculate dew point
  */
 float Sensors::dewPoint(float temp, float hum) {
-    float dp = 40400.0;
-    const float a = 17.67, b = 243.5;
+  float dp = 40400.0;
+  const float a = 17.67, b = 243.5;
 
-    if(checkTemp(temp) and checkHum(hum)) {
-      float alpha = log(hum / 100.0) + (a * temp) / (b + temp);
-      dp = (b * alpha) / (a - alpha);
-    }
+  if(checkTemp(temp) and checkHum(hum)) {
+    float alpha = log(hum / 100.0) + (a * temp) / (b + temp);
+    dp = (b * alpha) / (a - alpha);
+  }
 
-    return dp;
+  return dp;
 }
 
 /*
  * Сonvert Celsius to Fahrenheit
  */
 float Sensors::fahrenheit(float temp) {
-    return temp * 9 / 5 + 32;
+  return (temp * 9.0 / 5.0) + 32.0;
+}
+
+/*
+ * Сonvert Fahrenheit to Celsius
+ */
+float Sensors::celsius(float temp) {
+  return (temp - 32.0) * 5.0 / 9.0;
+}
+
+/*
+ * Conversion of temperature correction value
+ */
+float Sensors::tempCorrVal(float t) {
+  if(config.units_temp() == 1) return celsius(t);
+  return t;
+}
+
+/*
+ * Get corrected temperature in local format, Celsius or Fahrenheit
+ */
+float Sensors::tempLocal(float temp, float corr) {
+  if(config.units_temp() == 1) return fahrenheit(temp) + corr;
+  return temp + corr;
 }
 
 /*
  * Convert hPa to mmHg
  */
 float Sensors::hPaToMM(float p) {
-    return p / 1.33322;
+  return p / 1.33322;
 }
 
 /*
  * Convert mmHg to hPa
  */
 float Sensors::mmToHPA(float p) {
-    return p * 1.33322;
+  return p * 1.33322;
+}
+
+/*
+ * Conversion of pressure correction value
+ */
+float Sensors::presCorrVal(float p) {
+  if(config.units_pres() == 0) return mmToHPA(p);
+  return p;
+}
+
+/*
+ * Get corrected pressure in local format, hPa or mmHg
+ */
+float Sensors::presLocal(float pres, float corr) {
+  if(config.units_pres() == 0) return hPaToMM(pres) + corr;
+  return pres + corr;
 }
